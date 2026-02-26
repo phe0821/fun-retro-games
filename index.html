@@ -3,79 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Time Attack Tetris by 향은 </title>
+    <title>Time Attack Tetris by 향은</title>
     <style>
         body {
-            background-color: #202028;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding-top: 15px;
-            user-select: none; 
-            -webkit-user-select: none;
+            background-color: #202028; color: #fff; display: flex; flex-direction: column;
+            align-items: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; padding-top: 15px; user-select: none; -webkit-user-select: none;
         }
-        /* 💡 메인 타이틀 디자인 */
         h1 {
-            margin: 0 0 10px 0;
-            color: #0DC2FF;
-            text-shadow: 2px 2px 0px #FF0D72;
-            font-size: 28px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
+            margin: 0 0 10px 0; color: #0DC2FF; text-shadow: 2px 2px 0px #FF0D72;
+            font-size: 28px; letter-spacing: 2px; text-transform: uppercase;
         }
         #info-panel {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 200px;
-            margin-bottom: 10px;
-            font-size: 18px;
-            font-weight: bold;
+            display: flex; justify-content: space-between; align-items: flex-end;
+            width: 100%; max-width: 200px; margin-bottom: 10px; font-weight: bold;
         }
-        #score { color: #FFE138; }
-        #timer { color: #FF0D72; }
+        #score-container { display: flex; flex-direction: column; }
+        #high-score { color: #0DFF72; font-size: 12px; margin-bottom: 2px; }
+        #score { color: #FFE138; font-size: 18px; }
+        #timer { color: #FF0D72; font-size: 18px; }
         
         #game-container { position: relative; }
         canvas {
-            border: 2px solid #fff;
-            background-color: #000;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-            display: block;
+            border: 2px solid #fff; background-color: #000; box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); display: block;
         }
         
-        /* 💡 오디오 활성화를 위한 시작 화면 & 게임 오버 화면 */
         .overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 10;
         }
         .overlay h2 { margin: 0 0 10px 0; color: #FF0D72; text-align: center;}
         .overlay p { color: #fff; margin-bottom: 20px; font-size: 14px; }
         #final-score { font-size: 24px; font-weight: bold; margin-bottom: 20px; color: #FFE138;}
         
         .action-btn {
-            background-color: #0DC2FF;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #0099CC;
+            background-color: #0DC2FF; color: white; border: none; padding: 12px 24px;
+            font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 0 #0099CC;
         }
-        .action-btn:active {
-            box-shadow: 0 0 0 #0099CC;
-            transform: translateY(4px);
-        }
+        .action-btn:active { box-shadow: 0 0 0 #0099CC; transform: translateY(4px); }
 
         #controls {
             display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
@@ -89,7 +55,6 @@
         button.pad-btn:active { background-color: #777; }
         .btn-wide { flex: 1 1 100%; font-weight: bold; }
         
-        /* BGM 켜기/끄기 버튼 */
         #mute-btn {
             margin-top: 10px; background: none; border: 1px solid #fff; color: #fff;
             padding: 5px 10px; border-radius: 5px; cursor: pointer;
@@ -97,27 +62,27 @@
     </style>
 </head>
 <body>
-    <!-- 💡 메인 타이틀 추가 -->
-    <h1>Time Attack Tetris by 향은 </h1>
+    <h1>Time Attack Tetris by 향은</h1>
 
     <div id="info-panel">
-        <div id="score">점수: 0</div>
+        <div id="score-container">
+            <div id="high-score">나의 최고 기록: 0</div>
+            <div id="score">현재 점수: 0</div>
+        </div>
         <div id="timer">⏱️ 60초</div>
     </div>
 
     <div id="game-container">
         <canvas id="tetris" width="200" height="400"></canvas>
         
-        <!-- 💡 처음 시작 화면 (오디오 권한 얻기용) -->
         <div id="start-screen" class="overlay">
             <h2>준비 되셨나요?</h2>
             <p>1분 동안 최고 점수에 도전하세요!</p>
             <button id="btn-start" class="action-btn">게임 시작 ▶</button>
         </div>
 
-        <!-- 게임 오버 화면 -->
         <div id="game-over-screen" class="overlay" style="display: none;">
-            <h2 id="game-over-title">TIME OVER!</h2>
+            <h2 id="game-over-title">GAME OVER!</h2>
             <div id="final-score">최종 점수: 0</div>
             <button id="btn-replay" class="action-btn">다시 하기 🔄</button>
         </div>
@@ -140,12 +105,13 @@
 
         const colors = [ null, '#FF0D72', '#0DC2FF', '#0DFF72', '#F538FF', '#FF8E0D', '#FFE138', '#3877FF' ];
 
-        let isGameOver = true; // 처음엔 멈춰있음
+        let isGameOver = true;
         let timeLeft = 60;
         let timerInterval = null;
         let animationId = null;
+        
+        let highScore = localStorage.getItem('tetrisHighScore') || 0;
 
-        // --- 💡 사운드 시스템 (Web Audio API) ---
         let audioCtx = null;
         let isMuted = false;
         let isBgmPlaying = false;
@@ -153,7 +119,6 @@
         let nextNoteTime = 0;
         let noteIndex = 0;
 
-        // 오리지널 테트리스 BGM (코로베이니키) 주파수와 길이 배열
         const melody = [
             [659.25, 400], [493.88, 200], [523.25, 200], [587.33, 400], [523.25, 200], [493.88, 200],
             [440.00, 400], [440.00, 200], [523.25, 200], [659.25, 400], [587.33, 200], [523.25, 200],
@@ -171,18 +136,15 @@
             while (nextNoteTime < audioCtx.currentTime + 0.1) {
                 const [freq, durMs] = melody[noteIndex];
                 const dur = durMs / 1000;
-                
                 if (freq > 0) {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
-                    osc.type = 'square'; // 8비트 레트로 느낌의 파형
+                    osc.type = 'square';
                     osc.connect(gain);
                     gain.connect(audioCtx.destination);
-                    
                     osc.frequency.value = freq;
-                    gain.gain.setValueAtTime(0.03, nextNoteTime); // 음량 (작게 설정)
-                    gain.gain.setTargetAtTime(0, nextNoteTime + dur - 0.05, 0.015); // 끊어치는 느낌
-                    
+                    gain.gain.setValueAtTime(0.03, nextNoteTime);
+                    gain.gain.setTargetAtTime(0, nextNoteTime + dur - 0.05, 0.015);
                     osc.start(nextNoteTime);
                     osc.stop(nextNoteTime + dur);
                 }
@@ -195,56 +157,33 @@
         function playBGM() {
             if (isBgmPlaying) return;
             isBgmPlaying = true;
-            if (audioCtx) {
-                nextNoteTime = audioCtx.currentTime + 0.1;
-                noteIndex = 0;
-                scheduleBGM();
-            }
+            if (audioCtx) { nextNoteTime = audioCtx.currentTime + 0.1; noteIndex = 0; scheduleBGM(); }
         }
 
-        function stopBGM() {
-            isBgmPlaying = false;
-            clearTimeout(bgmInterval);
-        }
+        function stopBGM() { isBgmPlaying = false; clearTimeout(bgmInterval); }
 
-        // 💡 타격감 있는 줄 지우기 효과음 (뾰로롱~ 터지는 소리)
         function playClearSound() {
             if (!audioCtx || isMuted) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'square';
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'square'; osc.connect(gain); gain.connect(audioCtx.destination);
             osc.frequency.setValueAtTime(150, audioCtx.currentTime);
             osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.1);
             osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2);
-            
             gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-            
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.2);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
         }
 
-        // 하드 드롭 쿵! 소리
         function playDropSound() {
             if (!audioCtx || isMuted) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'triangle';
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'triangle'; osc.connect(gain); gain.connect(audioCtx.destination);
             osc.frequency.setValueAtTime(100, audioCtx.currentTime);
             osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
             gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.1);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
         }
-        // ------------------------------------
 
         function createPiece(type) {
             if (type === 'T') return [[0,0,0], [1,1,1], [0,1,0]];
@@ -258,75 +197,64 @@
 
         const arena = createMatrix(10, 20);
         function createMatrix(w, h) {
-            const matrix = [];
-            while (h--) matrix.push(new Array(w).fill(0));
-            return matrix;
+            const matrix = []; while (h--) matrix.push(new Array(w).fill(0)); return matrix;
         }
 
         const player = { pos: { x: 0, y: 0 }, matrix: null, score: 0 };
 
         function updateUI() {
-            document.getElementById('score').innerText = '점수: ' + player.score;
+            document.getElementById('high-score').innerText = '나의 최고 기록: ' + highScore;
+            document.getElementById('score').innerText = '현재 점수: ' + player.score;
             document.getElementById('timer').innerText = '⏱️ ' + timeLeft + '초';
         }
 
         function arenaSweep() {
-            let rowCount = 1;
-            let cleared = false;
+            let rowCount = 1; let cleared = false;
             outer: for (let y = arena.length - 1; y >= 0; --y) {
                 for (let x = 0; x < arena[y].length; ++x) {
                     if (arena[y][x] === 0) continue outer;
                 }
                 const row = arena.splice(y, 1)[0].fill(0);
-                arena.unshift(row);
-                ++y;
+                arena.unshift(row); ++y;
                 player.score += rowCount * 10;
-                rowCount *= 2;
-                cleared = true;
+                rowCount *= 2; cleared = true;
             }
-            if (cleared) playClearSound(); // 💡 줄을 지웠을 때 효과음 재생!
+            if (cleared) playClearSound();
         }
 
-       function drawMatrix(matrix, offset) {
-    matrix.forEach((row, y) => {
-        row.forEach((value, x) => {
-            if (value !== 0) {
-                // 1. 블록의 색상 채우기
-                context.fillStyle = colors[value];
-                context.fillRect(x + offset.x, y + offset.y, 1, 1);
-                
-                // 2. 💡 블록의 칸을 구분하는 테두리 선 긋기
-                context.lineWidth = 0.05; // 캔버스가 확대되어 있으므로 선 굵기를 아주 얇게 조절
-                context.strokeStyle = 'rgba(0, 0, 0, 0.6)'; // 반투명한 검은색 테두리
-                context.strokeRect(x + offset.x, y + offset.y, 1, 1);
-            }
-        });
-    });
-}
+        function drawMatrix(matrix, offset) {
+            matrix.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value !== 0) {
+                        context.fillStyle = colors[value];
+                        context.fillRect(x + offset.x, y + offset.y, 1, 1);
+                        
+                        context.lineWidth = 0.05; 
+                        context.strokeStyle = 'rgba(0, 0, 0, 0.6)'; 
+                        context.strokeRect(x + offset.x, y + offset.y, 1, 1);
+                    }
+                });
+            });
+        }
 
         function getGhostPos() {
             const ghost = { matrix: player.matrix, pos: { x: player.pos.x, y: player.pos.y } };
             while (!collide(arena, ghost)) ghost.pos.y++;
-            ghost.pos.y--;
-            return ghost.pos;
+            ghost.pos.y--; return ghost.pos;
         }
 
         function draw() {
-            context.fillStyle = '#000';
-            context.fillRect(0, 0, 10, 20);
+            context.fillStyle = '#000'; context.fillRect(0, 0, 10, 20);
             drawMatrix(arena, { x: 0, y: 0 });
             if (player.matrix) {
                 const ghostPos = getGhostPos();
-                context.globalAlpha = 0.2;
-                drawMatrix(player.matrix, ghostPos);
-                context.globalAlpha = 1.0;
+                context.globalAlpha = 0.2; drawMatrix(player.matrix, ghostPos); context.globalAlpha = 1.0;
             }
             drawMatrix(player.matrix, player.pos);
         }
 
         function collide(arena, player) {
-            const m = player.matrix;
-            const o = player.pos;
+            const m = player.matrix; const o = player.pos;
             for (let y = 0; y < m.length; ++y) {
                 for (let x = 0; x < m[y].length; ++x) {
                     if (m[y][x] !== 0 && (arena[y + o.y] && arena[y + o.y][x + o.x]) !== 0) return true;
@@ -337,9 +265,7 @@
 
         function merge(arena, player) {
             player.matrix.forEach((row, y) => {
-                row.forEach((value, x) => {
-                    if (value !== 0) arena[y + player.pos.y][x + player.pos.x] = value;
-                });
+                row.forEach((value, x) => { if (value !== 0) arena[y + player.pos.y][x + player.pos.x] = value; });
             });
         }
 
@@ -355,87 +281,54 @@
 
         function playerRotate(dir) {
             if (isGameOver) return;
-            const pos = player.pos.x;
-            let offset = 1;
-            rotate(player.matrix, dir);
+            const pos = player.pos.x; let offset = 1; rotate(player.matrix, dir);
             while (collide(arena, player)) {
-                player.pos.x += offset;
-                offset = -(offset + (offset > 0 ? 1 : -1));
-                if (offset > player.matrix[0].length) {
-                    rotate(player.matrix, -dir);
-                    player.pos.x = pos;
-                    return;
-                }
+                player.pos.x += offset; offset = -(offset + (offset > 0 ? 1 : -1));
+                if (offset > player.matrix[0].length) { rotate(player.matrix, -dir); player.pos.x = pos; return; }
             }
         }
 
         function playerReset() {
             const pieces = 'ILJOTSZ';
             player.matrix = createPiece(pieces[pieces.length * Math.random() | 0]);
-            player.pos.y = 0;
-            player.pos.x = (arena[0].length / 2 | 0) - (player.matrix[0].length / 2 | 0);
+            player.pos.y = 0; player.pos.x = (arena[0].length / 2 | 0) - (player.matrix[0].length / 2 | 0);
             
-            if (collide(arena, player)) {
-                endGame("GAME OVER"); 
-            }
+            if (collide(arena, player)) { endGame("GAME OVER!"); }
         }
 
         function playerDrop() {
             if (isGameOver) return;
             player.pos.y++;
             if (collide(arena, player)) {
-                player.pos.y--;
-                merge(arena, player);
-                arenaSweep();
-                updateUI();
-                playerReset();
+                player.pos.y--; merge(arena, player); arenaSweep(); updateUI(); playerReset();
             }
             dropCounter = 0;
         }
 
         function playerHardDrop() {
             if (isGameOver) return;
-            playDropSound(); // 💡 하드 드롭 시 쿵! 소리
+            playDropSound();
             while (!collide(arena, player)) player.pos.y++;
-            player.pos.y--;
-            merge(arena, player);
-            arenaSweep();
-            updateUI();
-            playerReset();
+            player.pos.y--; merge(arena, player); arenaSweep(); updateUI(); playerReset();
             dropCounter = 0;
         }
 
-        let dropCounter = 0;
-        let dropInterval = 1000;
-        let lastTime = 0;
+        let dropCounter = 0; let dropInterval = 1000; let lastTime = 0;
 
         function update(time = 0) {
             if (isGameOver) return;
             if (lastTime === 0) lastTime = time;
-
-            const deltaTime = time - lastTime;
-            lastTime = time;
-            dropCounter += deltaTime;
+            const deltaTime = time - lastTime; lastTime = time; dropCounter += deltaTime;
             if (dropCounter > dropInterval) playerDrop();
-            
-            draw();
-            animationId = requestAnimationFrame(update);
+            draw(); animationId = requestAnimationFrame(update);
         }
 
         function startGame() {
-            initAudio(); // 💡 게임 시작 버튼을 누를 때 오디오 엔진 켜기
-            playBGM();   // 💡 브금 시작
-
+            initAudio(); playBGM();
             arena.forEach(row => row.fill(0));
-            player.score = 0;
-            timeLeft = 60;
-            isGameOver = false;
-            dropCounter = 0;
-            lastTime = 0;
+            player.score = 0; timeLeft = 60; isGameOver = false; dropCounter = 0; lastTime = 0;
             
-            updateUI();
-            playerReset();
-            
+            updateUI(); playerReset();
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('game-over-screen').style.display = 'none';
 
@@ -444,65 +337,53 @@
 
             timerInterval = setInterval(() => {
                 if(isGameOver) return;
-                timeLeft--;
-                updateUI();
-                if (timeLeft <= 0) endGame("TIME OVER!");
+                timeLeft--; updateUI();
+                if (timeLeft <= 0) endGame("TIME OVER");
             }, 1000);
-
             update();
         }
 
         function endGame(titleText) {
             isGameOver = true;
             clearInterval(timerInterval);
-            stopBGM(); // 💡 게임 끝나면 브금 정지
+            stopBGM(); 
             
-            document.getElementById('game-over-title').innerText = titleText;
+            if (player.score > highScore) {
+                highScore = player.score;
+                localStorage.setItem('tetrisHighScore', highScore);
+                document.getElementById('game-over-title').innerText = "🎉 신기록 달성! 🎉";
+            } else {
+                document.getElementById('game-over-title').innerText = titleText;
+            }
+            
             document.getElementById('final-score').innerText = '최종 점수: ' + player.score;
             document.getElementById('game-over-screen').style.display = 'flex';
         }
 
-        // 버튼 이벤트 리스너들
         document.getElementById('btn-start').addEventListener('click', startGame);
         document.getElementById('btn-replay').addEventListener('click', startGame);
-
         document.getElementById('mute-btn').addEventListener('click', (e) => {
             isMuted = !isMuted;
-            if (isMuted) {
-                stopBGM();
-                e.target.innerText = '🔇 소리 켜기';
-            } else {
-                if (!isGameOver) playBGM();
-                e.target.innerText = '🔊 소리 끄기';
-            }
+            if (isMuted) { stopBGM(); e.target.innerText = '🔇 소리 켜기'; } 
+            else { if (!isGameOver) playBGM(); e.target.innerText = '🔊 소리 끄기'; }
         });
 
         document.addEventListener('keydown', event => {
             if (isGameOver) return;
-            if (event.key === 'ArrowLeft') {
-                player.pos.x--; if (collide(arena, player)) player.pos.x++;
-            } else if (event.key === 'ArrowRight') {
-                player.pos.x++; if (collide(arena, player)) player.pos.x--;
-            } else if (event.key === 'ArrowDown') {
-                playerDrop();
-            } else if (event.key === 'ArrowUp') {
-                playerRotate(1);
-            } else if (event.key === ' ') {
-                playerHardDrop();
-            }
+            if (event.key === 'ArrowLeft') { player.pos.x--; if (collide(arena, player)) player.pos.x++; } 
+            else if (event.key === 'ArrowRight') { player.pos.x++; if (collide(arena, player)) player.pos.x--; } 
+            else if (event.key === 'ArrowDown') { playerDrop(); } 
+            else if (event.key === 'ArrowUp') { playerRotate(1); } 
+            else if (event.key === ' ') { playerHardDrop(); }
         });
 
-        document.getElementById('btn-left').addEventListener('click', () => {
-            if (!isGameOver) { player.pos.x--; if (collide(arena, player)) player.pos.x++; }
-        });
-        document.getElementById('btn-right').addEventListener('click', () => {
-            if (!isGameOver) { player.pos.x++; if (collide(arena, player)) player.pos.x--; }
-        });
+        document.getElementById('btn-left').addEventListener('click', () => { if (!isGameOver) { player.pos.x--; if (collide(arena, player)) player.pos.x++; } });
+        document.getElementById('btn-right').addEventListener('click', () => { if (!isGameOver) { player.pos.x++; if (collide(arena, player)) player.pos.x--; } });
         document.getElementById('btn-rotate').addEventListener('click', () => playerRotate(1));
         document.getElementById('btn-down').addEventListener('click', () => playerDrop());
         document.getElementById('btn-drop').addEventListener('click', () => playerHardDrop());
 
-        // 초기 화면 세팅 (게임은 아직 시작 안 함)
+        updateUI();
         draw();
     </script>
 </body>
