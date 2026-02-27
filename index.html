@@ -5,18 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>추억의 오락실 (Hyang Eun Arcade)</title>
     <style>
-        body {
-            background-color: #1a1a24;
-            color: #fff;
+       body {
+            /* 🎨 대문 기본 스타일 (기존에 있던 거라면 그대로 두셔도 됩니다) */
+            background-color: #1a1a24; color: #fff; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100dvh;
-            padding-bottom: 30px
-            padding: 20px;
-            box-sizing: border-box;
+            
+            /* 💡 화면 짤림을 막아주는 핵심 마법 3총사! */
+            box-sizing: border-box; /* 여백을 화면 크기 안으로 밀어 넣기! */
+            height: 100dvh;         /* 모바일 하단 바를 피하는 동적 높이! */
+            padding-bottom: 30px;   /* 맨 아래쪽 안전 여유 공간! */
         }
         
         /* 💡 오락실 네온사인 느낌의 메인 타이틀 */
