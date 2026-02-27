@@ -33,9 +33,11 @@
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
             display: block; border-radius: 10px;
             /* 💡 화면이 콩알만 해지는 걸 막고 다시 큼직하게! */
-            max-width: 95vw;
-            height: 65vh; /* 폰 화면의 65%를 차지하도록 시원하게 키웠습니다 */
-            width: auto;
+            max-width: 95%;       /* 가로로 너무 꽉 차지 않게 숨통 틔우기 */
+            max-height: 50vh;     /* 세로 크기도 화면의 50% 이하로 억제! (모바일에서 너무 안 커보이게) */
+            width: auto;          /* 억지로 고정하지 않고 자연스럽게! */
+            height: auto;         /* 억지로 고정하지 않고 자연스럽게! */
+            object-fit: contain;  /* PC 줌인/아웃 시 찌그러지지 않고 원본 비율 완벽 유지! */
         }
         
         .overlay {
