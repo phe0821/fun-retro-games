@@ -206,42 +206,44 @@
 
         function playPopSound() {
             if (!audioCtx || isMuted || isPaused) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            
-            const now = audioCtx.currentTime;
-            osc.frequency.setValueAtTime(600, now);
-            osc.frequency.exponentialRampToValueAtTime(1500, now + 0.05);
-            
-            gain.gain.setValueAtTime(0.5, now);
-            /* 💡 핵심 1: 소리를 0.01이 아니라 완전히 '0'으로 깎아버립니다! */
-            gain.gain.linearRampToValueAtTime(0, now + 0.05); 
-            
-            osc.start(now); osc.stop(now + 0.05);
-            /* 💡 핵심 2: 소리가 끝나면 브라우저 메모리에서 완벽하게 박살 내서 흔적을 지웁니다! */
-            osc.onended = () => { osc.disconnect(); gain.disconnect(); };
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                
+                const now = audioCtx.currentTime;
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(1500, now + 0.04); /* 💡 0.05에서 0.04로 더 짧고 경쾌하게! */
+                
+                /* 💡 볼륨을 0.5에서 0.2로 낮춤! 여러 번 다다닥 눌러서 겹쳐도 찢어지지 않습니다 */
+                gain.gain.setValueAtTime(0.2, now); 
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.04); 
+                
+                osc.start(now); osc.stop(now + 0.04);
+                osc.onended = () => { osc.disconnect(); gain.disconnect(); };
+            } catch (e) { console.warn("Audio bug prevented!", e); }
         }
 
         function playMissSound() {
-           if (!audioCtx || isMuted || isPaused) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sawtooth';
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            
-            const now = audioCtx.currentTime;
-            osc.frequency.setValueAtTime(150, now);
-            osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
-            
-            gain.gain.setValueAtTime(0.3, now);
-            /* 💡 여기도 소리를 완전히 0으로 만들고 */
-            gain.gain.linearRampToValueAtTime(0, now + 0.1);
-            
-            osc.start(now); osc.stop(now + 0.1);
-            /* 💡 끝나는 순간 완벽하게 제거! */
-            osc.onended = () => { osc.disconnect(); gain.disconnect(); };
+            if (!audioCtx || isMuted || isPaused) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                
+                const now = audioCtx.currentTime;
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.exponentialRampToValueAtTime(100, now + 0.08); /* 💡 꼬리를 0.1에서 0.08로 살짝 짧게 끊어줌 */
+                
+                /* 💡 미스 볼륨도 0.3에서 0.1로 확 낮춤! 미친 듯이 연타해도 고장 난 라디오 소리가 나지 않습니다 */
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                
+                osc.start(now); osc.stop(now + 0.08);
+                osc.onended = () => { osc.disconnect(); gain.disconnect(); };
+            } catch (e) { console.warn("Audio bug prevented!", e); }
         }
 
         function updateUI() {
