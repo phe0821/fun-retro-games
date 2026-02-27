@@ -59,21 +59,23 @@
         }
         /* ✨💎✨ 크리스탈 네온 아케이드 버튼 스타일 */
         button.bishi-btn {
-            flex: 1; padding: 25px 0; font-size: 24px; font-weight: 900; border-radius: 15px;
+           flex: 1; 
+            padding: 15px 0; /* 💡 25px에서 15px로 대폭 다이어트! */
+            font-size: 18px; /* 💡 24px에서 18px로 글씨 크기 축소! */
+            font-weight: 900; border-radius: 12px;
             border: none; color: white; cursor: pointer; touch-action: manipulation;
-            /* 깊이감 있는 내부 그림자와 테두리 빛 효과 */
             box-shadow: 
-                0 8px 0 rgba(0,0,0,0.6), 
-                inset 0 -4px 8px rgba(0,0,0,0.4),
-                inset 0 4px 8px rgba(255,255,255,0.4),
-                0 0 10px rgba(255,255,255,0.2); /* 은은한 테두리 빛 */
+                0 6px 0 rgba(0,0,0,0.6), 
+                inset 0 -3px 6px rgba(0,0,0,0.4),
+                inset 0 3px 6px rgba(255,255,255,0.4),
+                0 0 8px rgba(255,255,255,0.2);
             transition: all 0.05s; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
             position: relative; overflow: hidden;
         }
 
         /* 버튼을 눌렀을 때: 빛이 번쩍하며 깊이 들어가는 효과 */
         button.bishi-btn:active {
-            transform: translateY(8px);
+            transform: translateY(6px);
             box-shadow: 
                 0 0px 0 rgba(0,0,0,0.6), 
                 inset 0 2px 4px rgba(0,0,0,0.6),
