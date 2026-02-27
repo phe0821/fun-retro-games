@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BALLOON POP POP</title>
+    <style>
+        body {
+            background-color: #202028; color: #fff; display: flex; flex-direction: column;
+            align-items: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; padding-top: 15px; user-select: none; -webkit-user-select: none;
+            overflow: hidden;
+        }
+        h1 {
+            margin: 0 0 10px 0; color: #fff; text-shadow: 2px 2px 0px #FF0D72, -2px -2px 0px #0DC2FF;
+            font-size: 26px; letter-spacing: 2px; text-transform: uppercase; text-align: center;
+        }
+        #info-panel {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            width: 100%; max-width: 300px; margin-bottom: 10px; font-weight: bold;
+        }
+        #score-container { display: flex; flex-direction: column; }
+        #high-score { color: #0DFF72; font-size: 12px; margin-bottom: 2px; }
+        #score { color: #FFE138; font-size: 18px; }
+        #combo-text { color: #F538FF; font-size: 16px; font-weight: 900; opacity: 0; transition: opacity 0.1s;}
+        #timer { color: #FF0D72; font-size: 18px; }
+        
+        #game-container { position: relative; }
+        canvas {
+            border: 2px solid #fff; background-color: #111; box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            display: block; border-radius: 10px;
+        }
+        
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 10; border-radius: 10px;
+        }
+        .overlay h2 { margin: 0 0 10px 0; color: #0DFF72; text-align: center;}
+        .overlay p { color: #ccc; margin-bottom: 20px; font-size: 14px; text-align: center; line-height: 1.5;}
+        #final-score { font-size: 24px; font-weight: bold; margin-bottom: 20px; color: #FFE138;}
+        
+        .action-btn {
+            background-color: #F538FF; color: white; border: none; padding: 12px 24px;
+            font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 0 #C200CC;
+        }
+        .action-btn:active { box-shadow: 0 0 0 #C200CC; transform: translateY(4px); }
+
+        #controls {
+            display: flex; justify-content: space-between; gap: 10px;
+            margin-top: 15px; width: 100%; max-width: 300px;
+        }
+        /* ✨💎✨ 크리스탈 네온 아케이드 버튼 스타일 */
+        button.bishi-btn {
+            flex: 1; padding: 25px 0; font-size: 24px; font-weight: 900; border-radius: 15px;
+            border: none; color: white; cursor: pointer; touch-action: manipulation;
+            /* 깊이감 있는 내부 그림자와 테두리 빛 효과 */
+            box-shadow: 
+                0 8px 0 rgba(0,0,0,0.6), 
+                inset 0 -4px 8px rgba(0,0,0,0.4),
+                inset 0 4px 8px rgba(255,255,255,0.4),
+                0 0 10px rgba(255,255,255,0.2); /* 은은한 테두리 빛 */
+            transition: all 0.05s; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            position: relative; overflow: hidden;
+        }
+
+        /* 버튼을 눌렀을 때: 빛이 번쩍하며 깊이 들어가는 효과 */
+        button.bishi-btn:active {
+            transform: translateY(8px);
+            box-shadow: 
+                0 0px 0 rgba(0,0,0,0.6), 
+                inset 0 2px 4px rgba(0,0,0,0.6),
+                inset 0 6px 15px rgba(0,0,0,0.5); /* 더 깊은 내부 그림자 */
+            filter: brightness(1.2) contrast(1.1); /* 순간적으로 밝게 빛남! */
+        }
+
+        /* 💡 빨강도 딥한 다크 컬러 글씨로 통일! */
+        #btn-red { background: linear-gradient(to bottom, #ff4d94, #FF0D72, #cc0050); color: #330011; text-shadow: none; }
+        #btn-green { background: linear-gradient(to bottom, #4dff94, #0DFF72, #00cc55); color: #003300; text-shadow: none; }
+        #btn-blue { background: linear-gradient(to bottom, #4dc2ff, #0DC2FF, #0099cc); color: #002244; text-shadow: none; }
+
+        /* 하단 버튼은 유지! */
+        #bottom-controls { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; width: 100%; max-width: 300px; }
+        .sub-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); color: #ddd; padding: 10px 10px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 14px; font-weight: bold; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); transition: background 0.1s, transform 0.1s; }
+        .sub-btn:active { background: rgba(255, 255, 255, 0.15); transform: scale(0.98); }
+    </style>
+</head>
+<body>
+    <h1>BALLOON POP POP</h1>
+
+    <div id="info-panel">
+        <div id="score-container">
+            <div id="high-score">나의 최고 기록: 0</div>
+            <div id="score">현재 점수: 0</div>
+            <div id="combo-text">1 COMBO!</div>
+        </div>
+        <div id="timer">⏱️ 30초</div>
+    </div>
+
+    <div id="game-container">
+        <canvas id="gameCanvas" width="300" height="400"></canvas>
+        
+        <div id="start-screen" class="overlay">
+            <h2>🎈벌룬 팝팝 </h2>
+            <p>올라오는 풍선 색상에 맞춰<br>아래의 버튼을 빠르게 누르세요!<br>갈수록 엄청나게 빨라집니다!</p>
+            <button id="btn-start" class="action-btn">게임 시작 ▶</button>
+        </div>
+
+        <div id="game-over-screen" class="overlay" style="display: none;">
+            <h2 id="game-over-title">TIME OVER!</h2>
+            <div id="final-score">최종 점수: 0</div>
+            <button id="btn-replay" class="action-btn">다시 하기 🔄</button>
+        </div>
+
+        <div id="pause-screen" class="overlay" style="display: none;">
+            <h2 style="color: #0DC2FF;">⏸️ 일시정지</h2>
+            <p>게임이 잠시 멈췄습니다.</p>
+            <button id="btn-resume" class="action-btn" style="background-color: #0DC2FF; box-shadow: 0 4px 0 #0099CC;">계속 하기 ▶</button>
+        </div>
+    </div>
+
+    <div id="controls">
+        <button id="btn-red" class="bishi-btn">빨강<br>(◀)</button>
+        <button id="btn-green" class="bishi-btn">초록<br>(▲)</button>
+        <button id="btn-blue" class="bishi-btn">파랑<br>(▶)</button>
+    </div>
+
+    <div id="bottom-controls">
+        <button id="mute-btn" class="sub-btn">🔊 소리 끄기</button>
+        <button id="pause-btn" class="sub-btn">⏸️ 일시정지</button>
+        <button class="sub-btn" onclick="location.href='index.html'" style="border-color: #FFE138; color: #FFE138; font-weight: bold;">🏠 홈 화면으로 돌아가기</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let isGameOver = true;
+        let isPaused = false;
+        let timeLeft = 30; 
+        let score = 0;
+        let combo = 1;
+        let timerInterval = null;
+        let animationId = null;
+        
+        let balloons = [];
+        let particles = [];
+        let lastTime = 0;
+        let spawnTimer = 0;
+        let currentSpawnRate = 600; 
+
+        let highScore = localStorage.getItem('balloonHighScore') || 0;
+
+        let audioCtx = null;
+        let isMuted = false;
+        let isBgmPlaying = false;
+        let bgmInterval = null;
+        let nextNoteTime = 0;
+        let noteIndex = 0;
+
+        const melody = [
+            [523.25, 150], [659.25, 150], [783.99, 150], [1046.50, 150],
+            [783.99, 150], [659.25, 150], [587.33, 150], [698.46, 150],
+            [523.25, 150], [659.25, 150], [783.99, 150], [1046.50, 150],
+            [1174.66, 300], [1046.50, 300]
+        ];
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended' && !isPaused) audioCtx.resume();
+        }
+
+        function scheduleBGM() {
+            if (!isBgmPlaying || !audioCtx || isMuted || isPaused) return;
+            while (nextNoteTime < audioCtx.currentTime + 0.1) {
+                const [freq, durMs] = melody[noteIndex];
+                const dur = durMs / 1000;
+                if (freq > 0) {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'square';
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.02, nextNoteTime);
+                    gain.gain.setTargetAtTime(0, nextNoteTime + dur - 0.02, 0.015);
+                    osc.start(nextNoteTime);
+                    osc.stop(nextNoteTime + dur);
+                }
+                nextNoteTime += dur;
+                noteIndex = (noteIndex + 1) % melody.length;
+            }
+            bgmInterval = setTimeout(scheduleBGM, 50);
+        }
+
+        function playBGM() {
+            if (isBgmPlaying) return;
+            isBgmPlaying = true;
+            if (audioCtx) { nextNoteTime = audioCtx.currentTime + 0.1; noteIndex = 0; scheduleBGM(); }
+        }
+
+        function stopBGM() { isBgmPlaying = false; clearTimeout(bgmInterval); }
+
+        function playPopSound() {
+            if (!audioCtx || isMuted || isPaused) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1500, audioCtx.currentTime + 0.05);
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+        }
+
+        function playMissSound() {
+            if (!audioCtx || isMuted || isPaused) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        function updateUI() {
+            document.getElementById('high-score').innerText = '나의 최고 기록: ' + highScore;
+            document.getElementById('score').innerText = '현재 점수: ' + score;
+            document.getElementById('timer').innerText = '⏱️ ' + timeLeft + '초';
+            
+            const comboEl = document.getElementById('combo-text');
+            if (combo > 1) {
+                comboEl.innerText = combo + ' COMBO!';
+                comboEl.style.opacity = 1;
+                comboEl.style.transform = 'scale(1.2)';
+                setTimeout(() => { comboEl.style.transform = 'scale(1)'; }, 100);
+            } else {
+                comboEl.style.opacity = 0;
+            }
+        }
+
+        const lanes = [
+            { x: 50, color: '#FF0D72' },
+            { x: 150, color: '#0DFF72' },
+            { x: 250, color: '#0DC2FF' }
+        ];
+
+        function spawnBalloon() {
+            const minGap = 80; 
+            let validLanes = [0, 1, 2].filter(lane => {
+                let lowestY = -1;
+                for (let i = 0; i < balloons.length; i++) {
+                    if (balloons[i].lane === lane && balloons[i].y > lowestY) {
+                        lowestY = balloons[i].y;
+                    }
+                }
+                return lowestY < (450 - minGap);
+            });
+
+            if (validLanes.length === 0) return; 
+
+            const laneIndex = validLanes[Math.floor(Math.random() * validLanes.length)];
+
+            balloons.push({
+                lane: laneIndex,
+                x: lanes[laneIndex].x,
+                y: 450, 
+                radius: 30, 
+                speed: 4 + Math.random() * 2 + (30 - timeLeft) * 0.25, 
+                color: lanes[laneIndex].color
+            });
+        }
+
+        function createParticles(x, y, color) {
+            for (let i = 0; i < 15; i++) {
+                particles.push({
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 12, 
+                    life: 1.0, color: color
+                });
+            }
+        }
+
+        function popBalloon(laneIndex) {
+            if (isGameOver || isPaused) return; 
+            
+            let targetIdx = -1;
+            let minY = 9999; 
+            for (let i = 0; i < balloons.length; i++) {
+                if (balloons[i].lane === laneIndex && balloons[i].y < minY) {
+                    minY = balloons[i].y;
+                    targetIdx = i;
+                }
+            }
+
+            if (targetIdx !== -1) {
+                const b = balloons[targetIdx];
+                createParticles(b.x, b.y, b.color);
+                balloons.splice(targetIdx, 1);
+                
+                playPopSound();
+                score += 10 * combo; 
+                combo++;
+                updateUI();
+            } else {
+                combo = 1;
+                playMissSound();
+                updateUI();
+            }
+        }
+
+        function draw() {
+            ctx.fillStyle = '#111';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(100, 0); ctx.lineTo(100, 400);
+            ctx.moveTo(200, 0); ctx.lineTo(200, 400);
+            ctx.stroke();
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx; p.y += p.vy; p.life -= 0.05;
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                } else {
+                    ctx.globalAlpha = p.life;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI * 2); ctx.fill();
+                    ctx.globalAlpha = 1.0;
+                }
+            }
+
+            balloons.forEach(b => {
+                ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(b.x, b.y + b.radius);
+                ctx.lineTo(b.x, b.y + b.radius + 30);
+                ctx.stroke();
+
+                ctx.fillStyle = b.color;
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                ctx.beginPath();
+                ctx.arc(b.x - 10, b.y - 10, 6, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function update(time = 0) {
+            if (isGameOver) return;
+            
+            if (isPaused) {
+                lastTime = time;
+                animationId = requestAnimationFrame(update);
+                return;
+            }
+
+            const deltaTime = time - lastTime;
+            lastTime = time;
+
+            for (let i = balloons.length - 1; i >= 0; i--) {
+                balloons[i].y -= balloons[i].speed;
+                
+                if (balloons[i].y < -40) {
+                    balloons.splice(i, 1);
+                    combo = 1; 
+                    playMissSound();
+                    updateUI();
+                }
+            }
+
+            spawnTimer += deltaTime;
+            if (spawnTimer > currentSpawnRate) {
+                spawnBalloon();
+                spawnTimer = 0;
+                if (currentSpawnRate > 200) currentSpawnRate -= 15; 
+            }
+
+            draw();
+            animationId = requestAnimationFrame(update);
+        }
+
+        function togglePause() {
+            if (isGameOver) return;
+            isPaused = !isPaused;
+            
+            if (isPaused) {
+                if (audioCtx) audioCtx.suspend(); 
+                document.getElementById('pause-screen').style.display = 'flex';
+                document.getElementById('pause-btn').innerText = '▶️ 계속 하기';
+            } else {
+                lastTime = performance.now(); 
+                if (audioCtx) audioCtx.resume(); 
+                scheduleBGM(); 
+                document.getElementById('pause-screen').style.display = 'none';
+                document.getElementById('pause-btn').innerText = '⏸️ 일시정지';
+            }
+        }
+
+        function startGame() {
+            initAudio();
+            playBGM(); 
+            balloons = [];
+            particles = [];
+            score = 0;
+            combo = 1;
+            timeLeft = 30; 
+            currentSpawnRate = 600; 
+            isGameOver = false;
+            isPaused = false; 
+            lastTime = performance.now();
+            
+            document.getElementById('pause-btn').innerText = '⏸️ 일시정지';
+            updateUI();
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-over-screen').style.display = 'none';
+            document.getElementById('pause-screen').style.display = 'none';
+
+            if (animationId) cancelAnimationFrame(animationId);
+            if (timerInterval) clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                if (isGameOver || isPaused) return; 
+                timeLeft--; updateUI();
+                if (timeLeft <= 0) endGame();
+            }, 1000);
+            
+            update(performance.now());
+        }
+
+        function endGame() {
+            isGameOver = true;
+            clearInterval(timerInterval);
+            stopBGM(); 
+            
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('balloonHighScore', highScore);
+                document.getElementById('game-over-title').innerText = "🎉 신기록 달성! 🎉";
+            } else {
+                document.getElementById('game-over-title').innerText = "TIME OVER!";
+            }
+            
+            document.getElementById('final-score').innerText = '최종 점수: ' + score;
+            document.getElementById('game-over-screen').style.display = 'flex';
+        }
+
+        document.getElementById('btn-start').addEventListener('click', startGame);
+        document.getElementById('btn-replay').addEventListener('click', startGame);
+        
+        document.getElementById('pause-btn').addEventListener('click', togglePause);
+        document.getElementById('btn-resume').addEventListener('click', togglePause);
+
+        document.getElementById('btn-red').addEventListener('pointerdown', (e) => { e.preventDefault(); popBalloon(0); });
+        document.getElementById('btn-green').addEventListener('pointerdown', (e) => { e.preventDefault(); popBalloon(1); });
+        document.getElementById('btn-blue').addEventListener('pointerdown', (e) => { e.preventDefault(); popBalloon(2); });
+
+        document.addEventListener('keydown', event => {
+            if (isGameOver) return;
+            
+            if (event.key.toLowerCase() === 'p') {
+                togglePause();
+                return;
+            }
+
+            if (!isPaused) {
+                if (event.key === 'ArrowLeft') popBalloon(0);
+                if (event.key === 'ArrowUp') popBalloon(1); 
+                if (event.key === 'ArrowRight') popBalloon(2);
+            }
+        });
+
+        document.getElementById('mute-btn').addEventListener('click', (e) => {
+            isMuted = !isMuted;
+            if (isMuted) { stopBGM(); e.target.innerText = '🔇 소리 켜기'; } 
+            else { if (!isGameOver && !isPaused) playBGM(); e.target.innerText = '🔊 소리 끄기'; }
+        });
+
+        updateUI(); 
+        draw();
+    </script>
+</body>
+</html>
