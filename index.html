@@ -5,20 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>추억의 오락실 (Mini Arcade)</title>
     <style>
-       body {
-            /* 🎨 대문 기본 스타일 (기존에 있던 거라면 그대로 두셔도 됩니다) */
+        body {
             background-color: #1a1a24; color: #fff; 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             
-            /* 💡 화면 짤림을 막아주는 핵심 마법 3총사! */
-            box-sizing: border-box; /* 여백을 화면 크기 안으로 밀어 넣기! */
-            height: 100dvh;         /* 모바일 하단 바를 피하는 동적 높이! */
-            padding-bottom: 30px;   /* 맨 아래쪽 안전 여유 공간! */
+            box-sizing: border-box; 
+            height: 100dvh;         
+            padding-bottom: 30px;   
         }
         
-        /* 💡 오락실 네온사인 느낌의 메인 타이틀 */
         h1 {
             font-size: 36px;
             text-align: center;
@@ -46,7 +43,6 @@
             max-width: 350px;
         }
         
-        /* 💡 게임 선택 카드 디자인 */
         .game-card {
             background-color: #2a2a35;
             border: 2px solid #444;
@@ -54,14 +50,13 @@
             padding: 25px 20px;
             text-align: center;
             transition: transform 0.1s, border-color 0.2s, box-shadow 0.2s;
-            text-decoration: none; /* 링크 밑줄 제거 */
+            text-decoration: none; 
             color: white;
             display: block;
             position: relative;
             overflow: hidden;
         }
         
-        /* 터치하거나 마우스 올렸을 때의 반응 (누르는 맛!) */
         .game-card:hover, .game-card:active {
             transform: translateY(-4px);
             border-color: #FFE138;
@@ -86,12 +81,19 @@
             line-height: 1.5;
         }
         
-        /* 각 게임별 포인트 컬러 */
+        /* 💡 각 게임별 포인트 컬러 */
+        
+        /* 1. 타임어택 테트리스 (파랑) */
         #card-tetris { border-top: 5px solid #0DC2FF; }
         #card-tetris .game-title { color: #0DC2FF; }
         
-        #card-balloon { border-top: 5px solid #0DFF72; }
-        #card-balloon .game-title { color: #0DFF72; }
+        /* 2. 벌룬 팝팝 (빨강) */
+        #card-balloon { border-top: 5px solid #FF0D72; }
+        #card-balloon .game-title { color: #FF0D72; }
+        
+        /* 3. 오리지널 테트리스 (초록) */
+        #card-original { border-top: 5px solid #0DFF72; }
+        #card-original .game-title { color: #0DFF72; }
         
         .footer {
             margin-top: auto;
@@ -107,12 +109,21 @@
     <p class="subtitle">Welcome to Helen's Mini Arcade</p>
 
     <div class="game-list">
+        <!-- 💡 1순위: 오리지널 테트리스 -->
+        <a href="original_tetris.html" class="game-card" id="card-original">
+            <div class="game-icon">🟩</div> 
+            <div class="game-title">ORIGINAL TETRIS</div>
+            <div class="game-desc">오리지널 테트리스!<br>최대한 많은 블록을 깨보세요!</div>
+        </a>
+
+        <!-- 💡 2순위: 타임어택 테트리스 -->
         <a href="tetris.html" class="game-card" id="card-tetris">
             <div class="game-icon">🧱</div>
             <div class="game-title">TIME ATTACK TETRIS</div>
-            <div class="game-desc">60초 안에 최대한 많은 블록을 깨고<br>최고 점수에 도전하라!</div>
+            <div class="game-desc">60초 안에 최대한 많은 블록을 깨고<br>최고 점수에 도전하세요!</div>
         </a>
 
+        <!-- 💡 3순위: 벌룬 팝팝 -->
         <a href="balloon.html" class="game-card" id="card-balloon">
             <div class="game-icon">🎈</div>
             <div class="game-title">BALLOON POP POP</div>
