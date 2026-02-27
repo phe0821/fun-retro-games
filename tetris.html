@@ -9,6 +9,7 @@
             background-color: #202028; color: #fff; display: flex; flex-direction: column;
             align-items: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0; padding-top: 15px; user-select: none; -webkit-user-select: none;
+            overflow: hidden;
         }
         h1 {
             margin: 0 0 10px 0; color: #0DC2FF; text-shadow: 2px 2px 0px #FF0D72;
@@ -16,25 +17,29 @@
         }
         #info-panel {
             display: flex; justify-content: space-between; align-items: flex-end;
-            width: 100%; max-width: 200px; margin-bottom: 10px; font-weight: bold;
+            width: 100%; max-width: 250px; /* 화면 커진 비율에 맞춤 */
+            margin-bottom: 10px; font-weight: bold;
         }
         #score-container { display: flex; flex-direction: column; }
         #high-score { color: #0DFF72; font-size: 12px; margin-bottom: 2px; }
         #score { color: #FFE138; font-size: 18px; }
         #timer { color: #FF0D72; font-size: 18px; }
         
-        #game-container { position: relative; }
+        #game-container { position: relative; width: 100%; max-width: 260px; display: flex; justify-content: center; }
+        
+        /* 💡 CSS 마법: 게임판이 버튼 너비와 자연스럽게 어울리도록 크기 조절 */
         canvas {
-            border: 2px solid #fff; background-color: #000; box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); display: block;
+            border: 2px solid #fff; background-color: #000; box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            display: block; border-radius: 8px; width: 100%; max-width: 240px; height: auto; aspect-ratio: 1 / 2;
         }
         
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 10;
+            align-items: center; justify-content: center; z-index: 10; border-radius: 8px;
         }
         .overlay h2 { margin: 0 0 10px 0; color: #FF0D72; text-align: center;}
-        .overlay p { color: #fff; margin-bottom: 20px; font-size: 14px; }
+        .overlay p { color: #fff; margin-bottom: 20px; font-size: 14px; text-align: center; line-height: 1.5;}
         #final-score { font-size: 24px; font-weight: bold; margin-bottom: 20px; color: #FFE138;}
         
         .action-btn {
@@ -44,7 +49,7 @@
         .action-btn:active { box-shadow: 0 0 0 #0099CC; transform: translateY(4px); }
 
         #controls {
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
             margin-top: 15px; width: 100%; max-width: 300px;
         }
         button.pad-btn {
@@ -55,10 +60,17 @@
         button.pad-btn:active { background-color: #777; }
         .btn-wide { flex: 1 1 100%; font-weight: bold; }
         
-        #mute-btn {
-            margin-top: 10px; background: none; border: 1px solid #fff; color: #fff;
-            padding: 5px 10px; border-radius: 5px; cursor: pointer;
+        /* 💡 풍선 게임과 똑같은 사이즈의 하단 버튼 영역 */
+        #bottom-controls { 
+            display: flex; flex-direction: column; gap: 8px; 
+            margin-top: 15px; width: 100%; max-width: 300px; 
         }
+        .sub-btn { 
+            background: none; border: 1px solid #fff; color: #fff; 
+            padding: 8px 10px; border-radius: 5px; cursor: pointer; 
+            width: 100%; font-size: 14px; 
+        }
+        .sub-btn:active { background: #555; }
     </style>
 </head>
 <body>
@@ -73,7 +85,7 @@
     </div>
 
     <div id="game-container">
-        <canvas id="tetris" width="200" height="400"></canvas>
+        <canvas id="tetris" width="240" height="480"></canvas>
         
         <div id="start-screen" class="overlay">
             <h2>준비 되셨나요?</h2>
@@ -86,6 +98,12 @@
             <div id="final-score">최종 점수: 0</div>
             <button id="btn-replay" class="action-btn">다시 하기 🔄</button>
         </div>
+
+        <div id="pause-screen" class="overlay" style="display: none;">
+            <h2 style="color: #0DC2FF;">⏸️ 일시정지</h2>
+            <p>게임이 잠시 멈췄습니다.</p>
+            <button id="btn-resume" class="action-btn">계속 하기 ▶</button>
+        </div>
     </div>
 
     <div id="controls">
@@ -96,16 +114,21 @@
         <button id="btn-drop" class="pad-btn btn-wide">⏬ 하드 드롭</button>
     </div>
 
-    <button id="mute-btn">🔊 소리 끄기</button>
+    <div id="bottom-controls">
+        <button id="mute-btn" class="sub-btn">🔊 소리 끄기</button>
+        <button id="pause-btn" class="sub-btn">⏸️ 일시정지</button>
+    </div>
 
     <script>
         const canvas = document.getElementById('tetris');
         const context = canvas.getContext('2d');
-        context.scale(20, 20);
+        // 💡 캔버스 크기가 240x480 이므로, 1칸을 24px로 설정 (기존 20에서 24로 확대!)
+        context.scale(24, 24);
 
         const colors = [ null, '#FF0D72', '#0DC2FF', '#0DFF72', '#F538FF', '#FF8E0D', '#FFE138', '#3877FF' ];
 
         let isGameOver = true;
+        let isPaused = false; // 💡 일시정지 상태 변수 추가
         let timeLeft = 60;
         let timerInterval = null;
         let animationId = null;
@@ -128,11 +151,11 @@
 
         function initAudio() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
+            if (audioCtx.state === 'suspended' && !isPaused) audioCtx.resume();
         }
 
         function scheduleBGM() {
-            if (!isBgmPlaying || !audioCtx || isMuted) return;
+            if (!isBgmPlaying || !audioCtx || isMuted || isPaused) return; // 정지 중엔 브금 재생 안함
             while (nextNoteTime < audioCtx.currentTime + 0.1) {
                 const [freq, durMs] = melody[noteIndex];
                 const dur = durMs / 1000;
@@ -163,7 +186,7 @@
         function stopBGM() { isBgmPlaying = false; clearTimeout(bgmInterval); }
 
         function playClearSound() {
-            if (!audioCtx || isMuted) return;
+            if (!audioCtx || isMuted || isPaused) return;
             const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
             osc.type = 'square'; osc.connect(gain); gain.connect(audioCtx.destination);
             osc.frequency.setValueAtTime(150, audioCtx.currentTime);
@@ -175,7 +198,7 @@
         }
 
         function playDropSound() {
-            if (!audioCtx || isMuted) return;
+            if (!audioCtx || isMuted || isPaused) return;
             const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
             osc.type = 'triangle'; osc.connect(gain); gain.connect(audioCtx.destination);
             osc.frequency.setValueAtTime(100, audioCtx.currentTime);
@@ -280,7 +303,7 @@
         }
 
         function playerRotate(dir) {
-            if (isGameOver) return;
+            if (isGameOver || isPaused) return;
             const pos = player.pos.x; let offset = 1; rotate(player.matrix, dir);
             while (collide(arena, player)) {
                 player.pos.x += offset; offset = -(offset + (offset > 0 ? 1 : -1));
@@ -297,7 +320,7 @@
         }
 
         function playerDrop() {
-            if (isGameOver) return;
+            if (isGameOver || isPaused) return;
             player.pos.y++;
             if (collide(arena, player)) {
                 player.pos.y--; merge(arena, player); arenaSweep(); updateUI(); playerReset();
@@ -306,7 +329,7 @@
         }
 
         function playerHardDrop() {
-            if (isGameOver) return;
+            if (isGameOver || isPaused) return;
             playDropSound();
             while (!collide(arena, player)) player.pos.y++;
             player.pos.y--; merge(arena, player); arenaSweep(); updateUI(); playerReset();
@@ -317,30 +340,58 @@
 
         function update(time = 0) {
             if (isGameOver) return;
+            // 💡 일시정지 상태면 블록이 떨어지지 않게 고정
+            if (isPaused) {
+                lastTime = time;
+                animationId = requestAnimationFrame(update);
+                return;
+            }
+
             if (lastTime === 0) lastTime = time;
             const deltaTime = time - lastTime; lastTime = time; dropCounter += deltaTime;
             if (dropCounter > dropInterval) playerDrop();
             draw(); animationId = requestAnimationFrame(update);
         }
 
+        // 💡 일시정지 토글 함수
+        function togglePause() {
+            if (isGameOver) return;
+            isPaused = !isPaused;
+            
+            if (isPaused) {
+                if (audioCtx) audioCtx.suspend();
+                document.getElementById('pause-screen').style.display = 'flex';
+                document.getElementById('pause-btn').innerText = '▶️ 계속 하기';
+            } else {
+                lastTime = performance.now(); 
+                if (audioCtx) audioCtx.resume();
+                scheduleBGM(); 
+                document.getElementById('pause-screen').style.display = 'none';
+                document.getElementById('pause-btn').innerText = '⏸️ 일시정지';
+            }
+        }
+
         function startGame() {
             initAudio(); playBGM();
             arena.forEach(row => row.fill(0));
-            player.score = 0; timeLeft = 60; isGameOver = false; dropCounter = 0; lastTime = 0;
+            player.score = 0; timeLeft = 60; isGameOver = false; isPaused = false; dropCounter = 0; 
+            lastTime = performance.now();
             
+            document.getElementById('pause-btn').innerText = '⏸️ 일시정지';
             updateUI(); playerReset();
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('game-over-screen').style.display = 'none';
+            document.getElementById('pause-screen').style.display = 'none';
 
             if (animationId) cancelAnimationFrame(animationId);
             if (timerInterval) clearInterval(timerInterval);
 
             timerInterval = setInterval(() => {
-                if(isGameOver) return;
+                if(isGameOver || isPaused) return; // 일시정지 중엔 타이머 정지
                 timeLeft--; updateUI();
                 if (timeLeft <= 0) endGame("TIME OVER");
             }, 1000);
-            update();
+            update(performance.now());
         }
 
         function endGame(titleText) {
@@ -362,26 +413,41 @@
 
         document.getElementById('btn-start').addEventListener('click', startGame);
         document.getElementById('btn-replay').addEventListener('click', startGame);
+        
+        // 💡 일시정지 버튼 클릭 이벤트 연결
+        document.getElementById('pause-btn').addEventListener('click', togglePause);
+        document.getElementById('btn-resume').addEventListener('click', togglePause);
+
         document.getElementById('mute-btn').addEventListener('click', (e) => {
             isMuted = !isMuted;
             if (isMuted) { stopBGM(); e.target.innerText = '🔇 소리 켜기'; } 
-            else { if (!isGameOver) playBGM(); e.target.innerText = '🔊 소리 끄기'; }
+            else { if (!isGameOver && !isPaused) playBGM(); e.target.innerText = '🔊 소리 끄기'; }
         });
 
         document.addEventListener('keydown', event => {
             if (isGameOver) return;
-            if (event.key === 'ArrowLeft') { player.pos.x--; if (collide(arena, player)) player.pos.x++; } 
-            else if (event.key === 'ArrowRight') { player.pos.x++; if (collide(arena, player)) player.pos.x--; } 
-            else if (event.key === 'ArrowDown') { playerDrop(); } 
-            else if (event.key === 'ArrowUp') { playerRotate(1); } 
-            else if (event.key === ' ') { playerHardDrop(); }
+            
+            // P 키 누르면 일시정지
+            if (event.key.toLowerCase() === 'p') {
+                togglePause();
+                return;
+            }
+
+            if (!isPaused) {
+                if (event.key === 'ArrowLeft') { player.pos.x--; if (collide(arena, player)) player.pos.x++; } 
+                else if (event.key === 'ArrowRight') { player.pos.x++; if (collide(arena, player)) player.pos.x--; } 
+                else if (event.key === 'ArrowDown') { playerDrop(); } 
+                else if (event.key === 'ArrowUp') { playerRotate(1); } 
+                else if (event.key === ' ') { playerHardDrop(); }
+            }
         });
 
-        document.getElementById('btn-left').addEventListener('click', () => { if (!isGameOver) { player.pos.x--; if (collide(arena, player)) player.pos.x++; } });
-        document.getElementById('btn-right').addEventListener('click', () => { if (!isGameOver) { player.pos.x++; if (collide(arena, player)) player.pos.x--; } });
-        document.getElementById('btn-rotate').addEventListener('click', () => playerRotate(1));
-        document.getElementById('btn-down').addEventListener('click', () => playerDrop());
-        document.getElementById('btn-drop').addEventListener('click', () => playerHardDrop());
+        // 모바일 조작 버튼도 일시정지 중엔 안 눌리게 막기
+        document.getElementById('btn-left').addEventListener('click', () => { if (!isGameOver && !isPaused) { player.pos.x--; if (collide(arena, player)) player.pos.x++; } });
+        document.getElementById('btn-right').addEventListener('click', () => { if (!isGameOver && !isPaused) { player.pos.x++; if (collide(arena, player)) player.pos.x--; } });
+        document.getElementById('btn-rotate').addEventListener('click', () => { if (!isGameOver && !isPaused) playerRotate(1); });
+        document.getElementById('btn-down').addEventListener('click', () => { if (!isGameOver && !isPaused) playerDrop(); });
+        document.getElementById('btn-drop').addEventListener('click', () => { if (!isGameOver && !isPaused) playerHardDrop(); });
 
         updateUI();
         draw();
