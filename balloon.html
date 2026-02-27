@@ -98,7 +98,7 @@
             <div id="score">현재 점수: 0</div>
             <div id="combo-text">1 COMBO!</div>
         </div>
-        <div id="timer">⏱️ 30초</div>
+        <div id="timer">⏱️ 60초</div>
     </div>
 
     <div id="game-container">
@@ -140,7 +140,7 @@
 
         let isGameOver = true;
         let isPaused = false;
-        let timeLeft = 30; 
+        let timeLeft = 60; 
         let score = 0;
         let combo = 1;
         let timerInterval = null;
@@ -150,7 +150,7 @@
         let particles = [];
         let lastTime = 0;
         let spawnTimer = 0;
-        let currentSpawnRate = 600; 
+        let currentSpawnRate = 800; 
 
         let highScore = localStorage.getItem('balloonHighScore') || 0;
 
@@ -273,7 +273,7 @@
                 x: lanes[laneIndex].x,
                 y: 450, 
                 radius: 30, 
-                speed: 4 + Math.random() * 2 + (30 - timeLeft) * 0.25, 
+                speed: 4 + Math.random() * 2 + (60 - timeLeft) * 0.15, 
                 color: lanes[laneIndex].color
             });
         }
@@ -387,7 +387,7 @@
             if (spawnTimer > currentSpawnRate) {
                 spawnBalloon();
                 spawnTimer = 0;
-                if (currentSpawnRate > 200) currentSpawnRate -= 15; 
+                currentSpawnRate = 300 + (timeLeft / 60) * 500;
             }
 
             draw();
@@ -418,8 +418,8 @@
             particles = [];
             score = 0;
             combo = 1;
-            timeLeft = 30; 
-            currentSpawnRate = 600; 
+            timeLeft = 60; 
+            currentSpawnRate = 800; 
             isGameOver = false;
             isPaused = false; 
             lastTime = performance.now();
