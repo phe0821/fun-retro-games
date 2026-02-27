@@ -218,16 +218,23 @@
         }
 
         function playMissSound() {
-            if (!audioCtx || isMuted || isPaused) return;
+           if (!audioCtx || isMuted || isPaused) return;
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = 'sawtooth';
             osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            
+            const now = audioCtx.currentTime;
+            osc.frequency.setValueAtTime(150, now);
+            osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+            
+            gain.gain.setValueAtTime(0.3, now);
+            /* 💡 여기도 소리를 완전히 0으로 만들고 */
+            gain.gain.linearRampToValueAtTime(0, now + 0.1);
+            
+            osc.start(now); osc.stop(now + 0.1);
+            /* 💡 끝나는 순간 완벽하게 제거! */
+            osc.onended = () => { osc.disconnect(); gain.disconnect(); };
         }
 
         function updateUI() {
@@ -471,6 +478,8 @@
 
         document.addEventListener('keydown', event => {
             if (isGameOver) return;
+
+            if (event.repeat) return;
             
             if (event.key.toLowerCase() === 'p') {
                 togglePause();
