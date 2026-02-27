@@ -8,22 +8,19 @@
         body {
             background-color: #1a1a24; color: #fff; 
             display: flex; flex-direction: column; align-items: center; 
-            /* 💡 범인 1 검거: justify-content: center; 를 지워서 위에서부터 차곡차곡 쌓이게 합니다! */
-            
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             
             box-sizing: border-box; 
-            /* 💡 범인 2 검거: height를 min-height로 변경! (내용물이 많으면 화면이 밑으로 늘어날 수 있게 허용) */
             min-height: 100dvh;         
-            padding-top: 30px; /* 맨 위에 숨 쉴 공간(여백) 살짝 추가 */
+            padding-top: 30px;
             padding-bottom: 40px;   
         }
         
         h1 {
             font-size: 36px;
             text-align: center;
-            margin-top: 40px;
+            margin-top: 20px;
             margin-bottom: 5px;
             color: #fff;
             text-shadow: 0 0 5px #F538FF, 0 0 15px #F538FF, 0 0 30px #F538FF;
@@ -85,23 +82,26 @@
             line-height: 1.5;
         }
         
-        /* 💡 각 게임별 포인트 컬러 */
+        /* 💡 각 게임별 네온 포인트 컬러 */
         
-        /* 1. 타임어택 테트리스 (파랑) */
+        /* 1. 치킨 날다 (오렌지/노랑) */
+        #card-chicken { border-top: 5px solid #FF8E0D; }
+        #card-chicken .game-title { color: #FF8E0D; }
+
+        /* 2. 오리지널 테트리스 (초록) */
+        #card-original { border-top: 5px solid #0DFF72; }
+        #card-original .game-title { color: #0DFF72; }
+
+        /* 3. 타임어택 테트리스 (파랑) */
         #card-tetris { border-top: 5px solid #0DC2FF; }
         #card-tetris .game-title { color: #0DC2FF; }
         
-        /* 2. 벌룬 팝팝 (빨강) */
+        /* 4. 벌룬 팝팝 (핑크/빨강) */
         #card-balloon { border-top: 5px solid #FF0D72; }
         #card-balloon .game-title { color: #FF0D72; }
         
-        /* 3. 오리지널 테트리스 (초록) */
-        #card-original { border-top: 5px solid #0DFF72; }
-        #card-original .game-title { color: #0DFF72; }
-        
         .footer {
-            margin-top: auto;
-            padding-top: 40px;
+            margin-top: 40px;
             color: #555;
             font-size: 12px;
             font-weight: bold;
@@ -113,21 +113,28 @@
     <p class="subtitle">Welcome to Helen's Mini Arcade</p>
 
     <div class="game-list">
-        <!-- 💡 1순위: 오리지널 테트리스 -->
+        <!-- 💡 1순위: 치킨 날다 -->
+        <a href="flying_chicken.html" class="game-card" id="card-chicken">
+            <div class="game-icon">🐔</div>
+            <div class="game-title">FLYING CHICKEN</div>
+            <div class="game-desc">장애물을 피해 추락하지 않고 날아보세요!<br>날아라 꼬꼬!</div>
+        </a>
+
+        <!-- 💡 2순위: 오리지널 테트리스 -->
         <a href="original_tetris.html" class="game-card" id="card-original">
             <div class="game-icon">🟩</div> 
             <div class="game-title">ORIGINAL TETRIS</div>
-            <div class="game-desc">오리지널 테트리스!<br>최대한 많은 블록을 깨보세요!</div>
+            <div class="game-desc">시간 제한 없이 끝까지 살아남으세요!<br>갈수록 미친듯이 빨라집니다.</div>
         </a>
 
-        <!-- 💡 2순위: 타임어택 테트리스 -->
+        <!-- 💡 3순위: 타임어택 테트리스 -->
         <a href="tetris.html" class="game-card" id="card-tetris">
             <div class="game-icon">🧱</div>
             <div class="game-title">TIME ATTACK TETRIS</div>
-            <div class="game-desc">60초 안에 최대한 많은 블록을 깨고<br>최고 점수에 도전하세요!</div>
+            <div class="game-desc">60초 안에 최대한 많은 블록을 깨고<br>최고 점수에 도전하라!</div>
         </a>
 
-        <!-- 💡 3순위: 벌룬 팝팝 -->
+        <!-- 💡 4순위: 벌룬 팝팝 -->
         <a href="balloon.html" class="game-card" id="card-balloon">
             <div class="game-icon">🎈</div>
             <div class="game-title">BALLOON POP POP</div>
