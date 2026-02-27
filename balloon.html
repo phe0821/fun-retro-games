@@ -210,11 +210,18 @@
             const gain = audioCtx.createGain();
             osc.type = 'sine';
             osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(1500, audioCtx.currentTime + 0.05);
-            gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+            
+            const now = audioCtx.currentTime;
+            osc.frequency.setValueAtTime(600, now);
+            osc.frequency.exponentialRampToValueAtTime(1500, now + 0.05);
+            
+            gain.gain.setValueAtTime(0.5, now);
+            /* 💡 핵심 1: 소리를 0.01이 아니라 완전히 '0'으로 깎아버립니다! */
+            gain.gain.linearRampToValueAtTime(0, now + 0.05); 
+            
+            osc.start(now); osc.stop(now + 0.05);
+            /* 💡 핵심 2: 소리가 끝나면 브라우저 메모리에서 완벽하게 박살 내서 흔적을 지웁니다! */
+            osc.onended = () => { osc.disconnect(); gain.disconnect(); };
         }
 
         function playMissSound() {
