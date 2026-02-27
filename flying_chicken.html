@@ -31,7 +31,7 @@
         canvas {
             border: 3px solid #fff; box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
             display: block; border-radius: 10px; background-color: #1a1a2e;
-            transition: background-color 1.5s ease; /* 💡 배경색이 부드럽게 스르륵 바뀝니다 */
+            transition: background-color 1.5s ease; 
         }
         
         .overlay {
@@ -110,11 +110,10 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // 테마의 색상 정보만 남겨둡니다.
         const themes = [
-            { bg: "#1a1a2e", pipeColor: "#0DC2FF" }, // 파란색 네온 (밤하늘)
-            { bg: "#1a0024", pipeColor: "#F538FF" }, // 마젠타/보라색 네온 (심우주)
-            { bg: "#0a2914", pipeColor: "#0DFF72" }  // 초록색 네온 (대자연)
+            { bg: "#1a1a2e", pipeColor: "#0DC2FF" }, 
+            { bg: "#1a0024", pipeColor: "#F538FF" }, 
+            { bg: "#0a2914", pipeColor: "#0DFF72" }  
         ];
 
         let isGameOver = true; let isPaused = false;
@@ -256,12 +255,11 @@
 
         function checkTheme() {
             let safeGameTime = Math.max(0, gameTime);
-            const newIndex = Math.floor(safeGameTime / 25) % 3; // 25초 주기로 스왑
+            const newIndex = Math.floor(safeGameTime / 25) % 3; 
             
             if (newIndex !== currentThemeIndex && newIndex >= 0) {
                 currentThemeIndex = newIndex;
                 const newTheme = themes[currentThemeIndex];
-                // 💡 글씨를 띄우는 대신 조용히 배경색과 기둥색만 스르륵 바뀝니다.
                 canvas.style.backgroundColor = newTheme.bg;
             }
         }
@@ -317,6 +315,8 @@
             ctx.translate(chicken.x, chicken.y);
             let rotation = Math.min(Math.PI / 4, Math.max(-Math.PI / 4, (chicken.velocity * 0.1)));
             ctx.rotate(rotation);
+            ctx.fillStyle = "#ffffff"; 
+            ctx.globalAlpha = 1.0;     
             ctx.font = "35px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
             ctx.fillText(chicken.emoji, 0, 0);
             ctx.restore();
@@ -388,10 +388,12 @@
                 endGame(); return;
             }
 
-            const spawnInterval = Math.max(90, Math.floor(150 - gameTime));
+            // 💡 속도가 빨라진 만큼 파이프도 더 자주 나오게 조정!
+            const spawnInterval = Math.max(50, Math.floor(90 - gameTime * 0.8));
             if (frameCount % spawnInterval === 0) spawnObstacle(); 
 
-            const currentSpeed = Math.min(3.5, 1.5 + gameTime * 0.02);
+            // 💡 초반 스피드 3.0으로 상향, 최대 속도 5.5로 상향! (시원시원하게 달려갑니다)
+            const currentSpeed = Math.min(5.5, 3.0 + gameTime * 0.035);
 
             for (let i = obstacles.length - 1; i >= 0; i--) {
                 let obs = obstacles[i];
