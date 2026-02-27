@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Time Attack Tetris by 향은</title>
+    <title>TIME ATTACK TETRIS</title>
     <style>
-       body {
+        body {
             background-color: #202028; color: #fff; display: flex; flex-direction: column;
             align-items: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0; padding-top: 15px; 
@@ -16,7 +16,7 @@
         }
         h1 {
             margin: 0 0 10px 0; color: #0DC2FF; text-shadow: 2px 2px 0px #FF0D72;
-            font-size: 28px; letter-spacing: 2px; text-transform: uppercase;
+            font-size: 26px; letter-spacing: 2px; text-transform: uppercase;
         }
         #info-panel {
             display: flex; justify-content: space-between; align-items: flex-end;
@@ -74,10 +74,11 @@
             width: 100%; font-size: 14px; 
         }
         .sub-btn:active { background: #555; }
+	#start-screen p { margin-bottom: 40px; }
     </style>
 </head>
 <body>
-    <h1>Time Attack Tetris by 향은</h1>
+    <h1>TIME ATTACK TETRIS</h1>
 
     <div id="info-panel">
         <div id="score-container">
@@ -91,8 +92,8 @@
         <canvas id="tetris" width="240" height="480"></canvas>
         
         <div id="start-screen" class="overlay">
-            <h2>준비 되셨나요?</h2>
-            <p>1분 동안 최고 점수에 도전하세요!</p>
+            <h2>🧱 타임어택 테트리스</h2>
+            <p>60초 동안 블록을 회전하고 이동시켜<br>빈틈없이 가로 줄을 채워 없애면 득점!<br>하드드롭(⏬)으로 스피드를 올리세요!</p>
             <button id="btn-start" class="action-btn">게임 시작 ▶</button>
         </div>
 
@@ -120,6 +121,7 @@
     <div id="bottom-controls">
         <button id="mute-btn" class="sub-btn">🔊 소리 끄기</button>
         <button id="pause-btn" class="sub-btn">⏸️ 일시정지</button>
+        <button class="sub-btn" onclick="location.href='index.html'" style="border-color: #FFE138; color: #FFE138; font-weight: bold;">🏠 홈 화면으로 돌아가기</button>
     </div>
 
     <script>
