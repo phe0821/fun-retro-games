@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Time Attack Tetris by 향은</title>
     <style>
-        body {
+       body {
             background-color: #202028; color: #fff; display: flex; flex-direction: column;
             align-items: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0; padding-top: 15px; user-select: none; -webkit-user-select: none;
+            margin: 0; padding-top: 15px; 
+            padding-bottom: 40px; /* 💡 화면 맨 밑에 넉넉한 여유 공간 추가! */
+            min-height: 100dvh;   /* 💡 하단 바를 피하는 모바일 화면 맞춤 마법! */
+            user-select: none; -webkit-user-select: none;
             overflow: hidden;
         }
         h1 {
