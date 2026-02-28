@@ -21,59 +21,54 @@
         }
         
         #app-grid {
-            /* 💡 Grid 구조 유지하되, 헤더와 푸터는 1~2열 전체를 쓰도록 변경 */
             display: grid; 
-            grid-template-columns: 95px minmax(0, 360px); 
+            grid-template-columns: 100px minmax(0, 360px); 
             grid-template-rows: auto auto auto auto;
-            gap: 4px 15px; 
-            justify-content: center; 
-            width: 100%; 
-            padding: 0 10px; 
-            box-sizing: border-box;
+            gap: 4px 15px; justify-content: center; width: 100%; padding: 0 10px; box-sizing: border-box;
         }
 
-        /* 💡 타이틀: 화면 전체 기준 중앙 정렬 */
         #game-title {
-            grid-column: 1 / -1; /* 1열부터 끝까지 다 차지함 */
-            justify-self: center; /* 전체 화면 기준 가운데 정렬 */
+            grid-column: 1 / -1; 
+            justify-self: center; 
             margin: 5px 0 2px 0; color: #fff; font-size: 30px; font-weight: normal; 
             text-shadow: 3px 3px 0px #d35400, 0px 4px 8px rgba(0,0,0,0.3); 
             letter-spacing: 1px; font-family: 'Bungee', cursive;
         }
 
-        /* 💡 점수판: 화면 전체 기준 중앙 정렬 */
         #stats-board { 
-            grid-column: 1 / -1; /* 1열부터 끝까지 다 차지함 */
-            justify-self: center; /* 전체 화면 기준 가운데 정렬 */
+            grid-column: 1 / -1; 
+            justify-self: center; 
             display: flex; gap: 10px; position: relative; z-index: 10; 
         }
         
-        /* 💡 점수판 박스 다이어트: 폰트 크기 유지, 패딩 축소 */
         .stat-box { 
             font-size: 16px; font-weight: 900; color: #fff; background: rgba(139, 69, 19, 0.7); 
-            padding: 6px 14px; /* 패딩을 살짝 줄여서 덜 뚱뚱하게 */
+            padding: 6px 14px; 
             border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.2); 
             border: 2px solid rgba(255,255,255,0.3); font-family: 'Jua', sans-serif; letter-spacing: 1px; 
         }
         .stat-box.high { background: #d35400; border-color: #f1c40f; color: #fffaf0; }
         
-        /* 왼쪽 정보 패널 (진화 공식 등) */
         #side-panel { grid-column: 1; grid-row: 3; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding-top: 70px; padding-bottom: 25px; }
-        #next-snack-container { display: flex; flex-direction: column; align-items: center; }
+        
+        #next-snack-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; }
+        
         .side-title { color: #d35400; font-size: 15px; margin-bottom: 8px; text-shadow: 0 1px 2px rgba(255,255,255,0.8); text-align: center; font-family: 'Jua', sans-serif; }
         
-        #next-snack-bubble { width: 60px; height: 60px; position: relative; border-radius: 48% 52% 45% 55% / 55% 45% 50% 50%; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.1) 30%, transparent 60%, rgba(255,255,255,0.3) 100%); box-shadow: inset -2px -2px 6px rgba(255,255,255,0.4), inset 3px 3px 10px rgba(255,255,255,0.8), 0 8px 15px rgba(0,0,0,0.1); border: 1px solid rgba(255, 255, 255, 0.6); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); display: flex; justify-content: center; align-items: center; animation: floatBubble 3s ease-in-out infinite; }
+        #next-snack-bubble { width: 70px; height: 70px; position: relative; border-radius: 48% 52% 45% 55% / 55% 45% 50% 50%; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.1) 30%, transparent 60%, rgba(255,255,255,0.3) 100%); box-shadow: inset -2px -2px 6px rgba(255,255,255,0.4), inset 3px 3px 10px rgba(255,255,255,0.8), 0 8px 15px rgba(0,0,0,0.1); border: 1px solid rgba(255, 255, 255, 0.6); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); display: flex; justify-content: center; align-items: center; animation: floatBubble 3s ease-in-out infinite; }
         #next-snack-bubble::after { content: ''; position: absolute; top: 8px; left: 10px; width: 10px; height: 5px; background: rgba(255,255,255,0.9); border-radius: 50%; transform: rotate(-30deg); box-shadow: 0 0 5px rgba(255,255,255,0.8); }
-        #next-snack-img { width: 35px; height: 35px; object-fit: contain; z-index: 2; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
+        
+        #next-snack-img { width: 45px; height: 45px; object-fit: contain; z-index: 2; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
         @keyframes floatBubble { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
         #evolution-container { display: flex; flex-direction: column; align-items: center; width: 100%; }
-        #evolution-chain { display: flex; flex-direction: column; gap: 2px; justify-content: flex-start; align-items: center; background: linear-gradient(to bottom, #ffeaa7, #fab1a0, #e17055, #c0392b); padding: 8px 4px; border-radius: 15px; width: 95px; box-sizing: border-box; box-shadow: 0 10px 20px rgba(139, 69, 19, 0.3), inset 0 2px 5px rgba(255,255,255,0.5); border: 2px solid rgba(255, 255, 255, 0.4); }
+        #evolution-chain { display: flex; flex-direction: column; gap: 2px; justify-content: flex-start; align-items: center; background: linear-gradient(to bottom, #ffeaa7, #fab1a0, #e17055, #c0392b); padding: 8px 4px; border-radius: 15px; width: 100%; box-sizing: border-box; box-shadow: 0 10px 20px rgba(139, 69, 19, 0.3), inset 0 2px 5px rgba(255,255,255,0.5); border: 2px solid rgba(255, 255, 255, 0.4); }
         
-        .evo-formula { display: grid; grid-template-columns: 20px 32px 30px; align-items: center; justify-items: center; justify-content: center; gap: 2px; width: 100%; padding: 4px 0; border-bottom: 1px dashed rgba(255,255,255,0.3); }
+        .evo-formula { display: grid; grid-template-columns: 24px 30px 28px; align-items: center; justify-items: center; justify-content: center; gap: 2px; width: 100%; padding: 4px 0; border-bottom: 1px dashed rgba(255,255,255,0.3); }
         .evo-formula:last-child { border-bottom: none; }
-        .evo-small { width: 18px; height: 18px; object-fit: contain; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2)); }
-        .evo-big { width: 24px; height: 24px; object-fit: contain; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); }
+        
+        .evo-small { width: 22px; height: 22px; object-fit: contain; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2)); }
+        .evo-big { width: 28px; height: 28px; object-fit: contain; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); }
         .evo-math { font-size: 13px; font-weight: normal; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.4); font-family: 'Jua', sans-serif; }
         
         #canvas-wrapper { grid-column: 2; grid-row: 3; display: flex; width: 100%; margin-top: -65px; position: relative; z-index: 1; }
@@ -97,27 +92,25 @@
         .show-clear { animation: clearGlowFade 2.5s ease-out forwards; } 
         @keyframes clearGlowFade { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 15% { opacity: 1; transform: translate(-50%, -50%) scale(1.1) rotate(2deg); text-shadow: 0 0 20px #fff, 0 0 50px #00e5ff, 0 0 90px #008cff, 0 0 150px #0051ff; } 30% { transform: translate(-50%, -50%) scale(1.0) rotate(-2deg); } 60% { opacity: 1; transform: translate(-50%, -50%) scale(1.05) rotate(0deg); text-shadow: 0 0 10px #fff, 0 0 30px #00e5ff, 0 0 60px #008cff; } 100% { opacity: 0; transform: translate(-50%, -70%) scale(1.15); text-shadow: 0 0 5px #fff; } }
 
-        /* 💡 하단 버튼: 화면 전체 기준 중앙 정렬 & 버튼 크기(높이) 통일 */
         #button-container { 
-            grid-column: 1 / -1; /* 1열부터 끝까지 다 차지함 */
-            justify-self: center; /* 전체 화면 기준 가운데 정렬 */
-            display: flex; gap: 10px; margin-top: 5px; position: relative; z-index: 10; 
+            grid-column: 1 / -1; justify-self: center; 
+            display: flex; gap: 8px; margin-top: 5px; position: relative; z-index: 10; 
+            flex-wrap: wrap; justify-content: center;
         }
         
         .game-btn { 
-            /* 버튼 내용물에 상관없이 동일한 패딩과 글자 크기 유지 */
-            padding: 10px 16px; 
-            border-radius: 20px; font-size: 15px; font-family: 'Jua', sans-serif; 
+            padding: 10px 12px; 
+            border-radius: 20px; font-size: 14px; font-family: 'Jua', sans-serif; 
             cursor: pointer; box-shadow: 0 4px 6px rgba(139, 69, 19, 0.1); 
             transition: 0.1s; border: 2px solid; 
-            /* 💡 높이 통일을 위한 설정 */
             display: flex; align-items: center; justify-content: center;
-            box-sizing: border-box;
-            line-height: 1;
+            box-sizing: border-box; line-height: 1; white-space: nowrap; 
         }
         .game-btn:active { transform: translateY(2px); box-shadow: 0 2px 3px rgba(139, 69, 19, 0.1); }
+        
         #mute-btn { background: #fff; color: #d35400; border-color: #e1b12c; }
         #restart-btn { background: #d35400; color: #fff; border-color: #c0392b; }
+        #home-btn { background: #fff; color: #8B4513; border-color: #8B4513; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -153,19 +146,21 @@
         <div id="button-container">
             <button id="mute-btn" class="game-btn">🔊 소리 켜짐</button>
             <button id="restart-btn" class="game-btn">처음부터 다시하기</button>
+            <button id="home-btn" class="game-btn" onclick="location.href='index.html'">🏠 홈으로 이동</button>
         </div>
     </div>
 
     <script>
+        // 💡 디렉터님의 최종 밸런스 패치 적용 완료!
         const SNACKS = [
-            { name: "알사탕", radius: 15, img: "candy.png" },
-            { name: "호두과자", radius: 22, img: "walnut.png" },
-            { name: "델리만쥬", radius: 30, img: "manjoo.png" },
-            { name: "왕만두", radius: 40, img: "mandu.png" },
-            { name: "뚱붕어빵", radius: 48, img: "fish.png" },
-            { name: "씨앗호떡", radius: 56, img: "hotteok.png" },
-            { name: "대왕솜사탕", radius: 70, img: "cottoncandy.png" },
-            { name: "황금치킨", radius: 95, img: "chicken.png" }
+            { name: "알사탕", radius: 22, img: "candy.png" },       // 20 -> 22
+            { name: "호두과자", radius: 30, img: "walnut.png" },      // 28 -> 30
+            { name: "델리만쥬", radius: 38, img: "manjoo.png" },      // 36 -> 38
+            { name: "왕만두", radius: 46, img: "mandu.png" },       // 44 -> 46
+            { name: "뚱붕어빵", radius: 52, img: "fish.png" },        
+            { name: "씨앗호떡", radius: 60, img: "hotteok.png" },     
+            { name: "대왕솜사탕", radius: 72, img: "cottoncandy.png" }, 
+            { name: "황금치킨", radius: 95, img: "chicken.png" }      
         ];
 
         const loadedImages = {};
@@ -192,7 +187,6 @@
         const engine = Engine.create(); const world = engine.world;
         const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
 
-        // 로컬 스토리지에서 영구 누적 치킨 수를 불러옴
         let totalChickens = parseInt(localStorage.getItem('kSnackTotalChickens') || 0, 10);
         document.getElementById('total-chicken').innerText = totalChickens;
 
