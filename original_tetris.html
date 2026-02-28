@@ -8,10 +8,10 @@
         body {
             background-color: #202028; color: #fff;
             display: flex; flex-direction: column; align-items: center;
-            margin: 0; padding-top: 15px;
+            margin: 0; padding-top: 15px; padding-bottom: 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none; -webkit-user-select: none; 
-            overflow-x: hidden; overflow-y:auto;
+            overflow-x: hidden; overflow-y:auto; min-height: 100dvh;
         }
         h1 {
             margin: 0 0 10px 0; color: #0DFF72; text-shadow: 2px 2px 0px #0DC2FF;
@@ -49,28 +49,76 @@
         }
         .action-btn:active { box-shadow: 0 0 0 #009933; transform: translateY(4px); }
 
+        /* =========================================
+           🕹️ 테트리스 조이패드 (고급스러운 무광 플라스틱 버전으로 롤백!)
+           ========================================= */
         #controls {
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; 
             margin-top: 15px; width: 100%; max-width: 300px;
         }
         button.pad-btn {
-            background-color: #444; color: white; border: 2px solid #666;
-            padding: 10px 0; font-size: 24px; border-radius: 8px;
-            cursor: pointer; touch-action: manipulation; flex: 1 1 30%;
+            background: linear-gradient(145deg, #3a3a4a, #22222c); 
+            color: white; 
+            border: 1px solid #555;
+            border-bottom: 5px solid #111; 
+            padding: 16px 0; 
+            font-size: 26px; 
+            border-radius: 12px;
+            cursor: pointer; 
+            touch-action: manipulation; 
+            flex: 1 1 30%;
+            box-shadow: 0 6px 10px rgba(0,0,0,0.4), inset 0 2px 2px rgba(255,255,255,0.1);
+            transition: transform 0.05s, border-bottom-width 0.05s, box-shadow 0.05s;
         }
-        button.pad-btn:active { background-color: #777; }
-        .btn-wide { flex: 1 1 100%; font-weight: bold; font-size: 14px; padding: 11px 0; }
         
+        button.pad-btn:active { 
+            transform: translateY(5px);
+            border-bottom-width: 0px; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.5), inset 0 3px 5px rgba(0,0,0,0.8);
+            background: #1e1e26;
+        }
+
+        .btn-wide { 
+            flex: 1 1 100%; 
+            font-weight: 900; 
+            font-size: 16px; 
+            padding: 14px 0; 
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        
+        /* 💡 드롭 버튼 텍스트를 가장 쨍한 하얀색으로 복구 */
+        .btn-wide span {
+            color: #ffffff;
+            font-size: 16px;
+        }
+        
+        /* =========================================
+           🥷 하단 시스템 버튼 (존재감 지우기 / 스텔스 모드)
+           ========================================= */
         #bottom-controls { 
-            display: flex; flex-direction: column; gap: 8px; 
+            display: flex; flex-direction: column; gap: 6px; 
             margin-top: 15px; width: 100%; max-width: 300px; 
         }
+        .control-row { display: flex; gap: 8px; width: 100%; }
+        
         .sub-btn { 
-            background: none; border: 1px solid #fff; color: #fff; 
-            padding: 8px 10px; border-radius: 5px; cursor: pointer; 
-            width: 100%; font-size: 14px; 
+            flex: 1; 
+            background: transparent; 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            color: rgba(255, 255, 255, 0.3); 
+            padding: 10px 0; 
+            border-radius: 6px; cursor: pointer; 
+            font-size: 13px; font-weight: bold; text-align: center;
+            transition: all 0.1s ease;
         }
-        .sub-btn:active { background: #555; }
+        
+        .sub-btn:active { 
+            background: rgba(255, 255, 255, 0.05); 
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .home-btn { width: 100%; }
+
         #start-screen p { margin-bottom: 40px; }
     </style>
 </head>
@@ -111,13 +159,16 @@
         <button id="btn-left" class="pad-btn">⬅️</button>
         <button id="btn-rotate" class="pad-btn">🔄</button>
         <button id="btn-right" class="pad-btn">➡️</button>
-        <button id="btn-down" class="pad-btn btn-wide">⬇️ <span style="font-size: 16px;">소프트 드롭</span></button>
-        <button id="btn-drop" class="pad-btn btn-wide">⏬ <span style="font-size: 16px;">하드 드롭</span></button>
+        <button id="btn-down" class="pad-btn btn-wide">⬇️ <span>소프트 드롭</span></button>
+        <button id="btn-drop" class="pad-btn btn-wide">⏬ <span>하드 드롭</span></button>
     </div>
 
     <div id="bottom-controls">
-        <button id="mute-btn" class="sub-btn">🔊 소리 끄기</button>
-        <button id="pause-btn" class="sub-btn">⏸️ 일시정지</button>
+        <div class="control-row">
+            <button id="mute-btn" class="sub-btn">🔊 소리 끄기</button>
+            <button id="pause-btn" class="sub-btn">⏸️ 일시정지</button>
+        </div>
+        <button id="home-btn" class="sub-btn home-btn" onclick="location.href='index.html'">🏠 홈으로 이동</button>
     </div>
 
     <script>
@@ -377,7 +428,7 @@
             player.score = 0; 
             elapsedTime = 0;  
             dropInterval = 900; 
-            bgmSpeed = 1.0; // 💡 시작할 땐 브금 정상 속도!
+            bgmSpeed = 1.0; 
             isGameOver = false; isPaused = false; dropCounter = 0; 
             lastTime = performance.now();
             
@@ -396,12 +447,9 @@
                 elapsedTime++; 
                 updateUI();
                 
-                // 💡 마의 구간: 60초부터 30초마다 스피드 업!
                 if (elapsedTime >= 60 && elapsedTime % 30 === 0) {
                     if (dropInterval > 150) { 
                         dropInterval -= 150; 
-                        
-                        // 💡 1.1 -> 1.2 -> 1.3 배속으로 자연스럽고 쫄깃하게 상승!
                         bgmSpeed += 0.1; 
                         
                         const scoreEl = document.getElementById('score');
