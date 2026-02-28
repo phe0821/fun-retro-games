@@ -314,7 +314,7 @@
                         const nextLevel = level + 1;
                         
                         const newSnack = createSnack(newX, newY, nextLevel); 
-                        Matter.Body.setVelocity(newSnack, { x: (Math.random() - 0.5) * 4, y: -8 });
+                        Matter.Body.setVelocity(newSnack, { x: (Math.random() - 0.5) * 2, y: -4 });
 
                         if (nextLevel === 5) { playGoodSound(); triggerEffect('good-effect', 'show-good'); } 
                         else if (nextLevel === 6) { playGreatSound(); triggerEffect('great-effect', 'show-great'); } 
