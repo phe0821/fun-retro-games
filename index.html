@@ -4,141 +4,236 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>추억의 오락실 (Mini Arcade)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Press+Start+2P&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,600,0,0" />
     <style>
         body {
-            background-color: #1a1a24; color: #fff; 
+            background-color: #12121a; 
+            color: #fff; 
             display: flex; flex-direction: column; align-items: center; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Roboto Mono', monospace; 
             margin: 0;
-            
             box-sizing: border-box; 
             min-height: 100dvh;         
             padding-top: 30px;
-            padding-bottom: 40px;   
+            padding-bottom: 50px;   
+            background-image: radial-gradient(circle at 50% 0%, #2a2a40 0%, #12121a 70%); 
+            overflow-x: hidden; 
         }
         
         h1 {
-            font-size: 36px;
+            font-family: 'Press Start 2P', cursive; 
+            font-size: clamp(20px, 5vw, 28px); 
             text-align: center;
-            margin-top: 20px;
-            margin-bottom: 5px;
+            margin-top: 10px;
+            margin-bottom: 15px;
             color: #fff;
-            text-shadow: 0 0 5px #F538FF, 0 0 15px #F538FF, 0 0 30px #F538FF;
-            letter-spacing: 2px;
+            text-shadow: 2px 2px 0px #F538FF, -2px -2px 0px #0DC2FF; 
+            letter-spacing: 1px;
+            line-height: 1.4;
         }
         
-        p.subtitle {
-            color: #fff;
-            margin-bottom: 40px;
-            text-align: center;
+        /* 네온 전광판(Marquee) 컨테이너 */
+        .marquee-container {
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            margin-bottom: 35px;
+            position: relative;
+            white-space: nowrap;
+            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 15s linear infinite;
+        }
+
+        .marquee-text {
+            display: inline-block;
+            color: #ccc;
             font-weight: bold;
             letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(13, 194, 255, 0.5);
+            text-shadow: 0 0 8px rgba(13, 194, 255, 0.6);
+            font-size: clamp(11px, 3.5vw, 14px);
+            padding-right: 25px; 
+        }
+
+        @keyframes marquee {
+            0%   { transform: translateX(0%); }
+            100% { transform: translateX(-50%); } 
         }
         
         .game-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            width: 100%;
-            max-width: 350px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px; 
+            width: 90%;
+            max-width: 500px;
         }
         
+        /* 3D 아케이드 캐비닛 스타일 */
         .game-card {
-            background-color: #2a2a35;
-            border: 2px solid #444;
-            border-radius: 15px;
-            padding: 25px 20px;
-            text-align: center;
-            transition: transform 0.1s, border-color 0.2s, box-shadow 0.2s;
+            background: linear-gradient(145deg, #2a2a35, #1a1a22); 
+            border-radius: 16px;
+            padding: 8px; 
             text-decoration: none; 
             color: white;
-            display: block;
+            display: flex;
+            flex-direction: column;
+            border-bottom: 6px solid #000; 
+            box-shadow: 0 8px 15px rgba(0,0,0,0.5), inset 0 2px 3px rgba(255,255,255,0.1); 
+            transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             position: relative;
-            overflow: hidden;
+            top: 0;
         }
         
-        .game-card:hover, .game-card:active {
-            transform: translateY(-4px);
-            border-color: #FFE138;
-            box-shadow: 0 8px 20px rgba(255, 225, 56, 0.2);
+        .game-card:active, .game-card:hover {
+            transform: translateY(4px); 
+            border-bottom-width: 2px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.6), 0 0 20px rgba(255, 225, 56, 0.4); 
+        }
+
+        /* 오목한 스크린 효과 */
+        .game-screen-inner {
+            background-color: rgba(0,0,0,0.4);
+            border-radius: 12px;
+            padding: 15px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+            border: 2px solid rgba(255,255,255,0.05);
+            height: 100%;
+        }
+
+        #card-merge {
+            grid-column: 1 / -1; 
+            background: linear-gradient(145deg, #352a3a, #221a25);
         }
         
+        /* 💡 힙업된 네온 유리관 아이콘 스타일! */
         .game-icon {
-            font-size: 50px;
-            margin-bottom: 10px;
+            font-family: 'Material Symbols Outlined';
+            font-size: 38px;
+            margin-bottom: 8px;
+            color: #fff; /* 하얀색 유리관 */
+            /* 빛 번짐을 두 겹으로 주어 리얼한 네온 느낌 구현 */
         }
+        
+        #card-merge .game-icon { font-size: 48px; text-shadow: 0 0 10px #B538FF, 0 0 20px #B538FF, 0 0 30px #B538FF; } 
         
         .game-title {
-            font-size: 22px;
-            font-weight: 900;
-            margin-bottom: 8px;
+            font-family: 'Bungee', cursive;
+            font-size: clamp(14px, 4vw, 20px);
+            font-weight: normal; 
+            margin-bottom: 6px;
             color: #fff;
+            word-break: keep-all;
+            line-height: 1.1;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5); 
         }
         
         .game-desc {
-            font-size: 14px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: clamp(10px, 3vw, 12px);
             color: #aaa;
-            line-height: 1.5;
+            line-height: 1.4;
+            word-break: keep-all;
+            opacity: 0.9;
         }
         
-        /* 💡 각 게임별 네온 포인트 컬러 */
-        
-        /* 1. 치킨 날다 (오렌지/노랑) */
-        #card-chicken { border-top: 5px solid #FF8E0D; }
-        #card-chicken .game-title { color: #FF8E0D; }
+        /* 각 게임별 네온 포인트 컬러 (텍스트 & 아이콘 동시 적용) */
+        #card-merge { border-bottom-color: #8a1cbf; }
+        #card-merge:hover { border-color: #B538FF; box-shadow: 0 0 20px rgba(181, 56, 255, 0.6); }
+        #card-merge .game-title { color: #e0aaff; text-shadow: 0 0 10px rgba(181, 56, 255, 0.8); }
 
-        /* 2. 오리지널 테트리스 (초록) */
-        #card-original { border-top: 5px solid #0DFF72; }
-        #card-original .game-title { color: #0DFF72; }
+        #card-chicken { border-bottom-color: #bf6a00; }
+        #card-chicken:hover { border-color: #FF8E0D; box-shadow: 0 0 20px rgba(255, 142, 13, 0.6); }
+        #card-chicken .game-title { color: #ffd18a; text-shadow: 0 0 8px rgba(255, 142, 13, 0.8); }
+        #card-chicken .game-icon { text-shadow: 0 0 8px #FF8E0D, 0 0 15px #FF8E0D; }
 
-        /* 3. 타임어택 테트리스 (파랑) */
-        #card-tetris { border-top: 5px solid #0DC2FF; }
-        #card-tetris .game-title { color: #0DC2FF; }
+        #card-tetris { border-bottom-color: #0081bf; }
+        #card-tetris:hover { border-color: #0DC2FF; box-shadow: 0 0 20px rgba(13, 194, 255, 0.6); }
+        #card-tetris .game-title { color: #9ee6ff; text-shadow: 0 0 8px rgba(13, 194, 255, 0.8); }
+        #card-tetris .game-icon { text-shadow: 0 0 8px #0DC2FF, 0 0 15px #0DC2FF; }
         
-        /* 4. 벌룬 팝팝 (핑크/빨강) */
-        #card-balloon { border-top: 5px solid #FF0D72; }
-        #card-balloon .game-title { color: #FF0D72; }
+        #card-balloon { border-bottom-color: #bf0049; }
+        #card-balloon:hover { border-color: #FF0D72; box-shadow: 0 0 20px rgba(255, 13, 114, 0.6); }
+        #card-balloon .game-title { color: #ff9ebf; text-shadow: 0 0 8px rgba(255, 13, 114, 0.8); }
+        #card-balloon .game-icon { text-shadow: 0 0 8px #FF0D72, 0 0 15px #FF0D72; }
+
+        #card-original { border-bottom-color: #00bf49; }
+        #card-original:hover { border-color: #0DFF72; box-shadow: 0 0 20px rgba(13, 255, 114, 0.6); }
+        #card-original .game-title { color: #9effcb; text-shadow: 0 0 8px rgba(13, 255, 114, 0.8); }
+        #card-original .game-icon { text-shadow: 0 0 8px #0DFF72, 0 0 15px #0DFF72; }
         
         .footer {
             margin-top: 40px;
-            color: #555;
-            font-size: 12px;
+            color: #666;
+            font-size: 11px;
             font-weight: bold;
+            font-family: 'Roboto Mono', monospace;
         }
     </style>
 </head>
 <body>
     <h1>🕹️ 추억의 오락실 🕹️</h1>
-    <p class="subtitle">Welcome to Helen's Mini Arcade</p>
+    
+    <div class="marquee-container">
+        <div class="marquee-content">
+            <span class="marquee-text">Welcome to Helen's Mini Arcade.</span>
+            <span class="marquee-text">Welcome to Helen's Mini Arcade.</span>
+            <span class="marquee-text">Welcome to Helen's Mini Arcade.</span>
+            <span class="marquee-text">Welcome to Helen's Mini Arcade.</span>
+        </div>
+    </div>
 
     <div class="game-list">
-        <!-- 💡 1순위: 치킨 날다 -->
+        
+        <a href="k_snack_merge.html" class="game-card" id="card-merge">
+            <div class="game-screen-inner">
+                <div class="game-icon">merge</div>
+                <div class="game-title">K-SNACK MERGE</div>
+                <div class="game-desc">다양한 K-간식을 합쳐서 더 크게! <strong>황금 치킨</strong>을 만들어보세요!</div>
+            </div>
+        </a>
+
         <a href="flying_chicken.html" class="game-card" id="card-chicken">
-            <div class="game-icon">🐔</div>
-            <div class="game-title">FLYING CHICKEN</div>
-            <div class="game-desc">장애물을 피해 추락하지 않고 날아보세요!<br>날아라 꼬꼬!</div>
+            <div class="game-screen-inner">
+                <div class="game-icon">rocket_launch</div>
+                <div class="game-title">FLYING CHICKEN</div>
+                <div class="game-desc">장애물 피하기! 날아라 꼬꼬!</div>
+            </div>
         </a>
 
-        <!-- 💡 2순위: 오리지널 테트리스 -->
-        <a href="original_tetris.html" class="game-card" id="card-original">
-            <div class="game-icon">🟩</div> 
-            <div class="game-title">ORIGINAL TETRIS</div>
-            <div class="game-desc">오리지널 테트리스!<br>최대한 많은 블록을 깨보세요!</div>
-        </a>
-
-        <!-- 💡 3순위: 타임어택 테트리스 -->
         <a href="tetris.html" class="game-card" id="card-tetris">
-            <div class="game-icon">🧱</div>
-            <div class="game-title">TIME ATTACK TETRIS</div>
-            <div class="game-desc">60초 안에 최대한 많은 블록을 깨고<br>최고 점수에 도전하세요!</div>
+            <div class="game-screen-inner">
+                <div class="game-icon">timer</div>
+                <div class="game-title">TIME ATTACK </div>
+                <div class="game-desc">60초 제한 테트리스! 최고점 도전!</div>
+            </div>
         </a>
 
-        <!-- 💡 4순위: 벌룬 팝팝 -->
         <a href="balloon.html" class="game-card" id="card-balloon">
-            <div class="game-icon">🎈</div>
-            <div class="game-title">BALLOON POP POP</div>
-            <div class="game-desc">미친 속도로 올라오는 풍선을 터뜨려라!<br>스피드와 순발력 테스트!</div>
+            <div class="game-screen-inner">
+                <div class="game-icon">ads_click</div>
+                <div class="game-title">BALLOON POP</div>
+                <div class="game-desc">풍선 터뜨리기! 순발력 테스트!</div>
+            </div>
+        </a>
+
+        <a href="original_tetris.html" class="game-card" id="card-original">
+            <div class="game-screen-inner">
+                <div class="game-icon">extension</div> 
+                <div class="game-title">TETRIS</div>
+                <div class="game-desc">오리지널 테트리스!</div>
+            </div>
         </a>
     </div>
 
