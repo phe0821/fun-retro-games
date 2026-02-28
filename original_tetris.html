@@ -491,8 +491,17 @@
         });
 
         document.addEventListener('keydown', event => {
+            // 💡 핵심 패치: 방향키와 스페이스바를 누를 때 화면이 스크롤되는 브라우저 기본 동작을 완벽 차단!
+            if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(event.key)) {
+                event.preventDefault();
+            }
+
             if (isGameOver) return;
-            if (event.key.toLowerCase() === 'p') { togglePause(); return; }
+            
+            if (event.key.toLowerCase() === 'p') {
+                togglePause();
+                return;
+            }
 
             if (!isPaused) {
                 if (event.key === 'ArrowLeft') { player.pos.x--; if (collide(arena, player)) player.pos.x++; } 
