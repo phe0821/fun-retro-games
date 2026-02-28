@@ -8,10 +8,10 @@
        body {
             background-color: #202028; color: #fff;
             display: flex; flex-direction: column; align-items: center;
-            margin: 0; padding-top: 15px;
+            margin: 0; padding-top: 15px; padding-bottom: 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none; -webkit-user-select: none; 
-            overflow-x: hidden; overflow-y:auto;
+            overflow-x: hidden; overflow-y:auto; min-height: 100dvh;
         }
         h1 {
             margin: 0 0 10px 0; color: #fff; text-shadow: 2px 2px 0px #FF0D72, -2px -2px 0px #0DC2FF;
@@ -52,11 +52,11 @@
             display: flex; justify-content: space-between; gap: 10px;
             margin-top: 15px; width: 100%; max-width: 300px;
         }
-        /* ✨💎✨ 크리스탈 네온 아케이드 버튼 스타일 */
+        /* ✨💎✨ 크리스탈 네온 아케이드 버튼 스타일 (유지) */
         button.bishi-btn {
            flex: 1; 
-            padding: 15px 0; /* 💡 25px에서 15px로 대폭 다이어트! */
-            font-size: 18px; /* 💡 24px에서 18px로 글씨 크기 축소! */
+            padding: 15px 0; 
+            font-size: 18px; 
             font-weight: 900; border-radius: 12px;
             border: none; color: white; cursor: pointer; touch-action: manipulation;
             box-shadow: 
@@ -68,25 +68,55 @@
             position: relative; overflow: hidden;
         }
 
-        /* 버튼을 눌렀을 때: 빛이 번쩍하며 깊이 들어가는 효과 */
         button.bishi-btn:active {
             transform: translateY(6px);
             box-shadow: 
                 0 0px 0 rgba(0,0,0,0.6), 
                 inset 0 2px 4px rgba(0,0,0,0.6),
-                inset 0 6px 15px rgba(0,0,0,0.5); /* 더 깊은 내부 그림자 */
-            filter: brightness(1.2) contrast(1.1); /* 순간적으로 밝게 빛남! */
+                inset 0 6px 15px rgba(0,0,0,0.5); 
+            filter: brightness(1.2) contrast(1.1); 
         }
 
-        /* 💡 빨강도 딥한 다크 컬러 글씨로 통일! */
         #btn-red { background: linear-gradient(to bottom, #ff4d94, #FF0D72, #cc0050); color: #330011; text-shadow: none; }
         #btn-green { background: linear-gradient(to bottom, #4dff94, #0DFF72, #00cc55); color: #003300; text-shadow: none; }
         #btn-blue { background: linear-gradient(to bottom, #4dc2ff, #0DC2FF, #0099cc); color: #002244; text-shadow: none; }
 
-        /* 하단 버튼은 유지! */
-        #bottom-controls { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; width: 100%; max-width: 300px; }
-        .sub-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); color: #ddd; padding: 10px 10px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 14px; font-weight: bold; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); transition: background 0.1s, transform 0.1s; }
-        .sub-btn:active { background: rgba(255, 255, 255, 0.15); transform: scale(0.98); }
+        /* =========================================
+           🥷 하단 시스템 버튼 (치킨/테트리스와 동일한 스텔스 모드 적용!)
+           ========================================= */
+        #bottom-controls { 
+            display: flex; flex-direction: column; gap: 6px; 
+            margin-top: 15px; width: 100%; max-width: 300px; 
+        }
+        .control-row { display: flex; gap: 8px; width: 100%; }
+        
+        .sub-btn { 
+            flex: 1; 
+            background: transparent; 
+            border: 1px solid rgba(255, 255, 255, 0.15); /* 매우 얇고 어두운 테두리 */
+            color: rgba(255, 255, 255, 0.3); /* 글씨도 어둡게 (회색) */
+            padding: 10px 0; 
+            border-radius: 6px; cursor: pointer; 
+            font-size: 13px; font-weight: bold; text-align: center;
+            transition: all 0.1s ease;
+        }
+        
+        /* 누를 때만 살짝 밝아짐 */
+        .sub-btn:active { 
+            background: rgba(255, 255, 255, 0.05); 
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* 🏠 홈 버튼 전용: 게임 테마 컬러에 맞춰 살짝 핑크빛이 돌게 세팅 */
+        .home-btn { 
+            width: 100%; 
+            border-color: rgba(245, 56, 255, 0.3); 
+            color: rgba(245, 56, 255, 0.6); 
+        }
+        .home-btn:active { 
+            background: rgba(245, 56, 255, 0.1); 
+            color: #F538FF;
+        }
     </style>
 </head>
 <body>
@@ -130,8 +160,11 @@
     </div>
 
     <div id="bottom-controls">
-        <button id="mute-btn" class="sub-btn">🔊 소리 끄기</button>
-        <button id="pause-btn" class="sub-btn">⏸️ 일시정지</button>
+        <div class="control-row">
+            <button id="mute-btn" class="sub-btn">🔊 소리 끄기</button>
+            <button id="pause-btn" class="sub-btn">⏸️ 일시정지</button>
+        </div>
+        <button id="home-btn" class="sub-btn home-btn" onclick="location.href='index.html'">🏠 홈으로 이동</button>
     </div>
 
     <script>
@@ -214,9 +247,8 @@
                 
                 const now = audioCtx.currentTime;
                 osc.frequency.setValueAtTime(600, now);
-                osc.frequency.exponentialRampToValueAtTime(1500, now + 0.04); /* 💡 0.05에서 0.04로 더 짧고 경쾌하게! */
+                osc.frequency.exponentialRampToValueAtTime(1500, now + 0.04);
                 
-                /* 💡 볼륨을 0.5에서 0.2로 낮춤! 여러 번 다다닥 눌러서 겹쳐도 찢어지지 않습니다 */
                 gain.gain.setValueAtTime(0.2, now); 
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.04); 
                 
@@ -235,9 +267,8 @@
                 
                 const now = audioCtx.currentTime;
                 osc.frequency.setValueAtTime(150, now);
-                osc.frequency.exponentialRampToValueAtTime(100, now + 0.08); /* 💡 꼬리를 0.1에서 0.08로 살짝 짧게 끊어줌 */
+                osc.frequency.exponentialRampToValueAtTime(100, now + 0.08); 
                 
-                /* 💡 미스 볼륨도 0.3에서 0.1로 확 낮춤! 미친 듯이 연타해도 고장 난 라디오 소리가 나지 않습니다 */
                 gain.gain.setValueAtTime(0.1, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
                 
