@@ -190,6 +190,10 @@
               Bodies = Matter.Bodies, Events = Matter.Events, Runner = Matter.Runner, Composite = Matter.Composite;
 
         const engine = Engine.create(); const world = engine.world;
+        
+        // 💡 물리 엔진 패치 1: 중력을 1.2로 살짝 올려 아래로 잘 파고들게 세팅!
+        engine.gravity.y = 1.2; 
+        
         const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
 
         let totalChickens = parseInt(localStorage.getItem('kSnackTotalChickens') || 0, 10);
@@ -282,7 +286,8 @@
             const baseDensity = 0.001;
             const snackDensity = baseDensity * Math.pow(1.2, level);
             const body = Bodies.circle(x, y, SNACKS[level].radius, {
-                restitution: 0.3, friction: 0.05, density: snackDensity, label: level.toString()
+                // 💡 물리 엔진 패치 2: 튀는 맛은 유지하되(0.3), 마찰력을 0.005로 확 줄여서 빈 공간으로 스르륵 미끄러지게!
+                restitution: 0.3, friction: 0.005, density: snackDensity, label: level.toString()
             });
             World.add(world, body); return body;
         }
@@ -362,8 +367,18 @@
             const bodies = Matter.Composite.allBodies(world);
             bodies.forEach(body => {
                 if (body.label !== 'Wall') {
-                    const level = parseInt(body.label); const img = loadedImages[level]; const r = SNACKS[level].radius; const visualR = r * 1.28; 
-                    ctx.save(); ctx.translate(body.position.x, body.position.y); ctx.rotate(body.angle);
+                    const level = parseInt(body.label); const img = loadedImages[level]; const r = SNACKS[level].radius; const visualR = r * 1.40; 
+                    ctx.save(); 
+                    
+                    // 2️⃣ [스마트 자르기 추가] 박스 안쪽에 있을 때만 벽을 뚫지 않게 잘라줍니다!
+                    // 위로 넘치거나 바깥으로 튕겨 나간 애들은 자르지 않아서 그대로 보이게 됩니다.
+                    if (body.position.y > fy_top && body.position.x > fx1 && body.position.x < fx2) {
+                        ctx.beginPath();
+                        ctx.rect(fx1, 0, fx2 - fx1, fy_bot);
+                        ctx.clip();
+                    }
+
+                    ctx.translate(body.position.x, body.position.y); ctx.rotate(body.angle);
                     if (img && img.complete) { ctx.drawImage(img, -visualR, -visualR, visualR * 2, visualR * 2); }
                     ctx.restore();
                 }
