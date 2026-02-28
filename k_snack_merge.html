@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>K-SNACK MERGE!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Jua&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <style>
+        body {
+            background: radial-gradient(circle at 50% 30%, #fff5e6 0%, #ffe0b2 40%, #ffcc80 80%, #f57c00 100%);
+            display: flex; flex-direction: column; align-items: center;
+            margin: 0; padding: 10px 0 40px 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none; -webkit-user-select: none; touch-action: none;
+            overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: none; 
+            min-height: 100dvh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"), radial-gradient(circle at 50% 30%, #fff5e6 0%, #ffe0b2 40%, #ffcc80 80%, #f57c00 100%);
+        }
+        
+        #app-grid {
+            display: grid; grid-template-columns: 95px minmax(0, 360px); grid-template-rows: auto auto auto auto;
+            gap: 4px 15px; justify-content: center; width: 100%; padding: 0 10px; box-sizing: border-box;
+        }
+
+        /* 💡 타이틀을 Bungee 폰트 & 3D 아케이드 레트로 스타일로 변경! */
+        #game-title {
+            grid-column: 2; grid-row: 1; justify-self: center;
+            margin: 5px 0 2px 0; color: #fff; font-size: 30px; font-weight: normal; 
+            text-shadow: 3px 3px 0px #d35400, 0px 4px 8px rgba(0,0,0,0.3); 
+            letter-spacing: 1px; font-family: 'Bungee', cursive;
+        }
+
+        #stats-board { grid-column: 2; grid-row: 2; justify-self: center; display: flex; gap: 10px; position: relative; z-index: 10; }
+        .stat-box { font-size: 16px; font-weight: 900; color: #fff; background: rgba(139, 69, 19, 0.7); padding: 10px 20px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); font-family: 'Jua', sans-serif; letter-spacing: 1px; }
+        .stat-box.high { background: #d35400; border-color: #f1c40f; color: #fffaf0; }
+        
+        #side-panel { grid-column: 1; grid-row: 3; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding-top: 70px; padding-bottom: 25px; }
+        #next-snack-container { display: flex; flex-direction: column; align-items: center; }
+        .side-title { color: #d35400; font-size: 15px; margin-bottom: 8px; text-shadow: 0 1px 2px rgba(255,255,255,0.8); text-align: center; font-family: 'Jua', sans-serif; }
+        
+        #next-snack-bubble { width: 60px; height: 60px; position: relative; border-radius: 48% 52% 45% 55% / 55% 45% 50% 50%; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.1) 30%, transparent 60%, rgba(255,255,255,0.3) 100%); box-shadow: inset -2px -2px 6px rgba(255,255,255,0.4), inset 3px 3px 10px rgba(255,255,255,0.8), 0 8px 15px rgba(0,0,0,0.1); border: 1px solid rgba(255, 255, 255, 0.6); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); display: flex; justify-content: center; align-items: center; animation: floatBubble 3s ease-in-out infinite; }
+        #next-snack-bubble::after { content: ''; position: absolute; top: 8px; left: 10px; width: 10px; height: 5px; background: rgba(255,255,255,0.9); border-radius: 50%; transform: rotate(-30deg); box-shadow: 0 0 5px rgba(255,255,255,0.8); }
+        #next-snack-img { width: 35px; height: 35px; object-fit: contain; z-index: 2; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
+        @keyframes floatBubble { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+        #evolution-container { display: flex; flex-direction: column; align-items: center; width: 100%; }
+        #evolution-chain { display: flex; flex-direction: column; gap: 2px; justify-content: flex-start; align-items: center; background: linear-gradient(to bottom, #ffeaa7, #fab1a0, #e17055, #c0392b); padding: 8px 4px; border-radius: 15px; width: 95px; box-sizing: border-box; box-shadow: 0 10px 20px rgba(139, 69, 19, 0.3), inset 0 2px 5px rgba(255,255,255,0.5); border: 2px solid rgba(255, 255, 255, 0.4); }
+        
+        .evo-formula { display: grid; grid-template-columns: 20px 32px 30px; align-items: center; justify-items: center; justify-content: center; gap: 2px; width: 100%; padding: 4px 0; border-bottom: 1px dashed rgba(255,255,255,0.3); }
+        .evo-formula:last-child { border-bottom: none; }
+        .evo-small { width: 18px; height: 18px; object-fit: contain; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2)); }
+        .evo-big { width: 24px; height: 24px; object-fit: contain; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); }
+        .evo-math { font-size: 13px; font-weight: normal; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.4); font-family: 'Jua', sans-serif; }
+        
+        #canvas-wrapper { grid-column: 2; grid-row: 3; display: flex; width: 100%; margin-top: -65px; position: relative; z-index: 1; }
+        canvas { width: 100%; height: auto; aspect-ratio: 360 / 600; background: transparent; border: none; outline: none; cursor: crosshair; touch-action: none; }
+
+        .effect-text { position: absolute; top: 45%; left: 50%; width: 90%; text-align: center; transform: translate(-50%, -50%); font-weight: 900; color: #fff; font-family: 'Jua', sans-serif; pointer-events: none; opacity: 0; z-index: 100; line-height: 1.15; word-break: keep-all; }
+
+        #good-effect { font-size: clamp(35px, 8vw, 45px); }
+        .show-good { animation: goodGlowFade 1.5s ease-out forwards; }
+        @keyframes goodGlowFade { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1) rotate(-3deg); text-shadow: 0 0 20px #fff, 0 0 40px #00e676, 0 0 80px #1de9b6; } 40% { transform: translate(-50%, -50%) scale(1.0) rotate(2deg); } 70% { opacity: 1; transform: translate(-50%, -50%) scale(1.05) rotate(0deg); text-shadow: 0 0 10px #fff, 0 0 20px #00e676; } 100% { opacity: 0; transform: translate(-50%, -65%) scale(1.15); text-shadow: 0 0 5px #fff; } }
+
+        #great-effect { font-size: clamp(40px, 9vw, 50px); }
+        .show-great { animation: greatGlowFade 1.5s ease-out forwards; }
+        @keyframes greatGlowFade { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 20% { opacity: 1; transform: translate(-50%, -50%) scale(1.15) rotate(4deg); text-shadow: 0 0 20px #fff, 0 0 40px #e040fb, 0 0 80px #d500f9; } 40% { transform: translate(-50%, -50%) scale(1.0) rotate(-2deg); } 70% { opacity: 1; transform: translate(-50%, -50%) scale(1.05) rotate(0deg); text-shadow: 0 0 10px #fff, 0 0 20px #e040fb; } 100% { opacity: 0; transform: translate(-50%, -65%) scale(1.2); text-shadow: 0 0 5px #fff; } }
+
+        #wow-effect { font-size: clamp(45px, 10vw, 55px); }
+        .show-wow { animation: wowGlowFade 1.5s ease-out forwards; }
+        @keyframes wowGlowFade { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2) rotate(-5deg); text-shadow: 0 0 20px #fff, 0 0 50px #ffea00, 0 0 90px #ff9100, 0 0 150px #ff5100; } 40% { transform: translate(-50%, -50%) scale(1.05) rotate(3deg); } 70% { opacity: 1; transform: translate(-50%, -50%) scale(1.1) rotate(0deg); text-shadow: 0 0 10px #fff, 0 0 30px #ffea00, 0 0 50px #ff9100; } 100% { opacity: 0; transform: translate(-50%, -65%) scale(1.25); text-shadow: 0 0 5px #fff; } }
+
+        #clear-effect { font-size: clamp(32px, 8vw, 42px); }
+        .show-clear { animation: clearGlowFade 2.5s ease-out forwards; } 
+        @keyframes clearGlowFade { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 15% { opacity: 1; transform: translate(-50%, -50%) scale(1.1) rotate(2deg); text-shadow: 0 0 20px #fff, 0 0 50px #00e5ff, 0 0 90px #008cff, 0 0 150px #0051ff; } 30% { transform: translate(-50%, -50%) scale(1.0) rotate(-2deg); } 60% { opacity: 1; transform: translate(-50%, -50%) scale(1.05) rotate(0deg); text-shadow: 0 0 10px #fff, 0 0 30px #00e5ff, 0 0 60px #008cff; } 100% { opacity: 0; transform: translate(-50%, -70%) scale(1.15); text-shadow: 0 0 5px #fff; } }
+
+        #button-container { grid-column: 2; grid-row: 4; justify-self: center; display: flex; gap: 10px; margin-top: 5px; position: relative; z-index: 10; }
+        .game-btn { padding: 8px 16px; border-radius: 20px; font-size: 15px; font-family: 'Jua', sans-serif; cursor: pointer; box-shadow: 0 4px 6px rgba(139, 69, 19, 0.1); transition: 0.1s; border: 2px solid; }
+        .game-btn:active { transform: translateY(2px); box-shadow: 0 2px 3px rgba(139, 69, 19, 0.1); }
+        #mute-btn { background: #fff; color: #d35400; border-color: #e1b12c; }
+        #restart-btn { background: #d35400; color: #fff; border-color: #c0392b; }
+    </style>
+</head>
+<body>
+    
+    <div id="app-grid">
+        <h1 id="game-title">K-SNACK MERGE!</h1>
+        
+        <div id="stats-board">
+            <div class="stat-box high">🍗 누적 달성 치킨: <span id="total-chicken" style="font-size: 20px; color: #fffea0;">0</span> 마리</div>
+        </div>
+
+        <div id="side-panel">
+            <div id="next-snack-container">
+                <div class="side-title">다음 간식</div>
+                <div id="next-snack-bubble"><img id="next-snack-img" src=""></div>
+            </div>
+            
+            <div id="evolution-container">
+                <div class="side-title">진화 공식</div>
+                <div id="evolution-chain"></div>
+            </div>
+        </div>
+        
+        <div id="canvas-wrapper">
+            <div id="good-effect" class="effect-text">GOOD!</div>
+            <div id="great-effect" class="effect-text">GREAT!</div>
+            <div id="wow-effect" class="effect-text">WOW!</div>
+            <div id="clear-effect" class="effect-text">Chicken Clear!<br>Go On!</div>
+            
+            <canvas id="gameCanvas" width="360" height="600"></canvas>
+        </div>
+
+        <div id="button-container">
+            <button id="mute-btn" class="game-btn">🔊 소리 켜짐</button>
+            <button id="restart-btn" class="game-btn">처음부터 다시하기</button>
+        </div>
+    </div>
+
+    <script>
+        const SNACKS = [
+            { name: "알사탕", radius: 15, img: "candy.png" },
+            { name: "호두과자", radius: 22, img: "walnut.png" },
+            { name: "델리만쥬", radius: 30, img: "manjoo.png" },
+            { name: "왕만두", radius: 40, img: "mandu.png" },
+            { name: "뚱붕어빵", radius: 48, img: "fish.png" },
+            { name: "씨앗호떡", radius: 56, img: "hotteok.png" },
+            { name: "대왕솜사탕", radius: 70, img: "cottoncandy.png" },
+            { name: "황금치킨", radius: 95, img: "chicken.png" }
+        ];
+
+        const loadedImages = {};
+        const evoContainer = document.getElementById('evolution-chain');
+        
+        SNACKS.forEach((snack, index) => {
+            const img = new Image(); img.src = snack.img; loadedImages[index] = img;
+            if (index < SNACKS.length - 1) {
+                const formulaDiv = document.createElement('div');
+                formulaDiv.className = 'evo-formula';
+                formulaDiv.innerHTML = `<img class="evo-small" src="${snack.img}"><span class="evo-math">x 2 =</span><img class="evo-big" src="${SNACKS[index + 1].img}">`;
+                evoContainer.appendChild(formulaDiv);
+            }
+        });
+
+        const clearFormulaDiv = document.createElement('div');
+        clearFormulaDiv.className = 'evo-formula';
+        clearFormulaDiv.innerHTML = `<img class="evo-small" src="${SNACKS[7].img}"><span class="evo-math">x 2 =</span><span class="evo-math" style="color:#f1c40f; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Clear</span>`;
+        evoContainer.appendChild(clearFormulaDiv);
+
+        const Engine = Matter.Engine, Render = Matter.Render, World = Matter.World,
+              Bodies = Matter.Bodies, Events = Matter.Events, Runner = Matter.Runner, Composite = Matter.Composite;
+
+        const engine = Engine.create(); const world = engine.world;
+        const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
+
+        // 💡 로컬 스토리지에서 영구 누적 치킨 수를 불러옴 (없으면 0)
+        let totalChickens = parseInt(localStorage.getItem('kSnackTotalChickens') || 0, 10);
+        document.getElementById('total-chicken').innerText = totalChickens;
+
+        let isDropping = false; let previewX = canvas.width / 2; let frameCount = 0;
+        let currentDroppingIndex = Math.floor(Math.random() * 3);
+        let upcomingSnackIndex = Math.floor(Math.random() * 3);
+        document.getElementById('next-snack-img').src = SNACKS[upcomingSnackIndex].img;
+
+        const fx1 = 20, fx2 = 340, fy_top = 180, fy_bot = 580; 
+        const bx1 = 60, bx2 = 300, by_top = 130, by_bot = 560; 
+        const dropY = 110; 
+
+        const wallOptions = { isStatic: true, render: { fillStyle: 'transparent' }, friction: 0.05, restitution: 0.2, label: 'Wall' };
+        World.add(world, [
+            Bodies.rectangle(10, 380, 20, 400, wallOptions),
+            Bodies.rectangle(350, 380, 20, 400, wallOptions),
+            Bodies.rectangle(180, 590, 360, 20, wallOptions)
+        ]);
+
+        let audioCtx = null; let isMuted = false;
+        function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); }
+
+        function playTone(freq, type, startTime, duration, vol = 0.2) {
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = type; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0, startTime); gain.gain.linearRampToValueAtTime(vol, startTime + 0.02); gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+            osc.start(startTime); osc.stop(startTime + duration);
+        }
+
+        function playSnap(startTime, freq = 300) {
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'triangle'; osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.setValueAtTime(freq * 1.5, startTime); osc.frequency.exponentialRampToValueAtTime(freq / 2, startTime + 0.03);
+            gain.gain.setValueAtTime(0, startTime); gain.gain.linearRampToValueAtTime(0.5, startTime + 0.002); gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.04); 
+            osc.start(startTime); osc.stop(startTime + 0.04);
+        }
+
+        function playDropSound() {
+            if (isMuted || !audioCtx) return;
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'sine'; osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        function playMergeSound(level) {
+            if (isMuted || !audioCtx) return;
+            const now = audioCtx.currentTime; const baseFreq = 300 + (level * 50);
+            playSnap(now, baseFreq);
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'sine'; osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.setValueAtTime(baseFreq, now); osc.frequency.exponentialRampToValueAtTime(baseFreq + 150, now + 0.15); 
+            gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.2, now + 0.02); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+            osc.start(now); osc.stop(now + 0.2);
+        }
+
+        function playGoodSound() {
+            if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const notes = [261.63, 329.63, 392.00]; 
+            notes.forEach((freq, i) => { const t = now + (i * 0.06); playSnap(t, freq); playTone(freq, 'sine', t, 0.6, 0.25); });
+        }
+        function playGreatSound() {
+            if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const notes = [349.23, 440.00, 523.25, 659.25]; 
+            notes.forEach((freq, i) => { const t = now + (i * 0.05); playSnap(t, freq); playTone(freq, i === 3 ? 'triangle' : 'sine', t, 0.8, i === 3 ? 0.15 : 0.25); });
+        }
+        function playWowSound() {
+            if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const notes = [392.00, 440.00, 493.88, 587.33, 783.99]; 
+            notes.forEach((freq, i) => { const t = now + (i * 0.08); playSnap(t, freq); playTone(freq, 'sine', t, 1.2, 0.2); playTone(freq * 2, 'triangle', t, 1.2, 0.05); });
+        }
+        function playClearSound() {
+            if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const notes = [130.81, 196.00, 261.63, 329.63, 392.00, 523.25]; 
+            playSnap(now, 100); playSnap(now + 0.02, 150);
+            notes.forEach((freq, i) => { playTone(freq, 'sine', now + (i*0.02), 3.0, 0.3); playTone(freq, 'triangle', now + (i*0.02), 3.0, 0.1); });
+            playSnap(now + 0.4, 392.00); playTone(392.00, 'sine', now + 0.4, 2.0, 0.2); playSnap(now + 0.7, 440.00); playTone(440.00, 'sine', now + 0.7, 2.0, 0.2); playSnap(now + 1.0, 523.25); playTone(523.25, 'sine', now + 1.0, 2.5, 0.25); 
+        }
+
+        document.getElementById('mute-btn').addEventListener('click', (e) => { isMuted = !isMuted; e.target.innerText = isMuted ? '🔇 소리 꺼짐' : '🔊 소리 켜짐'; });
+        
+        // 💡 재시작 시 이제 치킨 카운트를 초기화하지 않습니다!
+        document.getElementById('restart-btn').addEventListener('click', () => {
+            const allBodies = Composite.allBodies(world);
+            allBodies.forEach(body => { if (body.label !== 'Wall') World.remove(world, body); });
+            currentDroppingIndex = Math.floor(Math.random() * 3); upcomingSnackIndex = Math.floor(Math.random() * 3);
+            document.getElementById('next-snack-img').src = SNACKS[upcomingSnackIndex].img;
+            isDropping = false;
+        });
+
+        function createSnack(x, y, level) {
+            const baseDensity = 0.001;
+            const snackDensity = baseDensity * Math.pow(1.2, level);
+            const body = Bodies.circle(x, y, SNACKS[level].radius, {
+                restitution: 0.3, friction: 0.05, density: snackDensity, label: level.toString()
+            });
+            World.add(world, body); return body;
+        }
+
+        function triggerEffect(id, className) {
+            const el = document.getElementById(id);
+            el.classList.remove(className);
+            void el.offsetWidth; 
+            el.classList.add(className);
+        }
+
+        Events.on(engine, 'collisionStart', (event) => {
+            const pairs = event.pairs;
+            for (let i = 0; i < pairs.length; i++) {
+                const bodyA = pairs[i].bodyA; const bodyB = pairs[i].bodyB;
+                if (bodyA.label === bodyB.label && bodyA.label !== 'Wall') {
+                    let level = parseInt(bodyA.label);
+                    
+                    const newX = (bodyA.position.x + bodyB.position.x) / 2;
+                    const newY = (bodyA.position.y + bodyB.position.y) / 2;
+
+                    if (level < SNACKS.length - 1) {
+                        World.remove(world, bodyA); World.remove(world, bodyB);
+                        const nextLevel = level + 1;
+                        
+                        const newSnack = createSnack(newX, newY, nextLevel); 
+                        Matter.Body.setVelocity(newSnack, { x: (Math.random() - 0.5) * 4, y: -8 });
+
+                        if (nextLevel === 5) { playGoodSound(); triggerEffect('good-effect', 'show-good'); } 
+                        else if (nextLevel === 6) { playGreatSound(); triggerEffect('great-effect', 'show-great'); } 
+                        else if (nextLevel === 7) { 
+                            playWowSound(); triggerEffect('wow-effect', 'show-wow'); 
+                            
+                            // 💡 치킨 생성 시 누적 카운트 증가 및 영구 저장!
+                            totalChickens++; 
+                            localStorage.setItem('kSnackTotalChickens', totalChickens); 
+                            document.getElementById('total-chicken').innerText = totalChickens;
+                        } else { playMergeSound(nextLevel); }
+                    } 
+                    else if (level === 7) { 
+                        World.remove(world, bodyA); World.remove(world, bodyB); 
+                        playClearSound(); triggerEffect('clear-effect', 'show-clear'); 
+                    }
+                }
+            }
+        });
+
+        function renderLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); frameCount++;
+            
+            ctx.fillStyle = "rgba(255, 255, 255, 0.45)"; ctx.fillRect(bx1, by_top, bx2 - bx1, by_bot - by_top);
+            
+            const sideGradient = ctx.createLinearGradient(fx1, fy_top, bx1, by_top); sideGradient.addColorStop(0, "rgba(255, 255, 255, 0.6)"); sideGradient.addColorStop(1, "rgba(200, 180, 160, 0.2)"); ctx.fillStyle = sideGradient;
+            ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(bx1, by_top); ctx.lineTo(bx1, by_bot); ctx.lineTo(fx1, fy_bot); ctx.fill(); 
+            
+            const sideGradientRight = ctx.createLinearGradient(fx2, fy_top, bx2, by_top); sideGradientRight.addColorStop(0, "rgba(255, 255, 255, 0.6)"); sideGradientRight.addColorStop(1, "rgba(200, 180, 160, 0.2)"); ctx.fillStyle = sideGradientRight;
+            ctx.beginPath(); ctx.moveTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.lineTo(bx2, by_bot); ctx.lineTo(fx2, fy_bot); ctx.fill(); 
+            
+            const bottomGradient = ctx.createRadialGradient(canvas.width/2, fy_bot, 50, canvas.width/2, fy_bot, 200); bottomGradient.addColorStop(0, "rgba(100, 80, 60, 0.4)"); bottomGradient.addColorStop(1, "rgba(160, 140, 120, 0.1)"); ctx.fillStyle = bottomGradient;
+            ctx.beginPath(); ctx.moveTo(fx1, fy_bot); ctx.lineTo(bx1, by_bot); ctx.lineTo(bx2, by_bot); ctx.lineTo(fx2, fy_bot); ctx.fill();
+
+            ctx.strokeStyle = "rgba(255, 255, 240, 0.8)"; ctx.lineWidth = 2; ctx.lineJoin = "round"; ctx.shadowColor = "rgba(255, 255, 255, 0.5)"; ctx.shadowBlur = 5; 
+            ctx.strokeRect(bx1, by_top, bx2 - bx1, by_bot - by_top); 
+            ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(bx1, by_top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx1, fy_bot); ctx.lineTo(bx1, by_bot); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx2, fy_bot); ctx.lineTo(bx2, by_bot); ctx.stroke();
+            ctx.shadowBlur = 0; 
+
+            ctx.strokeStyle = "#ffb142"; ctx.lineWidth = 5; ctx.shadowColor = "#ffb142"; ctx.shadowBlur = 8;
+            ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.lineTo(bx1, by_top); ctx.closePath(); ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            if (!isDropping) {
+                const r = SNACKS[currentDroppingIndex].radius; const safeX = Math.max(r + 20, Math.min(previewX, canvas.width - r - 20));
+                ctx.beginPath(); ctx.setLineDash([6, 5]); ctx.moveTo(safeX, dropY + r); ctx.lineTo(safeX, fy_bot);
+                ctx.strokeStyle = 'rgba(255, 120, 0, 0.9)'; ctx.lineWidth = 2.5; ctx.shadowColor = "rgba(255, 255, 255, 0.6)"; ctx.shadowBlur = 4; ctx.stroke(); ctx.setLineDash([]); ctx.shadowBlur = 0; 
+                ctx.globalAlpha = 0.8; let bob = Math.sin(frameCount * 0.1) * 3; const img = loadedImages[currentDroppingIndex]; if (img && img.complete) { ctx.drawImage(img, safeX - r, dropY - r + bob, r * 2, r * 2); } ctx.globalAlpha = 1.0;
+            }
+
+            const bodies = Matter.Composite.allBodies(world);
+            bodies.forEach(body => {
+                if (body.label !== 'Wall') {
+                    const level = parseInt(body.label); const img = loadedImages[level]; const r = SNACKS[level].radius; const visualR = r * 1.28; 
+                    ctx.save(); ctx.translate(body.position.x, body.position.y); ctx.rotate(body.angle);
+                    if (img && img.complete) { ctx.drawImage(img, -visualR, -visualR, visualR * 2, visualR * 2); }
+                    ctx.restore();
+                }
+            });
+
+            const frontGlass = ctx.createLinearGradient(fx1, fy_top, fx2, fy_bot); frontGlass.addColorStop(0, "rgba(255, 255, 255, 0.2)"); frontGlass.addColorStop(0.5, "rgba(255, 255, 255, 0.05)"); frontGlass.addColorStop(1, "rgba(255, 255, 255, 0.1)");
+            ctx.fillStyle = frontGlass; ctx.fillRect(fx1, fy_top, fx2 - fx1, fy_bot - fy_top);
+            ctx.beginPath(); ctx.moveTo(fx1 + 50, fy_top); ctx.lineTo(fx1 + 150, fy_top); ctx.lineTo(fx1 + 100, fy_bot); ctx.lineTo(fx1, fy_bot); ctx.fillStyle = "rgba(255, 255, 255, 0.08)"; ctx.fill();
+            ctx.strokeStyle = "rgba(255, 255, 240, 0.9)"; ctx.lineWidth = 3; ctx.shadowColor = "rgba(255, 255, 255, 0.6)"; ctx.shadowBlur = 5; ctx.strokeRect(fx1, fy_top, fx2 - fx1, fy_bot - fy_top); ctx.shadowBlur = 0;
+
+            requestAnimationFrame(renderLoop);
+        }
+
+        function getPointerX(e) { const rect = canvas.getBoundingClientRect(); const clientX = e.touches ? e.touches[0].clientX : e.clientX; return (clientX - rect.left) * (canvas.width / rect.width); }
+
+        function dropSnack() {
+            if (isDropping) return; initAudio(); isDropping = true;
+            const r = SNACKS[currentDroppingIndex].radius; const safeX = Math.max(r + 20, Math.min(previewX, canvas.width - r - 20));
+            createSnack(safeX, dropY, currentDroppingIndex); playDropSound(); 
+            currentDroppingIndex = upcomingSnackIndex; upcomingSnackIndex = Math.floor(Math.random() * 3);
+            document.getElementById('next-snack-img').src = SNACKS[upcomingSnackIndex].img;
+            setTimeout(() => { isDropping = false; }, 600);
+        }
+
+        canvas.addEventListener('mousemove', (e) => { previewX = getPointerX(e); });
+        canvas.addEventListener('mousedown', dropSnack);
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); previewX = getPointerX(e); }, {passive: false});
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); previewX = getPointerX(e); }, {passive: false});
+        canvas.addEventListener('touchend', (e) => { e.preventDefault(); dropSnack(); }, {passive: false});
+
+        Runner.run(Runner.create(), engine); renderLoop();
+    </script>
+</body>
+</html>
