@@ -21,22 +21,43 @@
         }
         
         #app-grid {
-            display: grid; grid-template-columns: 95px minmax(0, 360px); grid-template-rows: auto auto auto auto;
-            gap: 4px 15px; justify-content: center; width: 100%; padding: 0 10px; box-sizing: border-box;
+            /* 💡 Grid 구조 유지하되, 헤더와 푸터는 1~2열 전체를 쓰도록 변경 */
+            display: grid; 
+            grid-template-columns: 95px minmax(0, 360px); 
+            grid-template-rows: auto auto auto auto;
+            gap: 4px 15px; 
+            justify-content: center; 
+            width: 100%; 
+            padding: 0 10px; 
+            box-sizing: border-box;
         }
 
-        /* 💡 타이틀을 Bungee 폰트 & 3D 아케이드 레트로 스타일로 변경! */
+        /* 💡 타이틀: 화면 전체 기준 중앙 정렬 */
         #game-title {
-            grid-column: 2; grid-row: 1; justify-self: center;
+            grid-column: 1 / -1; /* 1열부터 끝까지 다 차지함 */
+            justify-self: center; /* 전체 화면 기준 가운데 정렬 */
             margin: 5px 0 2px 0; color: #fff; font-size: 30px; font-weight: normal; 
             text-shadow: 3px 3px 0px #d35400, 0px 4px 8px rgba(0,0,0,0.3); 
             letter-spacing: 1px; font-family: 'Bungee', cursive;
         }
 
-        #stats-board { grid-column: 2; grid-row: 2; justify-self: center; display: flex; gap: 10px; position: relative; z-index: 10; }
-        .stat-box { font-size: 16px; font-weight: 900; color: #fff; background: rgba(139, 69, 19, 0.7); padding: 10px 20px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); font-family: 'Jua', sans-serif; letter-spacing: 1px; }
+        /* 💡 점수판: 화면 전체 기준 중앙 정렬 */
+        #stats-board { 
+            grid-column: 1 / -1; /* 1열부터 끝까지 다 차지함 */
+            justify-self: center; /* 전체 화면 기준 가운데 정렬 */
+            display: flex; gap: 10px; position: relative; z-index: 10; 
+        }
+        
+        /* 💡 점수판 박스 다이어트: 폰트 크기 유지, 패딩 축소 */
+        .stat-box { 
+            font-size: 16px; font-weight: 900; color: #fff; background: rgba(139, 69, 19, 0.7); 
+            padding: 6px 14px; /* 패딩을 살짝 줄여서 덜 뚱뚱하게 */
+            border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.2); 
+            border: 2px solid rgba(255,255,255,0.3); font-family: 'Jua', sans-serif; letter-spacing: 1px; 
+        }
         .stat-box.high { background: #d35400; border-color: #f1c40f; color: #fffaf0; }
         
+        /* 왼쪽 정보 패널 (진화 공식 등) */
         #side-panel { grid-column: 1; grid-row: 3; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding-top: 70px; padding-bottom: 25px; }
         #next-snack-container { display: flex; flex-direction: column; align-items: center; }
         .side-title { color: #d35400; font-size: 15px; margin-bottom: 8px; text-shadow: 0 1px 2px rgba(255,255,255,0.8); text-align: center; font-family: 'Jua', sans-serif; }
@@ -76,8 +97,24 @@
         .show-clear { animation: clearGlowFade 2.5s ease-out forwards; } 
         @keyframes clearGlowFade { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 15% { opacity: 1; transform: translate(-50%, -50%) scale(1.1) rotate(2deg); text-shadow: 0 0 20px #fff, 0 0 50px #00e5ff, 0 0 90px #008cff, 0 0 150px #0051ff; } 30% { transform: translate(-50%, -50%) scale(1.0) rotate(-2deg); } 60% { opacity: 1; transform: translate(-50%, -50%) scale(1.05) rotate(0deg); text-shadow: 0 0 10px #fff, 0 0 30px #00e5ff, 0 0 60px #008cff; } 100% { opacity: 0; transform: translate(-50%, -70%) scale(1.15); text-shadow: 0 0 5px #fff; } }
 
-        #button-container { grid-column: 2; grid-row: 4; justify-self: center; display: flex; gap: 10px; margin-top: 5px; position: relative; z-index: 10; }
-        .game-btn { padding: 8px 16px; border-radius: 20px; font-size: 15px; font-family: 'Jua', sans-serif; cursor: pointer; box-shadow: 0 4px 6px rgba(139, 69, 19, 0.1); transition: 0.1s; border: 2px solid; }
+        /* 💡 하단 버튼: 화면 전체 기준 중앙 정렬 & 버튼 크기(높이) 통일 */
+        #button-container { 
+            grid-column: 1 / -1; /* 1열부터 끝까지 다 차지함 */
+            justify-self: center; /* 전체 화면 기준 가운데 정렬 */
+            display: flex; gap: 10px; margin-top: 5px; position: relative; z-index: 10; 
+        }
+        
+        .game-btn { 
+            /* 버튼 내용물에 상관없이 동일한 패딩과 글자 크기 유지 */
+            padding: 10px 16px; 
+            border-radius: 20px; font-size: 15px; font-family: 'Jua', sans-serif; 
+            cursor: pointer; box-shadow: 0 4px 6px rgba(139, 69, 19, 0.1); 
+            transition: 0.1s; border: 2px solid; 
+            /* 💡 높이 통일을 위한 설정 */
+            display: flex; align-items: center; justify-content: center;
+            box-sizing: border-box;
+            line-height: 1;
+        }
         .game-btn:active { transform: translateY(2px); box-shadow: 0 2px 3px rgba(139, 69, 19, 0.1); }
         #mute-btn { background: #fff; color: #d35400; border-color: #e1b12c; }
         #restart-btn { background: #d35400; color: #fff; border-color: #c0392b; }
@@ -155,7 +192,7 @@
         const engine = Engine.create(); const world = engine.world;
         const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
 
-        // 💡 로컬 스토리지에서 영구 누적 치킨 수를 불러옴 (없으면 0)
+        // 로컬 스토리지에서 영구 누적 치킨 수를 불러옴
         let totalChickens = parseInt(localStorage.getItem('kSnackTotalChickens') || 0, 10);
         document.getElementById('total-chicken').innerText = totalChickens;
 
@@ -234,7 +271,6 @@
 
         document.getElementById('mute-btn').addEventListener('click', (e) => { isMuted = !isMuted; e.target.innerText = isMuted ? '🔇 소리 꺼짐' : '🔊 소리 켜짐'; });
         
-        // 💡 재시작 시 이제 치킨 카운트를 초기화하지 않습니다!
         document.getElementById('restart-btn').addEventListener('click', () => {
             const allBodies = Composite.allBodies(world);
             allBodies.forEach(body => { if (body.label !== 'Wall') World.remove(world, body); });
@@ -281,7 +317,6 @@
                         else if (nextLevel === 7) { 
                             playWowSound(); triggerEffect('wow-effect', 'show-wow'); 
                             
-                            // 💡 치킨 생성 시 누적 카운트 증가 및 영구 저장!
                             totalChickens++; 
                             localStorage.setItem('kSnackTotalChickens', totalChickens); 
                             document.getElementById('total-chicken').innerText = totalChickens;
