@@ -8,10 +8,10 @@
         body {
            background-color: #202028; color: #fff;
             display: flex; flex-direction: column; align-items: center;
-            margin: 0; padding-top: 15px;
+            margin: 0; padding-top: 15px; padding-bottom: 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none; -webkit-user-select: none; 
-            overflow-x: hidden; overflow-y:auto;
+            overflow-x: hidden; overflow-y:auto; min-height: 100dvh;
         }
         h1 {
             margin: 0 0 10px 0; color: #0DC2FF; text-shadow: 2px 2px 0px #FF0D72;
@@ -19,7 +19,7 @@
         }
         #info-panel {
             display: flex; justify-content: space-between; align-items: flex-end;
-            width: 100%; max-width: 250px; /* 화면 커진 비율에 맞춤 */
+            width: 100%; max-width: 250px; 
             margin-bottom: 10px; font-weight: bold;
         }
         #score-container { display: flex; flex-direction: column; }
@@ -29,7 +29,6 @@
         
         #game-container { position: relative; width: 100%; max-width: 260px; display: flex; justify-content: center; }
         
-        /* 💡 CSS 마법: 게임판이 버튼 너비와 자연스럽게 어울리도록 크기 조절 */
         canvas {
            border: 2px solid #fff; background-color: #000; box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
             display: block; border-radius: 6px; width: auto; height: auto; aspect-ratio: 1 / 2;
@@ -50,30 +49,77 @@
         }
         .action-btn:active { box-shadow: 0 0 0 #0099CC; transform: translateY(4px); }
 
+        /* =========================================
+           🕹️ 테트리스 조이패드 (고급스러운 무광 플라스틱 버전 적용)
+           ========================================= */
         #controls {
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; 
             margin-top: 15px; width: 100%; max-width: 300px;
         }
         button.pad-btn {
-            background-color: #444; color: white; border: 2px solid #666;
-            padding: 10px 0; font-size: 24px; border-radius: 8px;
-            cursor: pointer; touch-action: manipulation; flex: 1 1 30%;
+            background: linear-gradient(145deg, #3a3a4a, #22222c); 
+            color: white; 
+            border: 1px solid #555;
+            border-bottom: 5px solid #111; 
+            padding: 16px 0; 
+            font-size: 26px; 
+            border-radius: 12px;
+            cursor: pointer; 
+            touch-action: manipulation; 
+            flex: 1 1 30%;
+            box-shadow: 0 6px 10px rgba(0,0,0,0.4), inset 0 2px 2px rgba(255,255,255,0.1);
+            transition: transform 0.05s, border-bottom-width 0.05s, box-shadow 0.05s;
         }
-        button.pad-btn:active { background-color: #777; }
-        .btn-wide { flex: 1 1 100%; font-weight: bold; font-size: 14px; padding: 11px 0; }
         
-        /* 💡 풍선 게임과 똑같은 사이즈의 하단 버튼 영역 */
+        button.pad-btn:active { 
+            transform: translateY(5px);
+            border-bottom-width: 0px; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.5), inset 0 3px 5px rgba(0,0,0,0.8);
+            background: #1e1e26;
+        }
+
+        .btn-wide { 
+            flex: 1 1 100%; 
+            font-weight: 900; 
+            font-size: 16px; 
+            padding: 14px 0; 
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        
+        /* 💡 드롭 버튼 텍스트를 가장 쨍한 하얀색으로 세팅 */
+        .btn-wide span {
+            color: #ffffff;
+            font-size: 16px;
+        }
+        
+        /* =========================================
+           🥷 하단 시스템 버튼 (존재감 지우기 / 스텔스 모드)
+           ========================================= */
         #bottom-controls { 
-            display: flex; flex-direction: column; gap: 8px; 
+            display: flex; flex-direction: column; gap: 6px; 
             margin-top: 15px; width: 100%; max-width: 300px; 
         }
+        .control-row { display: flex; gap: 8px; width: 100%; }
+        
         .sub-btn { 
-            background: none; border: 1px solid #fff; color: #fff; 
-            padding: 8px 10px; border-radius: 5px; cursor: pointer; 
-            width: 100%; font-size: 14px; 
+            flex: 1; 
+            background: transparent; 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            color: rgba(255, 255, 255, 0.3); 
+            padding: 10px 0; 
+            border-radius: 6px; cursor: pointer; 
+            font-size: 13px; font-weight: bold; text-align: center;
+            transition: all 0.1s ease;
         }
-        .sub-btn:active { background: #555; }
-	#start-screen p { margin-bottom: 40px; }
+        
+        .sub-btn:active { 
+            background: rgba(255, 255, 255, 0.05); 
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .home-btn { width: 100%; }
+
+        #start-screen p { margin-bottom: 40px; }
     </style>
 </head>
 <body>
@@ -113,25 +159,28 @@
         <button id="btn-left" class="pad-btn">⬅️</button>
         <button id="btn-rotate" class="pad-btn">🔄</button>
         <button id="btn-right" class="pad-btn">➡️</button>
-        <button id="btn-down" class="pad-btn btn-wide">⬇️ <span style="font-size: 16px;">소프트 드롭</span></button>
-        <button id="btn-drop" class="pad-btn btn-wide">⏬ <span style="font-size: 16px;">하드 드롭</span></button>
+        <button id="btn-down" class="pad-btn btn-wide">⬇️ <span>소프트 드롭</span></button>
+        <button id="btn-drop" class="pad-btn btn-wide">⏬ <span>하드 드롭</span></button>
     </div>
 
     <div id="bottom-controls">
-        <button id="mute-btn" class="sub-btn">🔊 소리 끄기</button>
-        <button id="pause-btn" class="sub-btn">⏸️ 일시정지</button>
+        <div class="control-row">
+            <button id="mute-btn" class="sub-btn">🔊 소리 끄기</button>
+            <button id="pause-btn" class="sub-btn">⏸️ 일시정지</button>
+        </div>
+        <button id="home-btn" class="sub-btn home-btn" onclick="location.href='index.html'">🏠 홈으로 이동</button>
     </div>
 
     <script>
         const canvas = document.getElementById('tetris');
         const context = canvas.getContext('2d');
-        // 💡 캔버스 크기가 240x480 이므로, 1칸을 24px로 설정 (기존 20에서 24로 확대!)
+        // 💡 캔버스 크기가 240x480 이므로, 1칸을 24px로 설정
         context.scale(24, 24);
 
         const colors = [ null, '#FF0D72', '#0DC2FF', '#0DFF72', '#F538FF', '#FF8E0D', '#FFE138', '#3877FF' ];
 
         let isGameOver = true;
-        let isPaused = false; // 💡 일시정지 상태 변수 추가
+        let isPaused = false; 
         let timeLeft = 60;
         let timerInterval = null;
         let animationId = null;
@@ -158,7 +207,7 @@
         }
 
         function scheduleBGM() {
-            if (!isBgmPlaying || !audioCtx || isMuted || isPaused) return; // 정지 중엔 브금 재생 안함
+            if (!isBgmPlaying || !audioCtx || isMuted || isPaused) return; 
             while (nextNoteTime < audioCtx.currentTime + 0.1) {
                 const [freq, durMs] = melody[noteIndex];
                 const dur = durMs / 1000;
@@ -343,7 +392,6 @@
 
         function update(time = 0) {
             if (isGameOver) return;
-            // 💡 일시정지 상태면 블록이 떨어지지 않게 고정
             if (isPaused) {
                 lastTime = time;
                 animationId = requestAnimationFrame(update);
@@ -356,7 +404,6 @@
             draw(); animationId = requestAnimationFrame(update);
         }
 
-        // 💡 일시정지 토글 함수
         function togglePause() {
             if (isGameOver) return;
             isPaused = !isPaused;
@@ -390,7 +437,7 @@
             if (timerInterval) clearInterval(timerInterval);
 
             timerInterval = setInterval(() => {
-                if(isGameOver || isPaused) return; // 일시정지 중엔 타이머 정지
+                if(isGameOver || isPaused) return; 
                 timeLeft--; updateUI();
                 if (timeLeft <= 0) endGame("TIME OVER");
             }, 1000);
@@ -417,7 +464,6 @@
         document.getElementById('btn-start').addEventListener('click', startGame);
         document.getElementById('btn-replay').addEventListener('click', startGame);
         
-        // 💡 일시정지 버튼 클릭 이벤트 연결
         document.getElementById('pause-btn').addEventListener('click', togglePause);
         document.getElementById('btn-resume').addEventListener('click', togglePause);
 
@@ -430,7 +476,6 @@
         document.addEventListener('keydown', event => {
             if (isGameOver) return;
             
-            // P 키 누르면 일시정지
             if (event.key.toLowerCase() === 'p') {
                 togglePause();
                 return;
@@ -445,7 +490,6 @@
             }
         });
 
-        // 모바일 조작 버튼도 일시정지 중엔 안 눌리게 막기
         document.getElementById('btn-left').addEventListener('click', () => { if (!isGameOver && !isPaused) { player.pos.x--; if (collide(arena, player)) player.pos.x++; } });
         document.getElementById('btn-right').addEventListener('click', () => { if (!isGameOver && !isPaused) { player.pos.x++; if (collide(arena, player)) player.pos.x--; } });
         document.getElementById('btn-rotate').addEventListener('click', () => { if (!isGameOver && !isPaused) playerRotate(1); });
