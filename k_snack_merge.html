@@ -12,7 +12,8 @@
         body {
             background: radial-gradient(circle at 50% 30%, #fff5e6 0%, #ffe0b2 40%, #ffcc80 80%, #f57c00 100%);
             display: flex; flex-direction: column; align-items: center;
-            margin: 0; padding: 10px 0 40px 0; 
+            /* 💡 상단 패딩 축소 (10px -> 2px)하여 전체를 위로 올림 */
+            margin: 0; padding: 2px 0 25px 0; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none; -webkit-user-select: none; touch-action: none;
             overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: none; 
@@ -24,13 +25,15 @@
             display: grid; 
             grid-template-columns: 100px minmax(0, 360px); 
             grid-template-rows: auto auto auto auto;
-            gap: 4px 15px; justify-content: center; width: 100%; padding: 0 10px; box-sizing: border-box;
+            /* 💡 위아래 요소 간의 여백(gap) 축소 (4px -> 2px) */
+            gap: 2px 15px; justify-content: center; width: 100%; padding: 0 10px; box-sizing: border-box;
         }
 
         #game-title {
             grid-column: 1 / -1; 
             justify-self: center; 
-            margin: 5px 0 2px 0; color: #fff; font-size: 30px; font-weight: normal; 
+            /* 💡 타이틀 위아래 마진 축소 및 폰트 살짝 축소로 공간 확보 */
+            margin: 2px 0 0px 0; color: #fff; font-size: 26px; font-weight: normal; 
             text-shadow: 3px 3px 0px #d35400, 0px 4px 8px rgba(0,0,0,0.3); 
             letter-spacing: 1px; font-family: 'Bungee', cursive;
         }
@@ -41,9 +44,10 @@
             display: flex; gap: 10px; position: relative; z-index: 10; 
         }
         
+        /* 💡 점수판 높이(다이어트) 축소: 패딩(6px -> 3px) 및 기본 폰트(16px -> 14px) 감소 */
         .stat-box { 
-            font-size: 16px; font-weight: 900; color: #fff; background: rgba(139, 69, 19, 0.7); 
-            padding: 6px 14px; 
+            font-size: 14px; font-weight: 900; color: #fff; background: rgba(139, 69, 19, 0.7); 
+            padding: 3px 16px; 
             border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.2); 
             border: 2px solid rgba(255,255,255,0.3); font-family: 'Jua', sans-serif; letter-spacing: 1px; 
         }
@@ -94,12 +98,14 @@
 
         #button-container { 
             grid-column: 1 / -1; justify-self: center; 
-            display: flex; gap: 8px; margin-top: 5px; position: relative; z-index: 10; 
+            /* 💡 버튼 위 여백 최소화하여 캔버스와 밀착 */
+            display: flex; gap: 8px; margin-top: 0px; position: relative; z-index: 10; 
             flex-wrap: wrap; justify-content: center;
         }
         
         .game-btn { 
-            padding: 10px 12px; 
+            /* 💡 버튼 패딩도 살짝 줄여서 세로 높이를 다이어트 */
+            padding: 8px 12px; 
             border-radius: 20px; font-size: 14px; font-family: 'Jua', sans-serif; 
             cursor: pointer; box-shadow: 0 4px 6px rgba(139, 69, 19, 0.1); 
             transition: 0.1s; border: 2px solid; 
@@ -119,7 +125,7 @@
         <h1 id="game-title">K-SNACK MERGE!</h1>
         
         <div id="stats-board">
-            <div class="stat-box high">🍗 누적 달성 치킨: <span id="total-chicken" style="font-size: 20px; color: #fffea0;">0</span> 마리</div>
+            <div class="stat-box high">누적 달성 치킨: <span id="total-chicken" style="font-size: 18px; color: #fffea0;">0</span> 마리</div>
         </div>
 
         <div id="side-panel">
@@ -151,12 +157,11 @@
     </div>
 
     <script>
-        // 💡 디렉터님의 최종 밸런스 패치 적용 완료!
         const SNACKS = [
-            { name: "알사탕", radius: 22, img: "candy.png" },       // 20 -> 22
-            { name: "호두과자", radius: 30, img: "walnut.png" },      // 28 -> 30
-            { name: "델리만쥬", radius: 38, img: "manjoo.png" },      // 36 -> 38
-            { name: "왕만두", radius: 46, img: "mandu.png" },       // 44 -> 46
+            { name: "알사탕", radius: 22, img: "candy.png" },       
+            { name: "호두과자", radius: 30, img: "walnut.png" },      
+            { name: "델리만쥬", radius: 38, img: "manjoo.png" },      
+            { name: "왕만두", radius: 46, img: "mandu.png" },       
             { name: "뚱붕어빵", radius: 52, img: "fish.png" },        
             { name: "씨앗호떡", radius: 60, img: "hotteok.png" },     
             { name: "대왕솜사탕", radius: 72, img: "cottoncandy.png" }, 
