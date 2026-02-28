@@ -38,7 +38,19 @@
             background-color: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column;
             align-items: center; justify-content: center; z-index: 10; border-radius: 10px;
         }
-        .overlay h2 { margin: 0 0 10px 0; color: #F538FF; text-align: center;}
+        
+        /* 💡 타이틀과 캔버스 아이콘을 예쁘게 정렬하기 위한 스타일 */
+        .overlay h2 { 
+            margin: 0 0 10px 0; color: #F538FF; text-align: center;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        
+        /* 💡 양옆 풍선 캔버스를 위한 공통 클래스 */
+        .title-icon {
+            width: 36px; height: 36px;
+            border: none; box-shadow: none; background: transparent; border-radius: 0;
+        }
+
         .overlay p { color: #ccc; margin-bottom: 20px; font-size: 14px; text-align: center; line-height: 1.5;}
         #final-score { font-size: 24px; font-weight: bold; margin-bottom: 20px; color: #FFE138;}
         
@@ -52,7 +64,6 @@
             display: flex; justify-content: space-between; gap: 10px;
             margin-top: 15px; width: 100%; max-width: 300px;
         }
-        /* ✨💎✨ 크리스탈 네온 아케이드 버튼 스타일 (유지) */
         button.bishi-btn {
            flex: 1; 
             padding: 15px 0; 
@@ -81,9 +92,6 @@
         #btn-green { background: linear-gradient(to bottom, #4dff94, #0DFF72, #00cc55); color: #003300; text-shadow: none; }
         #btn-blue { background: linear-gradient(to bottom, #4dc2ff, #0DC2FF, #0099cc); color: #002244; text-shadow: none; }
 
-        /* =========================================
-           🥷 하단 시스템 버튼 (치킨/테트리스와 동일한 스텔스 모드 적용!)
-           ========================================= */
         #bottom-controls { 
             display: flex; flex-direction: column; gap: 6px; 
             margin-top: 15px; width: 100%; max-width: 300px; 
@@ -93,21 +101,19 @@
         .sub-btn { 
             flex: 1; 
             background: transparent; 
-            border: 1px solid rgba(255, 255, 255, 0.15); /* 매우 얇고 어두운 테두리 */
-            color: rgba(255, 255, 255, 0.3); /* 글씨도 어둡게 (회색) */
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            color: rgba(255, 255, 255, 0.3); 
             padding: 10px 0; 
             border-radius: 6px; cursor: pointer; 
             font-size: 13px; font-weight: bold; text-align: center;
             transition: all 0.1s ease;
         }
         
-        /* 누를 때만 살짝 밝아짐 */
         .sub-btn:active { 
             background: rgba(255, 255, 255, 0.05); 
             color: rgba(255, 255, 255, 0.7);
         }
         
-        /* 🏠 홈 버튼 전용: 게임 테마 컬러에 맞춰 살짝 핑크빛이 돌게 세팅 */
         .home-btn { 
             width: 100%; 
             border-color: rgba(245, 56, 255, 0.3); 
@@ -135,7 +141,11 @@
         <canvas id="gameCanvas" width="300" height="400"></canvas>
         
         <div id="start-screen" class="overlay">
-            <h2>🎈벌룬 팝팝 </h2>
+            <h2>
+                <canvas id="title-icon-left" class="title-icon" width="40" height="40"></canvas> 
+                벌룬 팝팝 
+                <canvas id="title-icon-right" class="title-icon" width="40" height="40"></canvas>
+            </h2>
             <p>올라오는 풍선 색상에 맞춰<br>아래의 버튼을 빠르게 누르세요!<br>갈수록 엄청나게 빨라집니다!</p>
             <button id="btn-start" class="action-btn">게임 시작 ▶</button>
         </div>
@@ -363,6 +373,42 @@
             }
         }
 
+        // 🎨 🎈 타이틀용 3색 풍선 다발 그리기 함수
+        function drawTitleBalloons(targetCtx) {
+            const drawB = (x, y, r, color) => {
+                targetCtx.strokeStyle = 'rgba(255,255,255,0.6)';
+                targetCtx.lineWidth = 1.5;
+                targetCtx.beginPath();
+                targetCtx.moveTo(x, y + r);
+                targetCtx.lineTo(20, 38); 
+                targetCtx.stroke();
+                
+                targetCtx.fillStyle = color;
+                targetCtx.beginPath();
+                targetCtx.arc(x, y, r, 0, Math.PI * 2);
+                targetCtx.fill();
+                
+                targetCtx.fillStyle = 'rgba(255,255,255,0.5)';
+                targetCtx.beginPath();
+                targetCtx.arc(x - r/3, y - r/3, r/4, 0, Math.PI * 2);
+                targetCtx.fill();
+            }
+            drawB(10, 18, 7, '#0DC2FF'); 
+            drawB(30, 18, 7, '#0DFF72'); 
+            drawB(20, 14, 10, '#FF0D72'); 
+        }
+
+        // 💡 양쪽 캔버스 모두에 풍선 그리기 실행!
+        window.addEventListener('load', () => {
+            const leftCanvas = document.getElementById('title-icon-left');
+            const leftCtx = leftCanvas.getContext('2d');
+            drawTitleBalloons(leftCtx);
+
+            const rightCanvas = document.getElementById('title-icon-right');
+            const rightCtx = rightCanvas.getContext('2d');
+            drawTitleBalloons(rightCtx);
+        });
+
         function draw() {
             ctx.fillStyle = '#111';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -515,13 +561,14 @@
         document.getElementById('btn-green').addEventListener('pointerdown', (e) => { e.preventDefault(); popBalloon(1); });
         document.getElementById('btn-blue').addEventListener('pointerdown', (e) => { e.preventDefault(); popBalloon(2); });
 
+        // 💡 PC 스크롤 방지 및 화살표 키 작동 완벽 복구 유지
         document.addEventListener('keydown', event => {
-            // 💡 핵심 패치: 방향키와 스페이스바를 누를 때 화면이 스크롤되는 브라우저 기본 동작을 완벽 차단!
             if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(event.key)) {
                 event.preventDefault();
             }
 
             if (isGameOver) return;
+            if (event.repeat) return;
             
             if (event.key.toLowerCase() === 'p') {
                 togglePause();
@@ -529,11 +576,9 @@
             }
 
             if (!isPaused) {
-                if (event.key === 'ArrowLeft') { player.pos.x--; if (collide(arena, player)) player.pos.x++; } 
-                else if (event.key === 'ArrowRight') { player.pos.x++; if (collide(arena, player)) player.pos.x--; } 
-                else if (event.key === 'ArrowDown') { playerDrop(); } 
-                else if (event.key === 'ArrowUp') { playerRotate(1); } 
-                else if (event.key === ' ') { playerHardDrop(); }
+                if (event.key === 'ArrowLeft') popBalloon(0);
+                if (event.key === 'ArrowUp') popBalloon(1); 
+                if (event.key === 'ArrowRight') popBalloon(2);
             }
         });
 
