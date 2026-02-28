@@ -6,14 +6,15 @@
     <title>추억의 오락실 (Mini Arcade)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Press+Start+2P&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,600,0,0" />
     <style>
         body {
             background-color: #12121a; 
             color: #fff; 
             display: flex; flex-direction: column; align-items: center; 
-            font-family: 'Roboto Mono', monospace; 
+            font-family: 'Galmuri9', monospace; /* 기본 폰트를 픽셀 한글 폰트로 변경! */
             margin: 0;
             box-sizing: border-box; 
             min-height: 100dvh;         
@@ -23,9 +24,10 @@
             overflow-x: hidden; 
         }
         
+        /* 💡 메인 타이틀 크기 증가! */
         h1 {
             font-family: 'Press Start 2P', cursive; 
-            font-size: clamp(20px, 5vw, 28px); 
+            font-size: clamp(24px, 6vw, 32px); /* 모바일에서 더 크고 시원하게 보이도록 수정 */
             text-align: center;
             margin-top: 10px;
             margin-bottom: 15px;
@@ -35,7 +37,6 @@
             line-height: 1.4;
         }
         
-        /* 네온 전광판(Marquee) 컨테이너 */
         .marquee-container {
             width: 100%;
             max-width: 500px;
@@ -55,11 +56,12 @@
         .marquee-text {
             display: inline-block;
             color: #ccc;
-            font-weight: bold;
+            font-family: 'Press Start 2P', cursive; /* 흐르는 영어 폰트도 통일 */
+            font-size: clamp(9px, 2.5vw, 12px);
             letter-spacing: 1px;
             text-shadow: 0 0 8px rgba(13, 194, 255, 0.6);
-            font-size: clamp(11px, 3.5vw, 14px);
             padding-right: 25px; 
+            text-transform: uppercase;
         }
 
         @keyframes marquee {
@@ -75,7 +77,6 @@
             max-width: 500px;
         }
         
-        /* 3D 아케이드 캐비닛 스타일 */
         .game-card {
             background: linear-gradient(145deg, #2a2a35, #1a1a22); 
             border-radius: 16px;
@@ -97,7 +98,6 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.6), 0 0 20px rgba(255, 225, 56, 0.4); 
         }
 
-        /* 오목한 스크린 효과 */
         .game-screen-inner {
             background-color: rgba(0,0,0,0.4);
             border-radius: 12px;
@@ -116,39 +116,37 @@
             background: linear-gradient(145deg, #352a3a, #221a25);
         }
         
-        /* 💡 힙업된 네온 유리관 아이콘 스타일! */
         .game-icon {
             font-family: 'Material Symbols Outlined';
             font-size: 38px;
             margin-bottom: 8px;
-            color: #fff; /* 하얀색 유리관 */
-            /* 빛 번짐을 두 겹으로 주어 리얼한 네온 느낌 구현 */
+            color: #fff; 
         }
         
         #card-merge .game-icon { font-size: 48px; text-shadow: 0 0 10px #B538FF, 0 0 20px #B538FF, 0 0 30px #B538FF; } 
         
         .game-title {
             font-family: 'Bungee', cursive;
-            font-size: clamp(14px, 4vw, 20px);
+            font-size: clamp(14px, 4.5vw, 20px);
             font-weight: normal; 
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             color: #fff;
-            word-break: keep-all;
-            line-height: 1.1;
+            line-height: 1.2;
             text-transform: uppercase;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5); 
+            text-align: center; /* 💡 줄바꿈 시 가운데 정렬 되도록 추가 */
         }
         
+        /* 💡 설명 폰트를 레트로 한글 픽셀 폰트로 교체! */
         .game-desc {
-            font-family: 'Roboto Mono', monospace;
-            font-size: clamp(10px, 3vw, 12px);
-            color: #aaa;
-            line-height: 1.4;
+            font-family: 'Galmuri9', sans-serif; /* 완벽한 오락실 한글 폰트! */
+            font-size: clamp(10px, 3.2vw, 13px);
+            color: #b0b0c0; /* 살짝 푸른빛이 도는 회색으로 가독성 향상 */
+            line-height: 1.5;
             word-break: keep-all;
-            opacity: 0.9;
+            text-align: center;
         }
         
-        /* 각 게임별 네온 포인트 컬러 (텍스트 & 아이콘 동시 적용) */
         #card-merge { border-bottom-color: #8a1cbf; }
         #card-merge:hover { border-color: #B538FF; box-shadow: 0 0 20px rgba(181, 56, 255, 0.6); }
         #card-merge .game-title { color: #e0aaff; text-shadow: 0 0 10px rgba(181, 56, 255, 0.8); }
@@ -175,10 +173,11 @@
         
         .footer {
             margin-top: 40px;
-            color: #666;
-            font-size: 11px;
-            font-weight: bold;
-            font-family: 'Roboto Mono', monospace;
+            color: #555;
+            font-size: 10px;
+            font-family: 'Press Start 2P', cursive; /* 푸터도 아케이드 감성으로 마무리 */
+            text-align: center;
+            line-height: 1.5;
         }
     </style>
 </head>
@@ -200,45 +199,45 @@
             <div class="game-screen-inner">
                 <div class="game-icon">merge</div>
                 <div class="game-title">K-SNACK MERGE</div>
-                <div class="game-desc">다양한 K-간식을 합쳐서 더 크게! <strong>황금 치킨</strong>을 만들어보세요!</div>
+                <div class="game-desc">다양한 K-간식을 합쳐서 더 크게!<br><strong>황금 치킨</strong>을 만들어보세요!</div>
             </div>
         </a>
 
         <a href="flying_chicken.html" class="game-card" id="card-chicken">
             <div class="game-screen-inner">
                 <div class="game-icon">rocket_launch</div>
-                <div class="game-title">FLYING CHICKEN</div>
-                <div class="game-desc">장애물 피하기! 날아라 꼬꼬!</div>
+                <div class="game-title">FLYING<br>CHICKEN</div>
+                <div class="game-desc">장애물 피하기!<br>날아라 꼬꼬!</div>
             </div>
         </a>
 
         <a href="tetris.html" class="game-card" id="card-tetris">
             <div class="game-screen-inner">
                 <div class="game-icon">timer</div>
-                <div class="game-title">TIME ATTACK </div>
-                <div class="game-desc">60초 제한 테트리스! 최고점 도전!</div>
+                <div class="game-title">TIME ATTACK<br>TETRIS</div>
+                <div class="game-desc">60초 제한 테트리스!<br>최고점 도전!</div>
             </div>
         </a>
 
         <a href="balloon.html" class="game-card" id="card-balloon">
             <div class="game-screen-inner">
                 <div class="game-icon">ads_click</div>
-                <div class="game-title">BALLOON POP</div>
-                <div class="game-desc">풍선 터뜨리기! 순발력 테스트!</div>
+                <div class="game-title">BALLOON<br>POP POP</div>
+                <div class="game-desc">풍선 터뜨리기!<br>순발력 테스트!</div>
             </div>
         </a>
 
         <a href="original_tetris.html" class="game-card" id="card-original">
             <div class="game-screen-inner">
                 <div class="game-icon">extension</div> 
-                <div class="game-title">TETRIS</div>
-                <div class="game-desc">오리지널 테트리스!</div>
+                <div class="game-title">ORIGINAL<br>TETRIS</div>
+                <div class="game-desc">오리지널 테트리스!<br>블록을 깨보세요!</div>
             </div>
         </a>
     </div>
 
     <div class="footer">
-        © Hyang Eun Park's Mini Arcade. All rights reserved.
+        © Hyang Eun Park's Mini Arcade.<br>All rights reserved.
     </div>
 </body>
 </html>
