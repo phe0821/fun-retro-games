@@ -367,7 +367,7 @@
             const bodies = Matter.Composite.allBodies(world);
             bodies.forEach(body => {
                 if (body.label !== 'Wall') {
-                    const level = parseInt(body.label); const img = loadedImages[level]; const r = SNACKS[level].radius; const visualR = r * 1.40; 
+                    const level = parseInt(body.label); const img = loadedImages[level]; const r = SNACKS[level].radius; const visualR = r * 1.35; 
                     ctx.save(); 
                     
                     // 2️⃣ [스마트 자르기 추가] 박스 안쪽에 있을 때만 벽을 뚫지 않게 잘라줍니다!
