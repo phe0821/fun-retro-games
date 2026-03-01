@@ -34,16 +34,18 @@
             letter-spacing: 1px; font-family: 'Bungee', cursive;
         }
 
+        /* 💡 수정됨: align-items: stretch 로 세 뱃지의 높이를 강제 동기화! */
         #stats-board { 
             grid-column: 1 / -1; 
             justify-self: center; 
             display: flex; gap: 4px; position: relative; z-index: 10; 
-            flex-wrap: wrap; justify-content: center;
+            flex-wrap: wrap; justify-content: center; align-items: stretch;
         }
         
+        /* 💡 수정됨: height: auto로 설정하여 부모(stats-board)에 맞춰 늘어나도록 설정 */
         .stat-box { 
-            /* 💡 전체 폰트 크기 14px -> 12px 축소, 좌우 여백 12px -> 6px 축소 */
-            font-size: 12px; font-weight: 900; color: #fff; background: rgba(139, 69, 19, 0.7); 
+            height: auto; 
+            font-weight: 900; color: #fff; background: rgba(139, 69, 19, 0.7); 
             padding: 3px 6px; 
             border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.2); 
             border: 2px solid #ffffff; font-family: 'Jua', sans-serif; letter-spacing: 0.5px; 
@@ -51,7 +53,24 @@
         }
         .stat-box.high { background: #d35400; border-color: #f1c40f; color: #fffaf0; }
         
-        /* 🛒 상점 버튼 추가 스타일 */
+        #bomb-btn {
+            background: rgba(0,0,0,0.6); color: #fff; border-color: #ffffff; cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+        }
+        #bomb-btn:active { transform: scale(0.95); background: rgba(0,0,0,0.8); }
+        
+        .bomb-neon { color: #ff9100; transition: color 0.2s; }
+        
+        #bomb-btn.disabled { 
+            background: rgba(120, 120, 120, 0.85); 
+            color: #eeeeee; 
+            border-color: #aaaaaa; 
+            cursor: not-allowed; 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); 
+        }
+        #bomb-btn.disabled:active { transform: none; }
+        #bomb-btn.disabled .bomb-neon { color: #cccccc; }
+
         #shop-btn {
             background: #FFD700; color: #8B4513; border-color: #DAA520; cursor: pointer;
             transition: transform 0.1s; text-shadow: 0 1px 1px rgba(255,255,255,0.8);
@@ -121,13 +140,10 @@
         #restart-btn { background: #d35400; color: #fff; border-color: #c0392b; }
         #home-btn { background: #fff; color: #8B4513; border-color: #8B4513; text-decoration: none; }
 
-        .stamp { opacity: 0.2; filter: grayscale(100%); transition: all 0.3s ease; }
-        .stamp.filled { opacity: 1; filter: grayscale(0%); animation: popStamp 0.4s ease-out forwards; }
-        @keyframes popStamp { 0% { transform: scale(0.5); } 50% { transform: scale(1.5); } 100% { transform: scale(1); } }
         #earthquake-toast { transition: opacity 0.3s, transform 0.3s; z-index: 100; }
         #earthquake-toast.hidden { opacity: 0; transform: translateY(-10px); pointer-events: none; }
 
-        /* 🛒 황금 상점 UI CSS */
+        /* 🛒 상점 UI CSS */
         #shop-modal {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
@@ -150,19 +166,25 @@
         .shop-header h2 { margin: 0; color: #8B4513; font-family: 'Jua'; font-size: 22px; text-shadow: 1px 1px 0 #FFD700; display: flex; align-items: center; gap: 5px; }
         #close-shop-btn { background: #fff; border: 2px solid #DAA520; color: #8B4513; font-size: 14px; font-weight: bold; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         
-        .shop-wallet {
+        /* 💡 수정됨: 상점 상단 투 뱃지 - 여백 넓히고 간격(gap) 확대 */
+        .shop-wallet-container {
+            display: flex; gap: 12px; justify-content: center; margin-bottom: 15px; width: 100%;
+        }
+        .shop-wallet-badge {
             background: #d35400; border: 2px solid #f1c40f; border-radius: 20px;
-            padding: 8px 0; font-family: 'Jua'; font-size: 16px; color: #fff;
-            margin-bottom: 15px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.2);
-            display: flex; justify-content: center; align-items: center; gap: 15px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            padding: 6px 16px; font-family: 'Jua'; color: #fff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center; text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            white-space: nowrap;
         }
         
         .shop-tabs { display: flex; gap: 4px; margin-bottom: 15px; }
         .shop-tab {
-            flex: 1; text-align: center; padding: 10px 0; font-family: 'Jua'; font-size: 15px;
+            /* 💡 수정됨: 탭 폰트 크기 15px */
+            flex: 1; text-align: center; padding: 8px 0; font-family: 'Jua'; font-size: 15px; 
             background: #fff5e6; color: #a0522d; border-radius: 12px 12px 0 0;
             border: 2px solid transparent; border-bottom: 3px solid #DAA520; 
-            cursor: pointer; transition: 0.2s;
+            cursor: pointer; transition: 0.2s; white-space: nowrap;
         }
         .shop-tab.active { 
             background: #FFD700; color: #8B4513; font-weight: bold; 
@@ -183,6 +205,27 @@
         .shop-item-img-wrapper { width: 48px; height: 48px; background: #fff5e6; border-radius: 50%; border: 2px solid #ffe0b2; display: flex; justify-content: center; align-items: center; flex-shrink: 0; overflow: hidden; }
         .shop-item-img { width: 36px; height: 36px; object-fit: contain; }
         
+        /* 💡 추가됨: 0바이트 CSS 3D 입체 유리 큐브! (80% 스케일로 축소) */
+        .css-3d-box {
+            width: 22px; height: 22px;
+            position: relative; margin: auto;
+            transform-style: preserve-3d;
+            transform: rotateX(-20deg) rotateY(-35deg) scale(0.8);
+        }
+        .css-3d-box .face {
+            position: absolute;
+            width: 22px; height: 22px;
+            background: rgba(255, 255, 255, 0.25);
+            border: 2px solid rgba(255, 177, 66, 0.9);
+            box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.6);
+        }
+        .css-3d-box .front  { transform: translateZ(11px); }
+        .css-3d-box .back   { transform: rotateY(180deg) translateZ(11px); }
+        .css-3d-box .right  { transform: rotateY(90deg) translateZ(11px); }
+        .css-3d-box .left   { transform: rotateY(-90deg) translateZ(11px); }
+        .css-3d-box .top    { transform: rotateX(90deg) translateZ(11px); background: rgba(255, 255, 255, 0.5); }
+        .css-3d-box .bottom { transform: rotateX(-90deg) translateZ(11px); }
+
         .filter-night { filter: brightness(0.6) sepia(0.8) hue-rotate(200deg) saturate(300%); }
 
         .shop-item-info { flex: 1; }
@@ -197,53 +240,31 @@
         .btn-equip { background: #4caf50; color: #fff; border-color: #388e3c; }
         .btn-equipped { background: #e0e0e0; color: #757575; border-color: #bdbdbd; cursor: default; }
 
-        /* 🌙 [추가] 심야 포장마차 (환경 탭) 전용 CSS - 즉시 전환 및 모바일 최적화! */
+        /* 심야 포장마차 (환경 탭) 전용 CSS */
         body.night-mode {
-            /* 깊고 푸른 밤하늘 감성 */
             background: linear-gradient(to bottom, #0f172a 0%, #1b2a47 40%, #2e4a62 80%, #0d1117 100%);
         }
-        
         body.night-mode #game-title {
-            /* 제안 2 반영: 포장마차 백열전구를 늘어뜨린 듯한 화려한 네온 효과 */
-            color: #ffdda1; 
-            text-shadow: 2px 2px 0px #d35400, 0px 0px 10px #ffea00, 0px 0px 20px #ff9100, 0px 0px 30px #ff5100;
+            color: #ffdda1; text-shadow: 2px 2px 0px #d35400, 0px 0px 10px #ffea00, 0px 0px 20px #ff9100, 0px 0px 30px #ff5100;
         }
-        
         body.night-mode .side-title { color: #ffdda1; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
-        
         body.night-mode #next-snack-bubble { 
-            /* 달빛을 받은 듯한 은은한 푸른빛 유리 질감 */
-            background: radial-gradient(circle at 30% 30%, rgba(200,220,255,0.2) 0%, rgba(50,70,100,0.4) 100%);
+            background: radial-gradient(circle at 30% 30%, rgba(200,220,255,0.3) 0%, rgba(100,120,150,0.1) 50%, transparent 80%, rgba(50,70,100,0.4) 100%);
             border-color: rgba(200, 220, 255, 0.4);
             box-shadow: inset -2px -2px 6px rgba(0,0,0,0.6), inset 3px 3px 10px rgba(200,220,255,0.2), 0 8px 15px rgba(0,0,0,0.7); 
         }
-
         body.night-mode .stat-box {
-            /* 제안 1 반영: 밤에 맞춰 톤다운 & 테두리를 옅은 회색으로 강조 */
-            background: rgba(15, 23, 42, 0.85); 
-            border-color: #a0aec0; /* 옅은 회색/푸른빛 테두리 */
-            color: #e2e8f0;
+            background: rgba(15, 23, 42, 0.85); border-color: #a0aec0; color: #e2e8f0;
         }
-        
-        /* 제안 1 반영: 치킨 이모지(🍗)도 옅은 회색으로 필터 처리 */
-        body.night-mode .stamp { filter: grayscale(100%) brightness(1.5); opacity: 0.4; }
-        body.night-mode .stamp.filled { filter: grayscale(0%) brightness(1); opacity: 1; }
-
         body.night-mode .stat-box.high {
-            /* 누적 치킨 창: 포장마차 특유의 붉은 천 색상으로 포인트! */
             background: rgba(180, 50, 20, 0.9); border-color: #ffdda1; color: #fff;
         }
-
         body.night-mode #evolution-chain {
-            /* 진화 공식 패널: 어두운 밤하늘 톤으로 자연스럽게 동화됨 */
             background: linear-gradient(to bottom, rgba(30,40,60,0.9), rgba(15,20,30,0.9)); 
             border-color: #a0aec0;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6), inset 0 2px 5px rgba(255,255,255,0.1);
         }
-        
-        body.night-mode .game-btn {
-            background: rgba(30, 40, 60, 0.9); color: #e2e8f0; border-color: #a0aec0;
-        }
+        body.night-mode .game-btn { background: rgba(30, 40, 60, 0.9); color: #e2e8f0; border-color: #a0aec0; }
     </style>
 </head>
 <body>
@@ -253,24 +274,19 @@
         
        <div id="stats-board">
             <div class="stat-box high">
-                <span style="white-space: nowrap;">누적 치킨: <span id="total-chicken" style="color: #fffea0;">0</span>마리</span>
+                <span style="white-space: nowrap; font-size: 14px;">보유 치킨: <span id="total-chicken" style="color: #fffea0; font-size: 14px;">0</span><span style="font-size: 13.5px; margin-left: 1px;">마리</span></span>
             </div>
             
-            <div class="stat-box" style="gap: 5px; background: rgba(0,0,0,0.6);">
-                <span style="color: #f1c40f; white-space: nowrap;">흔들기 찬스:</span>
-                <div style="display: flex; gap: 2px; font-size: 12px; margin-top: -1px;">
-                    <span class="stamp" id="stamp-1">🍗</span>
-                    <span class="stamp" id="stamp-2">🍗</span>
-                    <span class="stamp" id="stamp-3">🍗</span>
-                </div>
+            <div class="stat-box disabled" id="bomb-btn" onclick="useBomb()">
+                <span style="white-space: nowrap; font-size: 14px;">흔들기 찬스<span class="bomb-neon" style="font-size: 13.5px;">x</span><span id="bomb-count" class="bomb-neon" style="font-size: 14px;">0</span></span>
             </div>
 
             <div class="stat-box" id="shop-btn">
-                🛒 상점
+                <span style="font-size: 13.5px;">🛒</span><span style="font-size: 14px; margin-left: 2px;">상점</span>
             </div>
 
             <div id="earthquake-toast" class="hidden stat-box" style="background: #c0392b; border-color: #f1c40f; position: absolute; top: 40px; z-index: 100; white-space: nowrap;">
-                🚨 연속 3마리 달성! 상자가 요동칩니다!
+                🚨 흔들기 발동! 상자가 요동칩니다!
             </div>
         </div>
 
@@ -308,9 +324,19 @@
                 <h2>🛒 K-간식 상점</h2>
                 <button id="close-shop-btn">X</button>
             </div>
-            <div class="shop-wallet"><span>💰 금고:</span> <span>🍗 <span id="shop-wallet-count">0</span>마리</span></div>
+            
+            <div class="shop-wallet-container">
+                <div class="shop-wallet-badge">
+                    <span style="font-size: 16px;">보유 치킨: 🍗 <span id="shop-wallet-count" style="color: #fffea0; font-size: 16px;">0</span><span style="font-size: 15.5px; color: #fffea0; margin-left: 1px;">마리</span></span>
+                </div>
+                <div class="shop-wallet-badge" style="background: rgba(0,0,0,0.6); border-color: #ffffff;">
+                    <span style="font-size: 16px;">흔들기 찬스<span style="color: #ff9100; font-size: 15.5px;">x</span><span id="shop-bomb-count" style="color: #ff9100; font-size: 16px;">0</span></span>
+                </div>
+            </div>
+
             <div class="shop-tabs">
-                <div class="shop-tab active" data-tab="growth">성장</div>
+                <div class="shop-tab active" data-tab="booster" style="color:#d35400;">부스터</div>
+                <div class="shop-tab" data-tab="growth">성장</div>
                 <div class="shop-tab" data-tab="collection">수집</div>
                 <div class="shop-tab" data-tab="environment">환경</div>
             </div>
@@ -360,6 +386,11 @@
         let totalChickens = parseInt(localStorage.getItem('kSnackTotalChickens') || 0, 10);
         document.getElementById('total-chicken').innerText = totalChickens;
 
+        let isQuaking = false; 
+
+        let bombCount = parseInt(localStorage.getItem('kSnackBombCount') || 0, 10);
+        updateBombUI(); 
+
         let shopData = {
             owned: JSON.parse(localStorage.getItem('kSnackOwned')) || [],
             equipped: JSON.parse(localStorage.getItem('kSnackEquipped')) || { growth: [], collection: [], environment: null }
@@ -373,28 +404,20 @@
             }
         });
         
-        let currentShopTab = 'growth';
+        let currentShopTab = 'booster'; 
         let isShopOpen = false;
 
-        // 💡 [완전판] 스킨(이미지) 및 환경(배경)을 즉시 교체하는 함수!
         function applySkins() {
             const collection = Array.isArray(shopData.equipped.collection) ? shopData.equipped.collection : [];
-
-            SNACKS[3].img = "mandu.png";
-            SNACKS[4].img = "fish.png";
-
+            SNACKS[3].img = "mandu.png"; SNACKS[4].img = "fish.png";
             if (collection.includes('rainbow')) SNACKS[3].img = "rainbow_mandu.png"; 
             if (collection.includes('blackfish')) SNACKS[4].img = "black_fish.png";  
 
-            // 💡 [버그 해결] 깐깐한 파일명 검사
             SNACKS.forEach((snack, index) => {
                 const currentFileName = loadedImages[index].src.split('/').pop();
-                if (currentFileName !== snack.img) {
-                    loadedImages[index].src = snack.img; 
-                }
+                if (currentFileName !== snack.img) { loadedImages[index].src = snack.img; }
             });
 
-            // 💡 [최적화 완료] 진화 공식 UI 초고속 교체
             const evoFormulas = document.getElementById('evolution-chain').children;
             if (evoFormulas.length > 0) { 
                 SNACKS.forEach((snack, index) => {
@@ -412,13 +435,9 @@
                 nextSnackImgEl.src = SNACKS[upcomingSnackIndex].img;
             }
 
-            // 🌙 [추가] 환경(배경) 스위치!
             const environment = shopData.equipped.environment;
-            if (environment === 'night') {
-                document.body.classList.add('night-mode');
-            } else {
-                document.body.classList.remove('night-mode');
-            }
+            if (environment === 'night') { document.body.classList.add('night-mode'); } 
+            else { document.body.classList.remove('night-mode'); }
         }
 
         let isDropping = false; let previewX = canvas.width / 2; let frameCount = 0;
@@ -426,32 +445,17 @@
         function getRandomSnackIndex() {
             const growth = Array.isArray(shopData.equipped.growth) ? shopData.equipped.growth : [];
             const rand = Math.random(); 
-            
-            const hasBung = growth.includes('bungeoppang');
-            const hasMandu = growth.includes('wangmandu');
+            const hasBung = growth.includes('bungeoppang'); const hasMandu = growth.includes('wangmandu');
 
             if (hasBung && hasMandu) {
-                if (rand < 0.25) return 0;
-                if (rand < 0.50) return 1;
-                if (rand < 0.75) return 2;
-                if (rand < 0.90) return 3; 
-                return 4;                  
+                if (rand < 0.25) return 0; if (rand < 0.50) return 1; if (rand < 0.75) return 2; if (rand < 0.90) return 3; return 4;                  
             } else if (hasBung && !hasMandu) {
-                if (rand < 0.30) return 0;
-                if (rand < 0.60) return 1;
-                if (rand < 0.90) return 2;
-                return 4; 
+                if (rand < 0.30) return 0; if (rand < 0.60) return 1; if (rand < 0.90) return 2; return 4; 
             } else if (!hasBung && hasMandu) {
-                if (rand < 0.2833) return 0;
-                if (rand < 0.5666) return 1;
-                if (rand < 0.85) return 2;  
-                return 3;                  
-            } else {
-                return Math.floor(rand * 3); 
-            }
+                if (rand < 0.2833) return 0; if (rand < 0.5666) return 1; if (rand < 0.85) return 2;  return 3;                  
+            } else { return Math.floor(rand * 3); }
         }
 
-        // 💡 [해결!] 1. 번호를 먼저 뽑고 2. 스킨을 입힙니다 
         let currentDroppingIndex = getRandomSnackIndex();
         let upcomingSnackIndex = getRandomSnackIndex();
         applySkins(); 
@@ -470,14 +474,13 @@
         let audioCtx = null; let isMuted = false;
         function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); }
 
-        let feverCount = 0; 
-        function addChickenFever() {
-            feverCount++;
-            if (feverCount <= 3) { document.getElementById('stamp-' + feverCount).classList.add('filled'); }
-            if (feverCount === 3) { triggerEarthquake(); }
-        }
-
+        // 💡 수정됨: 상품 설명 업데이트!
         const SHOP_ITEMS = {
+            booster: [
+                { id: 'bomb_1', name: '흔들기 1개', price: 3, desc: '1회용 위기 탈출<br>상자 흔들기', img: 'css-box', amount: 1 },
+                { id: 'bomb_2', name: '흔들기 2개', price: 5, desc: '가성비 좋은<br>2개 묶음', img: 'css-box', amount: 2 },
+                { id: 'bomb_3', name: '흔들기 3개', price: 8, desc: '가성비 최고<br>3개 묶음', img: 'css-box', amount: 3 }
+            ],
             growth: [
                 { id: 'wangmandu', name: '왕만두 드롭', price: 15, desc: '왕만두도<br>드롭할 수 있어요', img: 'mandu.png' },
                 { id: 'bungeoppang', name: '붕어빵 드롭', price: 20, desc: '붕어빵도<br>드롭할 수 있어요', img: 'fish.png' }
@@ -493,28 +496,40 @@
 
         function renderShopItems() {
             document.getElementById('shop-wallet-count').innerText = totalChickens;
+            const shopBombEl = document.getElementById('shop-bomb-count');
+            if(shopBombEl) shopBombEl.innerText = bombCount;
+
             const container = document.getElementById('shop-content');
             container.innerHTML = '';
             
             SHOP_ITEMS[currentShopTab].forEach(item => {
-                const isOwned = shopData.owned.includes(item.id);
-                const isEquipped = Array.isArray(shopData.equipped[currentShopTab]) 
-                    ? shopData.equipped[currentShopTab].includes(item.id) 
-                    : shopData.equipped[currentShopTab] === item.id;
-                
                 let btnHtml = '';
-                if (isEquipped) {
-                    btnHtml = `<button class="shop-item-btn btn-equipped" style="cursor: pointer;" onclick="unequipItem('${currentShopTab}', '${item.id}')">장착 해제</button>`;
-                } else if (isOwned) {
-                    btnHtml = `<button class="shop-item-btn btn-equip" onclick="equipItem('${currentShopTab}', '${item.id}')">장착하기</button>`;
+                let imgHtml = '';
+
+                // 💡 수정됨: CSS 3D 큐브 주입
+                if (item.img === 'css-box') {
+                    imgHtml = `<div class="css-3d-box"><div class="face front"></div><div class="face back"></div><div class="face right"></div><div class="face left"></div><div class="face top"></div><div class="face bottom"></div></div>`;
                 } else {
-                    btnHtml = `<button class="shop-item-btn btn-buy" onclick="buyItem('${item.id}', '${currentShopTab}', ${item.price})">🍗 ${item.price} 구매</button>`;
-                } 
+                    imgHtml = `<img src="${item.img}" class="shop-item-img">`;
+                }
+
+                if (currentShopTab === 'booster') {
+                    btnHtml = `<button class="shop-item-btn btn-buy" onclick="buyBooster(${item.price}, ${item.amount})">🍗 ${item.price} 구매</button>`;
+                } else {
+                    const isOwned = shopData.owned.includes(item.id);
+                    const isEquipped = Array.isArray(shopData.equipped[currentShopTab]) 
+                        ? shopData.equipped[currentShopTab].includes(item.id) 
+                        : shopData.equipped[currentShopTab] === item.id;
+                    
+                    if (isEquipped) { btnHtml = `<button class="shop-item-btn btn-equipped" style="cursor: pointer;" onclick="unequipItem('${currentShopTab}', '${item.id}')">장착 해제</button>`; } 
+                    else if (isOwned) { btnHtml = `<button class="shop-item-btn btn-equip" onclick="equipItem('${currentShopTab}', '${item.id}')">장착하기</button>`; } 
+                    else { btnHtml = `<button class="shop-item-btn btn-buy" onclick="buyItem('${item.id}', '${currentShopTab}', ${item.price})">🍗 ${item.price} 구매</button>`; } 
+                }
 
                 container.innerHTML += `
                     <div class="shop-item">
                         <div class="shop-item-img-wrapper">
-                            <img src="${item.img}" class="shop-item-img">
+                            ${imgHtml}
                         </div>
                         <div class="shop-item-info">
                             <div class="shop-item-name">${item.name}</div>
@@ -524,6 +539,49 @@
                     </div>
                 `;
             });
+        }
+
+        window.buyBooster = function(price, amount) {
+            initAudio();
+            if (totalChickens >= price) {
+                totalChickens -= price;
+                bombCount += amount;
+                if(bombCount > 99) bombCount = 99; 
+                
+                document.getElementById('total-chicken').innerText = totalChickens;
+                localStorage.setItem('kSnackTotalChickens', totalChickens);
+                
+                updateBombUI(); 
+                playGoodSound(); 
+                renderShopItems(); 
+            } else {
+                alert('금고에 치킨이 부족합니다! 🍗');
+            }
+        };
+
+        function updateBombUI() {
+            localStorage.setItem('kSnackBombCount', bombCount);
+            const bombBtn = document.getElementById('bomb-btn');
+            document.getElementById('bomb-count').innerText = bombCount;
+            
+            const shopBombEl = document.getElementById('shop-bomb-count');
+            if(shopBombEl) shopBombEl.innerText = bombCount;
+            
+            if(bombCount <= 0 || isQuaking) {
+                bombBtn.classList.add('disabled');
+            } else {
+                bombBtn.classList.remove('disabled');
+            }
+        }
+
+        window.useBomb = function() {
+            initAudio();
+            if(isDropping || isShopOpen) return;
+            if(bombCount <= 0 || isQuaking) return; 
+
+            bombCount--;
+            updateBombUI();
+            triggerEarthquake();
         }
 
         window.buyItem = function(id, category, price) {
@@ -538,9 +596,7 @@
                 
                 playGoodSound(); 
                 renderShopItems();
-            } else {
-                alert('금고에 치킨이 부족합니다! 🍗');
-            }
+            } else { alert('금고에 치킨이 부족합니다! 🍗'); }
         };
 
         window.equipItem = function(category, id) {
@@ -548,14 +604,11 @@
             if (category === 'growth' || category === 'collection') {
                 if (!Array.isArray(shopData.equipped[category])) shopData.equipped[category] = [];
                 if (!shopData.equipped[category].includes(id)) shopData.equipped[category].push(id);
-            } else {
-                shopData.equipped[category] = id;
-            }
+            } else { shopData.equipped[category] = id; }
             
             localStorage.setItem('kSnackEquipped', JSON.stringify(shopData.equipped));
             playTone(300, 'sine', audioCtx.currentTime, 0.1, 0.1);
-            applySkins(); 
-            renderShopItems();
+            applySkins(); renderShopItems();
         };
 
         window.unequipItem = function(category, id) {
@@ -564,14 +617,11 @@
                 if (Array.isArray(shopData.equipped[category])) {
                     shopData.equipped[category] = shopData.equipped[category].filter(itemId => itemId !== id);
                 }
-            } else {
-                shopData.equipped[category] = null;
-            }
+            } else { shopData.equipped[category] = null; }
             
             localStorage.setItem('kSnackEquipped', JSON.stringify(shopData.equipped));
             playTone(300, 'sine', audioCtx.currentTime, 0.1, 0.1); 
-            applySkins();
-            renderShopItems();
+            applySkins(); renderShopItems();
         };        
 
         document.querySelectorAll('.shop-tab').forEach(tab => {
@@ -586,38 +636,24 @@
         let engineRunner = Runner.create(); 
 
         document.getElementById('shop-btn').addEventListener('click', () => {
-            initAudio();
-            isShopOpen = true; 
-            Runner.stop(engineRunner); 
-            document.getElementById('shop-modal').classList.remove('hidden');
-            renderShopItems();
+            initAudio(); isShopOpen = true; Runner.stop(engineRunner); 
+            document.getElementById('shop-modal').classList.remove('hidden'); renderShopItems();
         });
 
         document.getElementById('close-shop-btn').addEventListener('click', () => {
-            isShopOpen = false;
-            document.getElementById('shop-modal').classList.add('hidden');
-
+            isShopOpen = false; document.getElementById('shop-modal').classList.add('hidden');
             const growth = Array.isArray(shopData.equipped.growth) ? shopData.equipped.growth : [];
-            const hasBung = growth.includes('bungeoppang');
-            const hasMandu = growth.includes('wangmandu');
-
-            let isValidCurrent = true;
-            if (currentDroppingIndex === 4 && !hasBung) isValidCurrent = false; 
-            if (currentDroppingIndex === 3 && !hasMandu) isValidCurrent = false; 
-
-            let isValidUpcoming = true;
-            if (upcomingSnackIndex === 4 && !hasBung) isValidUpcoming = false;
-            if (upcomingSnackIndex === 3 && !hasMandu) isValidUpcoming = false;
-
-            if (!isValidCurrent) currentDroppingIndex = getRandomSnackIndex();
-            if (!isValidUpcoming) upcomingSnackIndex = getRandomSnackIndex();
-
-            document.getElementById('next-snack-img').src = SNACKS[upcomingSnackIndex].img;
-            Runner.start(engineRunner, engine); 
+            const hasBung = growth.includes('bungeoppang'); const hasMandu = growth.includes('wangmandu');
+            let isValidCurrent = true; if (currentDroppingIndex === 4 && !hasBung) isValidCurrent = false;  if (currentDroppingIndex === 3 && !hasMandu) isValidCurrent = false; 
+            let isValidUpcoming = true; if (upcomingSnackIndex === 4 && !hasBung) isValidUpcoming = false; if (upcomingSnackIndex === 3 && !hasMandu) isValidUpcoming = false;
+            if (!isValidCurrent) currentDroppingIndex = getRandomSnackIndex(); if (!isValidUpcoming) upcomingSnackIndex = getRandomSnackIndex();
+            document.getElementById('next-snack-img').src = SNACKS[upcomingSnackIndex].img; Runner.start(engineRunner, engine); 
         });
 
-        // 🌋 대지진 로직
         function triggerEarthquake() {
+            isQuaking = true;
+            updateBombUI(); 
+            
             const toast = document.getElementById('earthquake-toast');
             toast.classList.remove('hidden');
 
@@ -652,7 +688,6 @@
                             Matter.Body.setPosition(body, { x: body.position.x, y: body.position.y - 10 });
                             const level = parseInt(body.label); 
                             const popPower = 18 + ((7 - level) * 2.5) + (Math.random() * 4); 
-                            
                             Matter.Body.setVelocity(body, { x: (Math.random() - 0.5) * 12, y: -popPower });
                             Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.6);
                             body.frictionAir = 0.025 - (level * 0.003);
@@ -660,11 +695,6 @@
                     });
 
                     setTimeout(() => {
-                        feverCount = 0;
-                        document.getElementById('stamp-1').classList.remove('filled');
-                        document.getElementById('stamp-2').classList.remove('filled');
-                        document.getElementById('stamp-3').classList.remove('filled');
-
                         const currentBodies = Composite.allBodies(world);
                         currentBodies.forEach(body => {
                             if (body.label !== 'Wall' && body.label !== 'SafetyNet') {
@@ -672,12 +702,15 @@
                             }
                         });
                         World.remove(world, safetyNet);
+                        
+                        isQuaking = false; 
+                        updateBombUI(); 
+                        
                     }, 4000); 
                 }, 2500); 
-            }, 1500); 
+            }, 500);
         }
 
-        // 🎵 사운드 모듈
         function playTone(freq, type, startTime, duration, vol = 0.2) { const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = type; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.value = freq; gain.gain.setValueAtTime(0, startTime); gain.gain.linearRampToValueAtTime(vol, startTime + 0.02); gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration); osc.start(startTime); osc.stop(startTime + duration); }
         function playSnap(startTime, freq = 300) { const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'triangle'; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(freq * 1.5, startTime); osc.frequency.exponentialRampToValueAtTime(freq / 2, startTime + 0.03); gain.gain.setValueAtTime(0, startTime); gain.gain.linearRampToValueAtTime(0.5, startTime + 0.002); gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.04); osc.start(startTime); osc.stop(startTime + 0.04); }
         function playDropSound() { if (isMuted || !audioCtx) return; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(600, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1); osc.start(); osc.stop(audioCtx.currentTime + 0.1); }
@@ -743,7 +776,10 @@
                             totalChickens++; 
                             localStorage.setItem('kSnackTotalChickens', totalChickens); 
                             document.getElementById('total-chicken').innerText = totalChickens;
-                            addChickenFever();
+                            
+                            // 상점 열려있을 때 뒷배경 숫자 갱신용
+                            const shopWalletEl = document.getElementById('shop-wallet-count');
+                            if(shopWalletEl) shopWalletEl.innerText = totalChickens;
                         } else { playMergeSound(nextLevel); }
                     } 
                     else if (level === 7) { 
@@ -754,12 +790,10 @@
             }
         });
 
-        // 💡 [최적화 완료] 캔버스 그리기 함수 - 즉시 전환! 연산량 폭풍 감소!
         function renderLoop() {
             if (!isShopOpen) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height); frameCount++;
                 
-                // 🎨 캔버스 그라데이션 그리기 
                 const gradientTop = ctx.createLinearGradient(0, fy_top, 0, by_top);
                 gradientTop.addColorStop(0, "rgba(255, 255, 255, 0.45)"); gradientTop.addColorStop(1, "rgba(255, 255, 255, 0)");
                 ctx.fillStyle = gradientTop; ctx.fillRect(bx1, by_top, bx2 - bx1, fy_top - by_top);
@@ -779,20 +813,15 @@
                 ctx.fillStyle = bottomGradient;
                 ctx.beginPath(); ctx.moveTo(fx1, fy_bot); ctx.lineTo(bx1, by_bot); ctx.lineTo(bx2, by_bot); ctx.lineTo(fx2, fy_bot); ctx.fill();
 
-                // 🌙 [제안 3 반영] 0초 즉시 전환! CSS에서 클래스만 확인해서 색상 바로 적용
                 const isNight = document.body.classList.contains('night-mode');
-                
-                // 낮: 주황색, 밤: 포장마차 붉은색
                 const innerColor = isNight ? "rgba(220, 40, 40, 0.6)" : "rgba(255, 177, 66, 0.6)";
                 const outerColor = isNight ? "rgb(220, 40, 40)" : "rgb(255, 177, 66)";
 
-                // 🎨 안쪽 테두리 그리기
                 ctx.strokeStyle = innerColor; 
                 ctx.lineWidth = 2; ctx.lineJoin = "round"; 
                 ctx.strokeRect(bx1, by_top, bx2 - bx1, by_bot - by_top); 
                 ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(bx1, by_top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx1, fy_bot); ctx.lineTo(bx1, by_bot); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx2, fy_bot); ctx.lineTo(bx2, by_bot); ctx.stroke();
                 
-                // 🎨 게임 오버 라인 (상단 테두리)
                 ctx.strokeStyle = outerColor; 
                 ctx.lineWidth = 5; 
                 ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.lineTo(bx1, by_top); ctx.closePath(); ctx.stroke();
@@ -824,7 +853,6 @@
                     }
                 });
 
-                // 🎨 앞유리 테두리 선 
                 const frontGlass = ctx.createLinearGradient(fx1, fy_top, fx2, fy_bot); 
                 frontGlass.addColorStop(0, "rgba(255, 255, 255, 0.2)"); frontGlass.addColorStop(0.5, "rgba(255, 255, 255, 0.05)"); frontGlass.addColorStop(1, "rgba(255, 255, 255, 0.1)");
                 
