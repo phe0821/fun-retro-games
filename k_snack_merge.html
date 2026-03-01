@@ -780,11 +780,15 @@
                         else if (nextLevel === 7) { playWowSound(); triggerEffect('wow-effect', 'show-wow'); } 
                         else { playMergeSound(nextLevel); }
                     } 
-                    else if (level === 7) { 
-                        World.remove(world, bodyA); World.remove(world, bodyB); 
-                        playClearSound(); triggerEffect('clear-effect', 'show-clear'); 
-                        startGoldenRain(); triggerJackpotMagnet();
-                    }
+                    else if (nextLevel === 7) { 
+    // 💡 황금치킨 탄생 보상 (+1마리) 로직 추가
+    totalChickens++; 
+    localStorage.setItem('kSnackTotalChickens', totalChickens);
+    document.getElementById('total-chicken').innerText = totalChickens;
+
+    playWowSound(); 
+    triggerEffect('wow-effect', 'show-wow'); 
+}
                 }
             }
         });
