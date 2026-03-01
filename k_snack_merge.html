@@ -244,11 +244,21 @@
 
         function playMergeSound(level) {
             if (isMuted || !audioCtx) return;
-            const now = audioCtx.currentTime; const baseFreq = 300 + (level * 50);
+            const now = audioCtx.currentTime; 
+            
+            // 💡 1. 펜타토닉 스케일 (C4, D4, E4, G4, A4, C5, D5) 
+            // 여러 개가 동시에 터져도 무조건 아름다운 화음이 만들어집니다!
+            const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33];
+            const baseFreq = scale[Math.min(level, scale.length - 1)];
+
             playSnap(now, baseFreq);
             const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
             osc.type = 'sine'; osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.frequency.setValueAtTime(baseFreq, now); osc.frequency.exponentialRampToValueAtTime(baseFreq + 150, now + 0.15); 
+            
+            // 💡 2. 억지로 +150Hz를 더하는 대신, 음악적으로 가장 안정적인 '완전 5도(주파수 1.5배)'로 음을 꺾어줍니다.
+            osc.frequency.setValueAtTime(baseFreq, now); 
+            osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, now + 0.15); 
+            
             gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.2, now + 0.02); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
             osc.start(now); osc.stop(now + 0.2);
         }
@@ -257,19 +267,86 @@
             if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const notes = [261.63, 329.63, 392.00]; 
             notes.forEach((freq, i) => { const t = now + (i * 0.06); playSnap(t, freq); playTone(freq, 'sine', t, 0.6, 0.25); });
         }
+       // ✨ 1. [Great: 호떡 ➡️ 솜사탕] 푹신하고 달콤한 C 메이저 상승음
         function playGreatSound() {
-            if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const notes = [349.23, 440.00, 523.25, 659.25]; 
-            notes.forEach((freq, i) => { const t = now + (i * 0.05); playSnap(t, freq); playTone(freq, i === 3 ? 'triangle' : 'sine', t, 0.8, i === 3 ? 0.15 : 0.25); });
+            if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; 
+            const notes = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5 (도, 미, 솔, 도)
+            
+            notes.forEach((freq, i) => {
+                const t = now + (i * 0.08); 
+                const mainOsc = audioCtx.createOscillator(); const mainGain = audioCtx.createGain();
+                mainOsc.type = 'sine'; mainOsc.connect(mainGain); mainGain.connect(audioCtx.destination);
+                mainOsc.frequency.setValueAtTime(freq, t); 
+                
+                mainGain.gain.setValueAtTime(0, t); mainGain.gain.linearRampToValueAtTime(0.2, t + 0.02); mainGain.gain.exponentialRampToValueAtTime(0.01, t + 0.8);
+                mainOsc.start(t); mainOsc.stop(t + 0.8);
+            });
         }
+
+        // 🌟 2. [Wow: 솜사탕 ➡️ 황금치킨] 따뜻하고 풍성한 화음 (Great와 겹쳐도 완벽한 화음!)
         function playWowSound() {
-            if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const notes = [392.00, 440.00, 493.88, 587.33, 783.99]; 
-            notes.forEach((freq, i) => { const t = now + (i * 0.08); playSnap(t, freq); playTone(freq, 'sine', t, 1.2, 0.2); playTone(freq * 2, 'triangle', t, 1.2, 0.05); });
+            if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; 
+            const notes = [329.63, 392.00, 523.25, 587.33, 783.99]; // E4, G4, C5, D5, G5
+            
+            notes.forEach((freq, i) => {
+                const t = now + (i * 0.06); 
+                const mainOsc = audioCtx.createOscillator(); const mainGain = audioCtx.createGain();
+                mainOsc.type = 'triangle'; mainOsc.connect(mainGain); mainGain.connect(audioCtx.destination);
+                mainOsc.frequency.setValueAtTime(freq, t); 
+                
+                mainGain.gain.setValueAtTime(0, t); mainGain.gain.linearRampToValueAtTime(0.25, t + 0.02); mainGain.gain.exponentialRampToValueAtTime(0.01, t + 1.2);
+                mainOsc.start(t); mainOsc.stop(t + 1.2);
+            });
         }
-        function playClearSound() {
-            if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const notes = [130.81, 196.00, 261.63, 329.63, 392.00, 523.25]; 
-            playSnap(now, 100); playSnap(now + 0.02, 150);
-            notes.forEach((freq, i) => { playTone(freq, 'sine', now + (i*0.02), 3.0, 0.3); playTone(freq, 'triangle', now + (i*0.02), 3.0, 0.1); });
-            playSnap(now + 0.4, 392.00); playTone(392.00, 'sine', now + 0.4, 2.0, 0.2); playSnap(now + 0.7, 440.00); playTone(440.00, 'sine', now + 0.7, 2.0, 0.2); playSnap(now + 1.0, 523.25); playTone(523.25, 'sine', now + 1.0, 2.5, 0.25); 
+
+        // 🎇 3. [Clear: 치킨 + 치킨] 바삭한 기름 튀기는 소리 + 팝콘 타격감 + 경쾌한 승리 화음!
+     function playClearSound() {
+            if (isMuted || !audioCtx) return; const now = audioCtx.currentTime;
+
+            // 🍿 [효과 1] 날카로운 기름 소리 대신, 귀엽고 경쾌한 팝콘/방울 소리!
+            // 무서운 느낌을 없애기 위해 개수도 30개로 살짝 줄여서 여유를 줍니다.
+            for (let i = 0; i < 30; i++) {
+                const popTime = now + (Math.random() * 1.45); 
+                
+                // 1. 둥글고 귀여운 '뽁!' 소리 (물방울이나 두꺼운 반죽이 터지는 느낌)
+                const popOsc = audioCtx.createOscillator(); const popGain = audioCtx.createGain();
+                popOsc.type = 'sine'; popOsc.connect(popGain); popGain.connect(audioCtx.destination);
+                
+                // 주파수를 너무 높지 않게 잡아서 찢어지는 소리 방지
+                const startFreq = 400 + Math.random() * 300; 
+                popOsc.frequency.setValueAtTime(startFreq, popTime);
+                popOsc.frequency.exponentialRampToValueAtTime(startFreq * 0.5, popTime + 0.05); // 음이 살짝 떨어지며 '뽁'
+                
+                popGain.gain.setValueAtTime(0, popTime); 
+                popGain.gain.linearRampToValueAtTime(0.15 + Math.random() * 0.1, popTime + 0.01); 
+                popGain.gain.exponentialRampToValueAtTime(0.01, popTime + 0.06);
+                popOsc.start(popTime); popOsc.stop(popTime + 0.06);
+
+                // 2. 바삭함을 더해주는 아주 짧은 '틱!' 소리 (트라이앵글파로 부드럽게)
+                const snapOsc = audioCtx.createOscillator(); const snapGain = audioCtx.createGain();
+                snapOsc.type = 'triangle'; snapOsc.connect(snapGain); snapGain.connect(audioCtx.destination);
+                
+                snapOsc.frequency.setValueAtTime(800 + Math.random() * 500, popTime);
+                snapGain.gain.setValueAtTime(0.05, popTime); 
+                snapGain.gain.exponentialRampToValueAtTime(0.001, popTime + 0.02); // 0.02초 만에 스르륵 사라짐
+                
+                snapOsc.start(popTime); snapOsc.stop(popTime + 0.02);
+            }
+
+            // 🎉 [효과 2] 경쾌한 승리 화음은 그대로 유지! (1.5초 꼬리 연장)
+            const clearNotes = [261.63, 392.00, 523.25, 659.25, 783.99, 1046.50]; 
+            clearNotes.forEach((freq, i) => {
+                const t = now + (i * 0.05); 
+                const chordOsc = audioCtx.createOscillator(); const chordGain = audioCtx.createGain();
+                chordOsc.type = 'triangle'; chordOsc.connect(chordGain); chordGain.connect(audioCtx.destination);
+                chordOsc.frequency.setValueAtTime(freq, t);
+                
+                chordGain.gain.setValueAtTime(0, t);
+                chordGain.gain.linearRampToValueAtTime(0.3, t + 0.02);
+                chordGain.gain.exponentialRampToValueAtTime(0.01, t + 1.5); 
+                
+                chordOsc.start(t); chordOsc.stop(t + 1.5); 
+            });
         }
 
         document.getElementById('mute-btn').addEventListener('click', (e) => { isMuted = !isMuted; e.target.innerText = isMuted ? '🔇 소리 꺼짐' : '🔊 소리 켜짐'; });
