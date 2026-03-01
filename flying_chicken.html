@@ -16,7 +16,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none; -webkit-user-select: none; 
             
-            /* 🚨 바로 이 줄을 추가해 주세요! (더블 탭 줌 방지, 스크롤은 허용) */
+            /* 기본 방어 (스크롤 허용) */
             touch-action: manipulation; 
             
             overflow-x: hidden; overflow-y:auto; min-height: 100dvh;
@@ -43,6 +43,8 @@
             display: block; border-radius: 10px; background-color: #639bff;
             transition: background-color 1.5s ease; 
             image-rendering: pixelated; 
+            /* 🚨 캔버스 터치 시 줌인 완벽 차단! */
+            touch-action: none; 
         }
         
         .overlay {
@@ -68,6 +70,7 @@
             width: 32px; height: 32px;
             border: none; box-shadow: none; background: transparent; border-radius: 0;
             image-rendering: pixelated;
+            touch-action: none;
         }
 
         /* 💡 설명, 최종점수, 오버레이 버튼은 가독성을 위해 오리지널 폰트로 복원 */
@@ -83,16 +86,21 @@
 
         #controls { display: flex; justify-content: center; width: 100%; max-width: 300px; margin-top: 15px; }
         
-        /* 💡 FLY 버튼 롤백 (오리지널 깔끔한 버전) */
+        /* 💡 FLY 버튼 롤백 및 줌인 방지 */
         #btn-fly {
             background: linear-gradient(to bottom, #FFE138, #FF8E0D);
             color: #331A00; border: none; border-radius: 15px; width: 100%; padding: 20px 0;
-            font-size: 24px; font-weight: 900; cursor: pointer; touch-action: manipulation;
+            font-size: 24px; font-weight: 900; cursor: pointer; 
+            /* 🚨 버튼 터치 시 줌인 완벽 차단! */
+            touch-action: none; 
             box-shadow: 0 6px 0 #CC6600, inset 0 3px 6px rgba(255,255,255,0.4);
             text-shadow: 0 1px 2px rgba(255,255,255,0.5); transition: transform 0.05s, box-shadow 0.05s;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        #btn-fly:active { transform: translateY(6px); box-shadow: 0 0px 0 #CC6600, inset 0 3px 6px rgba(0,0,0,0.2); }
+        /* 🚨 JS로 제어할 강제 눌림 효과 클래스 추가 (.active-press) */
+        #btn-fly:active, #btn-fly.active-press { 
+            transform: translateY(6px); box-shadow: 0 0px 0 #CC6600, inset 0 3px 6px rgba(0,0,0,0.2); 
+        }
 
         #bottom-controls { 
             display: flex; flex-direction: column; gap: 6px; 
@@ -625,9 +633,37 @@
             if (event.code === 'Space' && !isGameOver && !isPaused) { flap(); }
             if (event.key.toLowerCase() === 'p' && !isGameOver) togglePause();
         });
-        canvas.addEventListener('pointerdown', (e) => { e.preventDefault(); flap(); });
-        document.getElementById('btn-fly').addEventListener('pointerdown', (e) => { e.preventDefault(); flap(); });
 
+        // 🚨 [핵심 수술 파트] 캔버스와 버튼의 터치 이벤트를 완전히 통제하여 줌인 발생을 근본적으로 파괴합니다.
+        const triggerFlap = (e) => {
+            if (e.cancelable) e.preventDefault(); // 브라우저 고유동작(줌인, 스크롤 등) 완전 차단
+            flap();
+        };
+
+        // 캔버스 터치 제어
+        canvas.addEventListener('touchstart', triggerFlap, { passive: false });
+        canvas.addEventListener('mousedown', triggerFlap);
+
+        // FLY 버튼 터치 제어 및 시각적 애니메이션 처리
+        const btnFly = document.getElementById('btn-fly');
+        
+        const pressBtn = (e) => {
+            if (e.cancelable) e.preventDefault(); 
+            btnFly.classList.add('active-press'); // 수동으로 버튼 눌림 효과 적용
+            flap();
+        };
+        const releaseBtn = (e) => {
+            if (e.cancelable) e.preventDefault();
+            btnFly.classList.remove('active-press'); // 손 떼면 원상복구
+        };
+
+        btnFly.addEventListener('touchstart', pressBtn, { passive: false });
+        btnFly.addEventListener('touchend', releaseBtn, { passive: false });
+        btnFly.addEventListener('mousedown', pressBtn);
+        btnFly.addEventListener('mouseup', releaseBtn);
+        btnFly.addEventListener('mouseleave', releaseBtn);
+
+        // 음소거 버튼
         document.getElementById('mute-btn').addEventListener('click', (e) => {
             isMuted = !isMuted;
             if (isMuted) { stopBGM(); e.target.innerText = '🔇 소리 켜기'; } 
