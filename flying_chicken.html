@@ -290,7 +290,7 @@
             playFlapSound();
         }
 
-        // 💡 [핵심 패치] 파이프 생성 시 100초가 넘었는지 검사하여 '무빙 파이프' 속성 부여!
+        // 💡 [핵심 패치] 디렉터님의 50초 주기 밀당(Tension & Release) 무한 루프 시스템!
         function spawnObstacle() {
             const theme = themes[currentThemeIndex];
             if (!theme) return;
@@ -299,15 +299,39 @@
             const minHeight = 40;
             const topHeight = Math.floor(Math.random() * (canvas.height - gap - minHeight * 2)) + minHeight;
             
-            // 😈 지옥불 난이도 트리거: 100초가 넘으면 파이프가 움직인다!
-            const isMoving = gameTime >= 100;
+            let isMoving = false;
+            let pipeMoveSpeed = 2.5;
+
+            // 페이즈 1: 100~150초 (부드러운 무빙)
+            if (gameTime >= 100 && gameTime < 150) {
+                isMoving = true;
+                pipeMoveSpeed = 2.5;
+            } 
+            // 페이즈 2 이후: 150초부터 50초 간격으로 4개의 패턴 무한 반복
+            else if (gameTime >= 150) {
+                const loopIndex = Math.floor((gameTime - 150) / 50) % 4;
+                
+                if (loopIndex === 0 || loopIndex === 2) {
+                    // 패턴 (2), (4): 정지 모드 (기본 최상 난이도)
+                    isMoving = false;
+                } else if (loopIndex === 1) {
+                    // 패턴 (3): 부드러운 무빙
+                    isMoving = true;
+                    pipeMoveSpeed = 2.5;
+                } else if (loopIndex === 3) {
+                    // 패턴 (5): 미친 무빙 (속도 1.5배 상승!)
+                    isMoving = true;
+                    pipeMoveSpeed = 3.75; 
+                }
+            }
             
             obstacles.push({
                 x: canvas.width, w: 48, top: topHeight, gap: gap,
                 color: theme.pipeColor, passed: false,
-                baseTop: topHeight, // 움직임의 중심이 될 원래 높이
-                movePhase: Math.random() * Math.PI * 2, // 파이프마다 다르게 움직이도록 난수 부여
-                isMoving: isMoving // 무빙 파이프 여부 저장
+                baseTop: topHeight, 
+                movePhase: Math.random() * Math.PI * 2, 
+                isMoving: isMoving, 
+                moveSpeed: pipeMoveSpeed // 파이프마다 계산된 속도 저장!
             });
         }
 
@@ -409,7 +433,6 @@
                 targetCtx.fillRect(x, bodyY + 4, w, 4); 
             }
         }
-
 
         window.addEventListener('load', () => {
             const leftCanvas = document.getElementById('title-icon-left');
@@ -537,13 +560,11 @@
                 let obs = obstacles[i];
                 obs.x -= currentSpeed; 
 
-                // 😈 [핵심 패치] 무빙 파이프 이동 로직! (Sine 함수를 이용해 위아래로 스르륵 이동)
+                // 😈 [핵심 패치] 파이프에 부여된 고유 속도로 움직이도록 수정!
                 if (obs.isMoving) {
-                    const amplitude = 50; // 파이프가 위아래로 움직이는 진폭 (px)
-                    const moveSpeed = 2.5; // 파이프가 꿀렁이는 속도
-                    let newTop = obs.baseTop + Math.sin(gameTime * moveSpeed + obs.movePhase) * amplitude;
+                    const amplitude = 50; 
+                    let newTop = obs.baseTop + Math.sin(gameTime * obs.moveSpeed + obs.movePhase) * amplitude;
                     
-                    // 파이프 틈새가 화면 밖으로 나가지 않도록 안전장치 설정
                     const maxTop = canvas.height - obs.gap - 40; 
                     obs.top = Math.max(40, Math.min(maxTop, newTop)); 
                 }
