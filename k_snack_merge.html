@@ -37,15 +37,16 @@
         #stats-board { 
             grid-column: 1 / -1; 
             justify-self: center; 
-            display: flex; gap: 8px; position: relative; z-index: 10; 
+            display: flex; gap: 4px; position: relative; z-index: 10; 
             flex-wrap: wrap; justify-content: center;
         }
         
         .stat-box { 
-            font-size: 14px; font-weight: 900; color: #fff; background: rgba(139, 69, 19, 0.7); 
-            padding: 3px 12px; 
+            /* 💡 전체 폰트 크기 14px -> 12px 축소, 좌우 여백 12px -> 6px 축소 */
+            font-size: 12px; font-weight: 900; color: #fff; background: rgba(139, 69, 19, 0.7); 
+            padding: 3px 6px; 
             border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.2); 
-            border: 2px solid rgba(255,255,255,0.3); font-family: 'Jua', sans-serif; letter-spacing: 1px; 
+            border: 2px solid rgba(255,255,255,0.3); font-family: 'Jua', sans-serif; letter-spacing: 0.5px; 
             display: flex; align-items: center; justify-content: center;
         }
         .stat-box.high { background: #d35400; border-color: #f1c40f; color: #fffaf0; }
@@ -252,12 +253,12 @@
         
        <div id="stats-board">
             <div class="stat-box high">
-                <span style="white-space: nowrap;">누적 치킨: <span id="total-chicken" style="font-size: 16px; color: #fffea0; vertical-align: bottom;">0</span> 마리</span>
+                <span style="white-space: nowrap;">누적 치킨: <span id="total-chicken" style="font-size: 16px; color: #fffea0; vertical-align: bottom;">0</span>마리</span>
             </div>
             
             <div class="stat-box" style="gap: 5px; background: rgba(0,0,0,0.6);">
                 <span style="color: #f1c40f; white-space: nowrap;">흔들기 찬스:</span>
-                <div style="display: flex; gap: 3px; font-size: 16px; margin-top: -2px;">
+                <div style="display: flex; gap: 2px; font-size: 12px; margin-top: -1px;">
                     <span class="stamp" id="stamp-1">🍗</span>
                     <span class="stamp" id="stamp-2">🍗</span>
                     <span class="stamp" id="stamp-3">🍗</span>
