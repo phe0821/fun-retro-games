@@ -8,25 +8,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Silkscreen&display=swap" rel="stylesheet">
     <style>
-        /* 💡 전체 폰트는 다시 깔끔하고 가독성 좋은 오리지널 폰트로 복원! */
         body {
             background-color: #1a1a24; color: #fff;
             display: flex; flex-direction: column; align-items: center;
             margin: 0; padding-top: 15px; padding-bottom: 30px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none; -webkit-user-select: none; 
-            
-            /* 기본 방어 (스크롤 허용) */
             touch-action: manipulation; 
-            
             overflow-x: hidden; overflow-y:auto; min-height: 100dvh;
         }
-        /* 메인 타이틀 롤백 */
         h1 {
             margin: 0 0 10px 0; color: #FFD700; text-shadow: 2px 2px 0px #FF8E0D;
             font-size: 26px; letter-spacing: 2px; text-transform: uppercase;
         }
-        /* 점수판 롤백 */
         #info-panel {
             display: flex; justify-content: space-between; align-items: flex-end;
             width: 100%; max-width: 300px; margin-bottom: 10px; font-weight: bold;
@@ -43,7 +37,6 @@
             display: block; border-radius: 10px; background-color: #639bff;
             transition: background-color 1.5s ease; 
             image-rendering: pixelated; 
-            /* 🚨 캔버스 터치 시 줌인 완벽 차단! */
             touch-action: none; 
         }
         
@@ -58,14 +51,12 @@
             display: flex; align-items: center; justify-content: center; gap: 10px;
         }
         
-        /* 💡 핵심: 시작 화면의 '치킨 날다'와 죽었을 때의 '치킨이 되었습니다...'에만 픽셀 폰트 적용 */
         #start-title, #game-over-title {
             font-family: 'Silkscreen', cursive;
             font-size: 26px;
             text-shadow: 2px 2px 0px #CC6600;
         }
 
-        /* 💡 타이틀 옆 아이콘 캔버스 스타일 (공통 클래스 사용) */
         .title-icon {
             width: 32px; height: 32px;
             border: none; box-shadow: none; background: transparent; border-radius: 0;
@@ -73,7 +64,6 @@
             touch-action: none;
         }
 
-        /* 💡 설명, 최종점수, 오버레이 버튼은 가독성을 위해 오리지널 폰트로 복원 */
         .overlay p { color: #fff; margin-bottom: 20px; font-size: 14px; text-align: center; line-height: 1.5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
         #final-score { font-size: 24px; font-weight: bold; margin-bottom: 20px; color: #FFE138; text-align: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
         
@@ -86,18 +76,15 @@
 
         #controls { display: flex; justify-content: center; width: 100%; max-width: 300px; margin-top: 15px; }
         
-        /* 💡 FLY 버튼 롤백 및 줌인 방지 */
         #btn-fly {
             background: linear-gradient(to bottom, #FFE138, #FF8E0D);
             color: #331A00; border: none; border-radius: 15px; width: 100%; padding: 20px 0;
             font-size: 24px; font-weight: 900; cursor: pointer; 
-            /* 🚨 버튼 터치 시 줌인 완벽 차단! */
             touch-action: none; 
             box-shadow: 0 6px 0 #CC6600, inset 0 3px 6px rgba(255,255,255,0.4);
             text-shadow: 0 1px 2px rgba(255,255,255,0.5); transition: transform 0.05s, box-shadow 0.05s;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        /* 🚨 JS로 제어할 강제 눌림 효과 클래스 추가 (.active-press) */
         #btn-fly:active, #btn-fly.active-press { 
             transform: translateY(6px); box-shadow: 0 0px 0 #CC6600, inset 0 3px 6px rgba(0,0,0,0.2); 
         }
@@ -108,7 +95,6 @@
         }
         .control-row { display: flex; gap: 8px; width: 100%; }
         
-        /* 💡 하단 스텔스 버튼들 롤백 (오리지널 깔끔한 버전) */
         .sub-btn { 
             flex: 1; 
             background: transparent; 
@@ -304,6 +290,7 @@
             playFlapSound();
         }
 
+        // 💡 [핵심 패치] 파이프 생성 시 100초가 넘었는지 검사하여 '무빙 파이프' 속성 부여!
         function spawnObstacle() {
             const theme = themes[currentThemeIndex];
             if (!theme) return;
@@ -312,9 +299,15 @@
             const minHeight = 40;
             const topHeight = Math.floor(Math.random() * (canvas.height - gap - minHeight * 2)) + minHeight;
             
+            // 😈 지옥불 난이도 트리거: 100초가 넘으면 파이프가 움직인다!
+            const isMoving = gameTime >= 100;
+            
             obstacles.push({
                 x: canvas.width, w: 48, top: topHeight, gap: gap,
-                color: theme.pipeColor, passed: false
+                color: theme.pipeColor, passed: false,
+                baseTop: topHeight, // 움직임의 중심이 될 원래 높이
+                movePhase: Math.random() * Math.PI * 2, // 파이프마다 다르게 움직이도록 난수 부여
+                isMoving: isMoving // 무빙 파이프 여부 저장
             });
         }
 
@@ -419,7 +412,6 @@
 
 
         window.addEventListener('load', () => {
-            // 💡 왼쪽, 오른쪽 두 개의 타이틀 아이콘 캔버스에 도트 치킨 그리기
             const leftCanvas = document.getElementById('title-icon-left');
             const leftCtx = leftCanvas.getContext('2d');
             drawPixelChicken(leftCtx, 4, 4, 24);
@@ -469,7 +461,6 @@
             ctx.restore();
 
             floatingTexts.forEach(ft => {
-                // 💡 플로팅 텍스트는 오리지널 폰트로 롤백 (가독성 목적)
                 ctx.font = "bold 20px Arial"; ctx.textAlign = "center";
                 ctx.fillStyle = `rgba(255, 225, 56, ${ft.life})`;
                 ctx.fillText(ft.text, ft.x, ft.y);
@@ -516,7 +507,6 @@
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = "#FFD700";
                 
-                // 💡 캔버스 내부 카운트다운 텍스트는 픽셀 폰트 유지!
                 ctx.font = "80px 'Silkscreen'";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
@@ -546,6 +536,17 @@
             for (let i = obstacles.length - 1; i >= 0; i--) {
                 let obs = obstacles[i];
                 obs.x -= currentSpeed; 
+
+                // 😈 [핵심 패치] 무빙 파이프 이동 로직! (Sine 함수를 이용해 위아래로 스르륵 이동)
+                if (obs.isMoving) {
+                    const amplitude = 50; // 파이프가 위아래로 움직이는 진폭 (px)
+                    const moveSpeed = 2.5; // 파이프가 꿀렁이는 속도
+                    let newTop = obs.baseTop + Math.sin(gameTime * moveSpeed + obs.movePhase) * amplitude;
+                    
+                    // 파이프 틈새가 화면 밖으로 나가지 않도록 안전장치 설정
+                    const maxTop = canvas.height - obs.gap - 40; 
+                    obs.top = Math.max(40, Math.min(maxTop, newTop)); 
+                }
 
                 let cx = chicken.x; let cy = chicken.y; 
                 let hw = chicken.width / 2 - 2; 
@@ -634,27 +635,25 @@
             if (event.key.toLowerCase() === 'p' && !isGameOver) togglePause();
         });
 
-        // 🚨 [핵심 수술 파트] 캔버스와 버튼의 터치 이벤트를 완전히 통제하여 줌인 발생을 근본적으로 파괴합니다.
+        // 🚨 캔버스와 버튼의 터치 이벤트를 완전히 통제 (더블탭 줌인 완벽 차단)
         const triggerFlap = (e) => {
-            if (e.cancelable) e.preventDefault(); // 브라우저 고유동작(줌인, 스크롤 등) 완전 차단
+            if (e.cancelable) e.preventDefault(); 
             flap();
         };
 
-        // 캔버스 터치 제어
         canvas.addEventListener('touchstart', triggerFlap, { passive: false });
         canvas.addEventListener('mousedown', triggerFlap);
 
-        // FLY 버튼 터치 제어 및 시각적 애니메이션 처리
         const btnFly = document.getElementById('btn-fly');
         
         const pressBtn = (e) => {
             if (e.cancelable) e.preventDefault(); 
-            btnFly.classList.add('active-press'); // 수동으로 버튼 눌림 효과 적용
+            btnFly.classList.add('active-press'); 
             flap();
         };
         const releaseBtn = (e) => {
             if (e.cancelable) e.preventDefault();
-            btnFly.classList.remove('active-press'); // 손 떼면 원상복구
+            btnFly.classList.remove('active-press'); 
         };
 
         btnFly.addEventListener('touchstart', pressBtn, { passive: false });
@@ -663,7 +662,20 @@
         btnFly.addEventListener('mouseup', releaseBtn);
         btnFly.addEventListener('mouseleave', releaseBtn);
 
-        // 음소거 버튼
+        // 더블클릭 기본 줌 동작 완전 차단
+        document.addEventListener('dblclick', function(event) {
+            event.preventDefault();
+        }, { passive: false });
+
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) { 
+                if(event.cancelable) event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, { passive: false });
+
         document.getElementById('mute-btn').addEventListener('click', (e) => {
             isMuted = !isMuted;
             if (isMuted) { stopBGM(); e.target.innerText = '🔇 소리 켜기'; } 
