@@ -15,6 +15,10 @@
             margin: 0; padding-top: 15px; padding-bottom: 30px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none; -webkit-user-select: none; 
+            
+            /* 🚨 바로 이 줄을 추가해 주세요! (더블 탭 줌 방지, 스크롤은 허용) */
+            touch-action: manipulation; 
+            
             overflow-x: hidden; overflow-y:auto; min-height: 100dvh;
         }
         /* 메인 타이틀 롤백 */
