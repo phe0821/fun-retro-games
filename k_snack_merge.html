@@ -10,7 +10,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     <style>
         body {
-            /* 💡 [최적화 완료] 모바일 폰을 뜨겁게 만들던 무거운 SVG 노이즈 필터를 제거했습니다! */
             background: radial-gradient(circle at 50% 30%, #fff5e6 0%, #ffe0b2 40%, #ffcc80 80%, #f57c00 100%);
             display: flex; flex-direction: column; align-items: center;
             margin: 0; padding: 2px 0 25px 0; 
@@ -38,17 +37,26 @@
         #stats-board { 
             grid-column: 1 / -1; 
             justify-self: center; 
-            display: flex; gap: 10px; position: relative; z-index: 10; 
+            display: flex; gap: 8px; position: relative; z-index: 10; 
+            flex-wrap: wrap; justify-content: center;
         }
         
         .stat-box { 
             font-size: 14px; font-weight: 900; color: #fff; background: rgba(139, 69, 19, 0.7); 
-            padding: 3px 16px; 
+            padding: 3px 12px; 
             border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.2); 
             border: 2px solid rgba(255,255,255,0.3); font-family: 'Jua', sans-serif; letter-spacing: 1px; 
+            display: flex; align-items: center; justify-content: center;
         }
         .stat-box.high { background: #d35400; border-color: #f1c40f; color: #fffaf0; }
         
+        /* 🛒 상점 버튼 추가 스타일 */
+        #shop-btn {
+            background: #FFD700; color: #8B4513; border-color: #DAA520; cursor: pointer;
+            transition: transform 0.1s; text-shadow: 0 1px 1px rgba(255,255,255,0.8);
+        }
+        #shop-btn:active { transform: scale(0.95); }
+
         #side-panel { grid-column: 1; grid-row: 3; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding-top: 70px; padding-bottom: 25px; }
         
         #next-snack-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; }
@@ -117,6 +125,124 @@
         @keyframes popStamp { 0% { transform: scale(0.5); } 50% { transform: scale(1.5); } 100% { transform: scale(1); } }
         #earthquake-toast { transition: opacity 0.3s, transform 0.3s; z-index: 100; }
         #earthquake-toast.hidden { opacity: 0; transform: translateY(-10px); pointer-events: none; }
+
+        /* 🛒 황금 상점 UI CSS */
+        #shop-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            display: flex; justify-content: center; align-items: flex-start; padding-top: 60px; z-index: 9999; 
+            opacity: 1; transition: opacity 0.3s ease;
+        }
+        #shop-modal.hidden { opacity: 0; pointer-events: none; }
+        
+        .shop-container {
+            width: 320px; height: 550px; max-height: 85vh;
+            background: linear-gradient(135deg, #fffaf0 0%, #ffe0b2 100%);
+            border: 4px solid #DAA520; border-radius: 20px;
+            display: flex; flex-direction: column; padding: 15px; box-sizing: border-box;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 0 15px rgba(255,215,0,0.3);
+            transform: translateY(0); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #shop-modal.hidden .shop-container { transform: translateY(30px); }
+
+        .shop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 2px dashed rgba(218,165,32,0.5); padding-bottom: 8px; }
+        .shop-header h2 { margin: 0; color: #8B4513; font-family: 'Jua'; font-size: 22px; text-shadow: 1px 1px 0 #FFD700; display: flex; align-items: center; gap: 5px; }
+        #close-shop-btn { background: #fff; border: 2px solid #DAA520; color: #8B4513; font-size: 14px; font-weight: bold; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        
+        .shop-wallet {
+            background: #d35400; border: 2px solid #f1c40f; border-radius: 20px;
+            padding: 8px 0; font-family: 'Jua'; font-size: 16px; color: #fff;
+            margin-bottom: 15px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.2);
+            display: flex; justify-content: center; align-items: center; gap: 15px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .shop-tabs { display: flex; gap: 4px; margin-bottom: 15px; }
+        .shop-tab {
+            flex: 1; text-align: center; padding: 10px 0; font-family: 'Jua'; font-size: 15px;
+            background: #fff5e6; color: #a0522d; border-radius: 12px 12px 0 0;
+            border: 2px solid transparent; border-bottom: 3px solid #DAA520; 
+            cursor: pointer; transition: 0.2s;
+        }
+        .shop-tab.active { 
+            background: #FFD700; color: #8B4513; font-weight: bold; 
+            border: 2px solid #DAA520; border-bottom: none; transform: translateY(-2px); 
+        }
+        
+        .shop-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px; }
+        .shop-content::-webkit-scrollbar { width: 6px; }
+        .shop-content::-webkit-scrollbar-track { background: rgba(255,215,0,0.1); border-radius: 10px; }
+        .shop-content::-webkit-scrollbar-thumb { background: #DAA520; border-radius: 10px; }
+
+        .shop-item {
+            background: #fff; border: 2px solid #FFD700; border-radius: 12px;
+            padding: 10px; display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: transform 0.1s;
+        }
+        .shop-item:active { transform: scale(0.98); }
+        .shop-item-img-wrapper { width: 48px; height: 48px; background: #fff5e6; border-radius: 50%; border: 2px solid #ffe0b2; display: flex; justify-content: center; align-items: center; flex-shrink: 0; overflow: hidden; }
+        .shop-item-img { width: 36px; height: 36px; object-fit: contain; }
+        
+        .filter-night { filter: brightness(0.6) sepia(0.8) hue-rotate(200deg) saturate(300%); }
+
+        .shop-item-info { flex: 1; }
+        .shop-item-name { font-family: 'Jua'; font-size: 15px; color: #8B4513; margin-bottom: 2px; line-height: 1.1; }
+        .shop-item-desc { font-size: 11px; color: #666; line-height: 1.2; word-break: keep-all; }
+        
+        .shop-item-btn {
+            padding: 6px 12px; border-radius: 15px; font-family: 'Jua'; font-size: 13px; cursor: pointer; border: 2px solid; white-space: nowrap; transition: 0.1s;
+        }
+        .btn-buy { background: #f57c00; color: #fff; border-color: #DAA520; }
+        .btn-buy:active { background: #e65100; }
+        .btn-equip { background: #4caf50; color: #fff; border-color: #388e3c; }
+        .btn-equipped { background: #e0e0e0; color: #757575; border-color: #bdbdbd; cursor: default; }
+
+        /* 🌙 [추가] 심야 포장마차 (환경 탭) 전용 CSS - 즉시 전환 및 모바일 최적화! */
+        body.night-mode {
+            /* 깊고 푸른 밤하늘 감성 */
+            background: linear-gradient(to bottom, #0f172a 0%, #1b2a47 40%, #2e4a62 80%, #0d1117 100%);
+        }
+        
+        body.night-mode #game-title {
+            /* 제안 2 반영: 포장마차 백열전구를 늘어뜨린 듯한 화려한 네온 효과 */
+            color: #ffdda1; 
+            text-shadow: 2px 2px 0px #d35400, 0px 0px 10px #ffea00, 0px 0px 20px #ff9100, 0px 0px 30px #ff5100;
+        }
+        
+        body.night-mode .side-title { color: #ffdda1; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+        
+        body.night-mode #next-snack-bubble { 
+            /* 달빛을 받은 듯한 은은한 푸른빛 유리 질감 */
+            background: radial-gradient(circle at 30% 30%, rgba(200,220,255,0.2) 0%, rgba(50,70,100,0.4) 100%);
+            border-color: rgba(200, 220, 255, 0.4);
+            box-shadow: inset -2px -2px 6px rgba(0,0,0,0.6), inset 3px 3px 10px rgba(200,220,255,0.2), 0 8px 15px rgba(0,0,0,0.7); 
+        }
+
+        body.night-mode .stat-box {
+            /* 제안 1 반영: 밤에 맞춰 톤다운 & 테두리를 옅은 회색으로 강조 */
+            background: rgba(15, 23, 42, 0.85); 
+            border-color: #a0aec0; /* 옅은 회색/푸른빛 테두리 */
+            color: #e2e8f0;
+        }
+        
+        /* 제안 1 반영: 치킨 이모지(🍗)도 옅은 회색으로 필터 처리 */
+        body.night-mode .stamp { filter: grayscale(100%) brightness(1.5); opacity: 0.4; }
+        body.night-mode .stamp.filled { filter: grayscale(0%) brightness(1); opacity: 1; }
+
+        body.night-mode .stat-box.high {
+            /* 누적 치킨 창: 포장마차 특유의 붉은 천 색상으로 포인트! */
+            background: rgba(180, 50, 20, 0.9); border-color: #ffdda1; color: #fff;
+        }
+
+        body.night-mode #evolution-chain {
+            /* 진화 공식 패널: 어두운 밤하늘 톤으로 자연스럽게 동화됨 */
+            background: linear-gradient(to bottom, rgba(30,40,60,0.9), rgba(15,20,30,0.9)); 
+            border-color: #a0aec0;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6), inset 0 2px 5px rgba(255,255,255,0.1);
+        }
+        
+        body.night-mode .game-btn {
+            background: rgba(30, 40, 60, 0.9); color: #e2e8f0; border-color: #a0aec0;
+        }
     </style>
 </head>
 <body>
@@ -124,13 +250,12 @@
     <div id="app-grid">
         <h1 id="game-title">K-SNACK MERGE!</h1>
         
-       <div id="stats-board" style="display: flex; flex-direction: row; justify-content: center; align-items: stretch; gap: 10px; width: 100%; margin-bottom: 5px;">
-            
-            <div class="stat-box high" style="display: flex; align-items: center; justify-content: center; padding: 6px 12px; font-size: 14px;">
+       <div id="stats-board">
+            <div class="stat-box high">
                 <span style="white-space: nowrap;">누적 치킨: <span id="total-chicken" style="font-size: 16px; color: #fffea0; vertical-align: bottom;">0</span> 마리</span>
             </div>
             
-            <div class="stat-box" style="display: flex; align-items: center; justify-content: center; gap: 5px; padding: 6px 12px; background: rgba(0,0,0,0.6); font-size: 14px;">
+            <div class="stat-box" style="gap: 5px; background: rgba(0,0,0,0.6);">
                 <span style="color: #f1c40f; white-space: nowrap;">흔들기 찬스:</span>
                 <div style="display: flex; gap: 3px; font-size: 16px; margin-top: -2px;">
                     <span class="stamp" id="stamp-1">🍗</span>
@@ -139,7 +264,11 @@
                 </div>
             </div>
 
-            <div id="earthquake-toast" class="hidden stat-box" style="background: #c0392b; border-color: #f1c40f; font-size: 14px; position: absolute; top: 40px; z-index: 100; white-space: nowrap;">
+            <div class="stat-box" id="shop-btn">
+                🛒 상점
+            </div>
+
+            <div id="earthquake-toast" class="hidden stat-box" style="background: #c0392b; border-color: #f1c40f; position: absolute; top: 40px; z-index: 100; white-space: nowrap;">
                 🚨 연속 3마리 달성! 상자가 요동칩니다!
             </div>
         </div>
@@ -172,16 +301,33 @@
         </div>
     </div>
 
+    <div id="shop-modal" class="hidden">
+        <div class="shop-container">
+            <div class="shop-header">
+                <h2>🛒 K-간식 상점</h2>
+                <button id="close-shop-btn">X</button>
+            </div>
+            <div class="shop-wallet"><span>💰 금고:</span> <span>🍗 <span id="shop-wallet-count">0</span>마리</span></div>
+            <div class="shop-tabs">
+                <div class="shop-tab active" data-tab="growth">성장</div>
+                <div class="shop-tab" data-tab="collection">수집</div>
+                <div class="shop-tab" data-tab="environment">환경</div>
+            </div>
+            <div class="shop-content" id="shop-content">
+                </div>
+        </div>
+    </div>
+
     <script>
         const SNACKS = [
-            { name: "알사탕", radius: 22, img: "candy.png" },       
+            { name: "알사탕", radius: 22, img: "candy.png" },        
             { name: "호두과자", radius: 30, img: "walnut.png" },      
             { name: "델리만쥬", radius: 38, img: "manjoo.png" },      
-            { name: "왕만두", radius: 46, img: "mandu.png" },        
-            { name: "뚱붕어빵", radius: 52, img: "fish.png" },        
-            { name: "씨앗호떡", radius: 60, img: "hotteok.png" },     
+            { name: "왕만두", radius: 46, img: "mandu.png" },         
+            { name: "뚱붕어빵", radius: 52, img: "fish.png" },         
+            { name: "씨앗호떡", radius: 60, img: "hotteok.png" },      
             { name: "대왕솜사탕", radius: 72, img: "cottoncandy.png" }, 
-            { name: "황금치킨", radius: 95, img: "chicken.png" }      
+            { name: "황금치킨", radius: 95, img: "chicken.png" }       
         ];
 
         const loadedImages = {};
@@ -213,27 +359,105 @@
         let totalChickens = parseInt(localStorage.getItem('kSnackTotalChickens') || 0, 10);
         document.getElementById('total-chicken').innerText = totalChickens;
 
+        let shopData = {
+            owned: JSON.parse(localStorage.getItem('kSnackOwned')) || [],
+            equipped: JSON.parse(localStorage.getItem('kSnackEquipped')) || { growth: [], collection: [], environment: null }
+        };
+
+        ['growth', 'collection'].forEach(cat => {
+            if (shopData.equipped[cat] && !Array.isArray(shopData.equipped[cat])) {
+                shopData.equipped[cat] = [shopData.equipped[cat]];
+            } else if (!shopData.equipped[cat]) {
+                shopData.equipped[cat] = [];
+            }
+        });
+        
+        let currentShopTab = 'growth';
+        let isShopOpen = false;
+
+        // 💡 [완전판] 스킨(이미지) 및 환경(배경)을 즉시 교체하는 함수!
+        function applySkins() {
+            const collection = Array.isArray(shopData.equipped.collection) ? shopData.equipped.collection : [];
+
+            SNACKS[3].img = "mandu.png";
+            SNACKS[4].img = "fish.png";
+
+            if (collection.includes('rainbow')) SNACKS[3].img = "rainbow_mandu.png"; 
+            if (collection.includes('blackfish')) SNACKS[4].img = "black_fish.png";  
+
+            // 💡 [버그 해결] 깐깐한 파일명 검사
+            SNACKS.forEach((snack, index) => {
+                const currentFileName = loadedImages[index].src.split('/').pop();
+                if (currentFileName !== snack.img) {
+                    loadedImages[index].src = snack.img; 
+                }
+            });
+
+            // 💡 [최적화 완료] 진화 공식 UI 초고속 교체
+            const evoFormulas = document.getElementById('evolution-chain').children;
+            if (evoFormulas.length > 0) { 
+                SNACKS.forEach((snack, index) => {
+                    if (index < SNACKS.length - 1) {
+                        evoFormulas[index].querySelector('.evo-small').src = snack.img;
+                        evoFormulas[index].querySelector('.evo-big').src = SNACKS[index + 1].img;
+                    } else if (index === 7) { 
+                        evoFormulas[index].querySelector('.evo-small').src = snack.img;
+                    }
+                });
+            }
+
+            const nextSnackImgEl = document.getElementById('next-snack-img');
+            if (nextSnackImgEl && typeof upcomingSnackIndex !== 'undefined') {
+                nextSnackImgEl.src = SNACKS[upcomingSnackIndex].img;
+            }
+
+            // 🌙 [추가] 환경(배경) 스위치!
+            const environment = shopData.equipped.environment;
+            if (environment === 'night') {
+                document.body.classList.add('night-mode');
+            } else {
+                document.body.classList.remove('night-mode');
+            }
+        }
+
         let isDropping = false; let previewX = canvas.width / 2; let frameCount = 0;
-        let currentDroppingIndex = Math.floor(Math.random() * 3);
-        let upcomingSnackIndex = Math.floor(Math.random() * 3);
-        document.getElementById('next-snack-img').src = SNACKS[upcomingSnackIndex].img;
+        
+        function getRandomSnackIndex() {
+            const growth = Array.isArray(shopData.equipped.growth) ? shopData.equipped.growth : [];
+            const rand = Math.random(); 
+            
+            const hasBung = growth.includes('bungeoppang');
+            const hasMandu = growth.includes('wangmandu');
+
+            if (hasBung && hasMandu) {
+                if (rand < 0.25) return 0;
+                if (rand < 0.50) return 1;
+                if (rand < 0.75) return 2;
+                if (rand < 0.90) return 3; 
+                return 4;                  
+            } else if (hasBung && !hasMandu) {
+                if (rand < 0.30) return 0;
+                if (rand < 0.60) return 1;
+                if (rand < 0.90) return 2;
+                return 4; 
+            } else if (!hasBung && hasMandu) {
+                if (rand < 0.2833) return 0;
+                if (rand < 0.5666) return 1;
+                if (rand < 0.85) return 2;  
+                return 3;                  
+            } else {
+                return Math.floor(rand * 3); 
+            }
+        }
+
+        // 💡 [해결!] 1. 번호를 먼저 뽑고 2. 스킨을 입힙니다 
+        let currentDroppingIndex = getRandomSnackIndex();
+        let upcomingSnackIndex = getRandomSnackIndex();
+        applySkins(); 
 
         const fx1 = 20, fx2 = 340, fy_top = 180, fy_bot = 580; 
         const bx1 = 60, bx2 = 300, by_top = 130, by_bot = 560; 
         const dropY = 110; 
-
-        // 🚀 [최적화 완료] 모바일 렌더링 성능을 갉아먹던 그라데이션을 최초 1번만 캐싱!
-        const sideGradient = ctx.createLinearGradient(fx1, fy_top, bx1, by_top); 
-        sideGradient.addColorStop(0, "rgba(255, 255, 255, 0.6)"); sideGradient.addColorStop(1, "rgba(200, 180, 160, 0.2)"); 
-        
-        const sideGradientRight = ctx.createLinearGradient(fx2, fy_top, bx2, by_top); 
-        sideGradientRight.addColorStop(0, "rgba(255, 255, 255, 0.6)"); sideGradientRight.addColorStop(1, "rgba(200, 180, 160, 0.2)"); 
-        
-        const bottomGradient = ctx.createRadialGradient(canvas.width/2, fy_bot, 50, canvas.width/2, fy_bot, 200); 
-        bottomGradient.addColorStop(0, "rgba(100, 80, 60, 0.4)"); bottomGradient.addColorStop(1, "rgba(160, 140, 120, 0.1)"); 
-
-        const frontGlass = ctx.createLinearGradient(fx1, fy_top, fx2, fy_bot); 
-        frontGlass.addColorStop(0, "rgba(255, 255, 255, 0.2)"); frontGlass.addColorStop(0.5, "rgba(255, 255, 255, 0.05)"); frontGlass.addColorStop(1, "rgba(255, 255, 255, 0.1)");
 
         const wallOptions = { isStatic: true, render: { fillStyle: 'transparent' }, friction: 0.05, restitution: 0.2, label: 'Wall' };
         World.add(world, [
@@ -252,7 +476,146 @@
             if (feverCount === 3) { triggerEarthquake(); }
         }
 
-        // 🌋 완벽히 세팅된 대지진 로직!
+        const SHOP_ITEMS = {
+            growth: [
+                { id: 'wangmandu', name: '왕만두 드롭', price: 15, desc: '왕만두도<br>드롭할 수 있어요', img: 'mandu.png' },
+                { id: 'bungeoppang', name: '붕어빵 드롭', price: 20, desc: '붕어빵도<br>드롭할 수 있어요', img: 'fish.png' }
+            ],
+            collection: [
+                { id: 'blackfish', name: '까만 붕어빵', price: 10, desc: '살짝 탔지만<br>바삭한 스킨', img: 'black_fish.png' },
+                { id: 'rainbow', name: '무지개 만두', price: 8, desc: '영롱한 빛깔의<br>무지개 스킨', img: 'rainbow_mandu.png' } 
+            ],
+            environment: [
+                { id: 'night', name: '심야 포장마차', price: 10, desc: '포장마차 감성의<br>특별한 배경', img: 'tent.png' }
+            ]
+        };
+
+        function renderShopItems() {
+            document.getElementById('shop-wallet-count').innerText = totalChickens;
+            const container = document.getElementById('shop-content');
+            container.innerHTML = '';
+            
+            SHOP_ITEMS[currentShopTab].forEach(item => {
+                const isOwned = shopData.owned.includes(item.id);
+                const isEquipped = Array.isArray(shopData.equipped[currentShopTab]) 
+                    ? shopData.equipped[currentShopTab].includes(item.id) 
+                    : shopData.equipped[currentShopTab] === item.id;
+                
+                let btnHtml = '';
+                if (isEquipped) {
+                    btnHtml = `<button class="shop-item-btn btn-equipped" style="cursor: pointer;" onclick="unequipItem('${currentShopTab}', '${item.id}')">장착 해제</button>`;
+                } else if (isOwned) {
+                    btnHtml = `<button class="shop-item-btn btn-equip" onclick="equipItem('${currentShopTab}', '${item.id}')">장착하기</button>`;
+                } else {
+                    btnHtml = `<button class="shop-item-btn btn-buy" onclick="buyItem('${item.id}', '${currentShopTab}', ${item.price})">🍗 ${item.price} 구매</button>`;
+                } 
+
+                container.innerHTML += `
+                    <div class="shop-item">
+                        <div class="shop-item-img-wrapper">
+                            <img src="${item.img}" class="shop-item-img">
+                        </div>
+                        <div class="shop-item-info">
+                            <div class="shop-item-name">${item.name}</div>
+                            <div class="shop-item-desc">${item.desc}</div>
+                        </div>
+                        ${btnHtml}
+                    </div>
+                `;
+            });
+        }
+
+        window.buyItem = function(id, category, price) {
+            initAudio();
+            if (totalChickens >= price) {
+                totalChickens -= price;
+                document.getElementById('total-chicken').innerText = totalChickens;
+                localStorage.setItem('kSnackTotalChickens', totalChickens);
+                
+                shopData.owned.push(id);
+                localStorage.setItem('kSnackOwned', JSON.stringify(shopData.owned));
+                
+                playGoodSound(); 
+                renderShopItems();
+            } else {
+                alert('금고에 치킨이 부족합니다! 🍗');
+            }
+        };
+
+        window.equipItem = function(category, id) {
+            initAudio();
+            if (category === 'growth' || category === 'collection') {
+                if (!Array.isArray(shopData.equipped[category])) shopData.equipped[category] = [];
+                if (!shopData.equipped[category].includes(id)) shopData.equipped[category].push(id);
+            } else {
+                shopData.equipped[category] = id;
+            }
+            
+            localStorage.setItem('kSnackEquipped', JSON.stringify(shopData.equipped));
+            playTone(300, 'sine', audioCtx.currentTime, 0.1, 0.1);
+            applySkins(); 
+            renderShopItems();
+        };
+
+        window.unequipItem = function(category, id) {
+            initAudio();
+            if (category === 'growth' || category === 'collection') {
+                if (Array.isArray(shopData.equipped[category])) {
+                    shopData.equipped[category] = shopData.equipped[category].filter(itemId => itemId !== id);
+                }
+            } else {
+                shopData.equipped[category] = null;
+            }
+            
+            localStorage.setItem('kSnackEquipped', JSON.stringify(shopData.equipped));
+            playTone(300, 'sine', audioCtx.currentTime, 0.1, 0.1); 
+            applySkins();
+            renderShopItems();
+        };        
+
+        document.querySelectorAll('.shop-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
+                e.target.classList.add('active');
+                currentShopTab = e.target.getAttribute('data-tab');
+                renderShopItems();
+            });
+        });
+
+        let engineRunner = Runner.create(); 
+
+        document.getElementById('shop-btn').addEventListener('click', () => {
+            initAudio();
+            isShopOpen = true; 
+            Runner.stop(engineRunner); 
+            document.getElementById('shop-modal').classList.remove('hidden');
+            renderShopItems();
+        });
+
+        document.getElementById('close-shop-btn').addEventListener('click', () => {
+            isShopOpen = false;
+            document.getElementById('shop-modal').classList.add('hidden');
+
+            const growth = Array.isArray(shopData.equipped.growth) ? shopData.equipped.growth : [];
+            const hasBung = growth.includes('bungeoppang');
+            const hasMandu = growth.includes('wangmandu');
+
+            let isValidCurrent = true;
+            if (currentDroppingIndex === 4 && !hasBung) isValidCurrent = false; 
+            if (currentDroppingIndex === 3 && !hasMandu) isValidCurrent = false; 
+
+            let isValidUpcoming = true;
+            if (upcomingSnackIndex === 4 && !hasBung) isValidUpcoming = false;
+            if (upcomingSnackIndex === 3 && !hasMandu) isValidUpcoming = false;
+
+            if (!isValidCurrent) currentDroppingIndex = getRandomSnackIndex();
+            if (!isValidUpcoming) upcomingSnackIndex = getRandomSnackIndex();
+
+            document.getElementById('next-snack-img').src = SNACKS[upcomingSnackIndex].img;
+            Runner.start(engineRunner, engine); 
+        });
+
+        // 🌋 대지진 로직
         function triggerEarthquake() {
             const toast = document.getElementById('earthquake-toast');
             toast.classList.remove('hidden');
@@ -266,17 +629,12 @@
             World.add(world, safetyNet); 
 
             setTimeout(() => {
-                
                 playRumbleSound(2.5);
-
                 const shakeInterval = setInterval(() => {
                     const allBodies = Composite.allBodies(world);
                     allBodies.forEach(body => {
                         if (body.label !== 'Wall' && body.label !== 'SafetyNet') {
-                            Matter.Body.setVelocity(body, { 
-                                x: (Math.random() - 0.5) * 5, 
-                                y: (Math.random() - 0.5) * 5 - 1 
-                            });
+                            Matter.Body.setVelocity(body, { x: (Math.random() - 0.5) * 5, y: (Math.random() - 0.5) * 5 - 1 });
                         }
                     });
                 }, 100); 
@@ -284,25 +642,18 @@
                 setTimeout(() => {
                     clearInterval(shakeInterval);
                     toast.classList.add('hidden');
-                    
                     playLaunchSound();
-                    
-                    // 💡 디렉터님 맞춤형 타이밍: 0.9초 후 쿵!
-                    setTimeout(() => playFallSound(), 900);
+                    setTimeout(() => playFallSound(), 1350);
 
                     const allBodies = Composite.allBodies(world);
                     allBodies.forEach(body => {
                         if (body.label !== 'Wall' && body.label !== 'SafetyNet') {
                             Matter.Body.setPosition(body, { x: body.position.x, y: body.position.y - 10 });
-                            
                             const level = parseInt(body.label); 
                             const popPower = 18 + ((7 - level) * 2.5) + (Math.random() * 4); 
                             
-                            Matter.Body.setVelocity(body, { 
-                                x: (Math.random() - 0.5) * 12, 
-                                y: -popPower 
-                            });
-
+                            Matter.Body.setVelocity(body, { x: (Math.random() - 0.5) * 12, y: -popPower });
+                            Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.6);
                             body.frictionAir = 0.025 - (level * 0.003);
                         }
                     });
@@ -320,205 +671,32 @@
                             }
                         });
                         World.remove(world, safetyNet);
-
                     }, 4000); 
-
                 }, 2500); 
-                
             }, 1500); 
         }
 
         // 🎵 사운드 모듈
-        function playTone(freq, type, startTime, duration, vol = 0.2) {
-            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.type = type; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.value = freq;
-            gain.gain.setValueAtTime(0, startTime); gain.gain.linearRampToValueAtTime(vol, startTime + 0.02); gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-            osc.start(startTime); osc.stop(startTime + duration);
-        }
+        function playTone(freq, type, startTime, duration, vol = 0.2) { const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = type; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.value = freq; gain.gain.setValueAtTime(0, startTime); gain.gain.linearRampToValueAtTime(vol, startTime + 0.02); gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration); osc.start(startTime); osc.stop(startTime + duration); }
+        function playSnap(startTime, freq = 300) { const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'triangle'; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(freq * 1.5, startTime); osc.frequency.exponentialRampToValueAtTime(freq / 2, startTime + 0.03); gain.gain.setValueAtTime(0, startTime); gain.gain.linearRampToValueAtTime(0.5, startTime + 0.002); gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.04); osc.start(startTime); osc.stop(startTime + 0.04); }
+        function playDropSound() { if (isMuted || !audioCtx) return; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(600, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1); osc.start(); osc.stop(audioCtx.currentTime + 0.1); }
+        function playMergeSound(level) { if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33]; const baseFreq = scale[Math.min(level, scale.length - 1)]; playSnap(now, baseFreq); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(baseFreq, now); osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, now + 0.15); gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.2, now + 0.02); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2); osc.start(now); osc.stop(now + 0.2); }
+        function playGoodSound() { if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const notes = [261.63, 329.63, 392.00]; notes.forEach((freq, i) => { const t = now + (i * 0.06); playSnap(t, freq); playTone(freq, 'sine', t, 0.6, 0.25); }); }
+        function playGreatSound() { if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const notes = [261.63, 329.63, 392.00, 523.25]; notes.forEach((freq, i) => { const t = now + (i * 0.08); const mainOsc = audioCtx.createOscillator(); const mainGain = audioCtx.createGain(); mainOsc.type = 'sine'; mainOsc.connect(mainGain); mainGain.connect(audioCtx.destination); mainOsc.frequency.setValueAtTime(freq, t); mainGain.gain.setValueAtTime(0, t); mainGain.gain.linearRampToValueAtTime(0.2, t + 0.02); mainGain.gain.exponentialRampToValueAtTime(0.01, t + 0.8); mainOsc.start(t); mainOsc.stop(t + 0.8); }); }
+        function playWowSound() { if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const notes = [329.63, 392.00, 523.25, 587.33, 783.99]; notes.forEach((freq, i) => { const t = now + (i * 0.06); const mainOsc = audioCtx.createOscillator(); const mainGain = audioCtx.createGain(); mainOsc.type = 'triangle'; mainOsc.connect(mainGain); mainGain.connect(audioCtx.destination); mainOsc.frequency.setValueAtTime(freq, t); mainGain.gain.setValueAtTime(0, t); mainGain.gain.linearRampToValueAtTime(0.25, t + 0.02); mainGain.gain.exponentialRampToValueAtTime(0.01, t + 1.2); mainOsc.start(t); mainOsc.stop(t + 1.2); }); }
+        function playClearSound() { if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; for (let i = 0; i < 30; i++) { const popTime = now + (Math.random() * 1.45); const popOsc = audioCtx.createOscillator(); const popGain = audioCtx.createGain(); popOsc.type = 'sine'; popOsc.connect(popGain); popGain.connect(audioCtx.destination); const startFreq = 400 + Math.random() * 300; popOsc.frequency.setValueAtTime(startFreq, popTime); popOsc.frequency.exponentialRampToValueAtTime(startFreq * 0.5, popTime + 0.05); popGain.gain.setValueAtTime(0, popTime); popGain.gain.linearRampToValueAtTime(0.15 + Math.random() * 0.1, popTime + 0.01); popGain.gain.exponentialRampToValueAtTime(0.01, popTime + 0.06); popOsc.start(popTime); popOsc.stop(popTime + 0.06); const snapOsc = audioCtx.createOscillator(); const snapGain = audioCtx.createGain(); snapOsc.type = 'triangle'; snapOsc.connect(snapGain); snapGain.connect(audioCtx.destination); snapOsc.frequency.setValueAtTime(800 + Math.random() * 500, popTime); snapGain.gain.setValueAtTime(0.05, popTime); snapGain.gain.exponentialRampToValueAtTime(0.001, popTime + 0.02); snapOsc.start(popTime); snapOsc.stop(popTime + 0.02); } const clearNotes = [261.63, 392.00, 523.25, 659.25, 783.99, 1046.50]; clearNotes.forEach((freq, i) => { const t = now + (i * 0.05); const chordOsc = audioCtx.createOscillator(); const chordGain = audioCtx.createGain(); chordOsc.type = 'triangle'; chordOsc.connect(chordGain); chordGain.connect(audioCtx.destination); chordOsc.frequency.setValueAtTime(freq, t); chordGain.gain.setValueAtTime(0, t); chordGain.gain.linearRampToValueAtTime(0.3, t + 0.02); chordGain.gain.exponentialRampToValueAtTime(0.01, t + 1.5); chordOsc.start(t); chordOsc.stop(t + 1.5); }); }
+        function playRumbleSound(duration) { if (isMuted || !audioCtx) return; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sawtooth'; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(40, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + duration / 2); osc.frequency.linearRampToValueAtTime(40, audioCtx.currentTime + duration); gain.gain.setValueAtTime(0, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.04, audioCtx.currentTime + 0.2); gain.gain.setValueAtTime(0.04, audioCtx.currentTime + duration - 0.2); gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + duration); osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime + duration); }
+        function playLaunchSound() { if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const boomOsc = audioCtx.createOscillator(); const boomGain = audioCtx.createGain(); boomOsc.type = 'triangle'; boomOsc.connect(boomGain); boomGain.connect(audioCtx.destination); boomOsc.frequency.setValueAtTime(300, now); boomOsc.frequency.exponentialRampToValueAtTime(30, now + 0.2); boomGain.gain.setValueAtTime(0, now); boomGain.gain.linearRampToValueAtTime(0.12, now + 0.02); boomGain.gain.exponentialRampToValueAtTime(0.001, now + 0.6); boomOsc.start(now); boomOsc.stop(now + 0.6); const snapOsc = audioCtx.createOscillator(); const snapGain = audioCtx.createGain(); snapOsc.type = 'sawtooth'; snapOsc.connect(snapGain); snapGain.connect(audioCtx.destination); snapOsc.frequency.setValueAtTime(600, now); snapOsc.frequency.exponentialRampToValueAtTime(50, now + 0.15); snapGain.gain.setValueAtTime(0, now); snapGain.gain.linearRampToValueAtTime(0.08, now + 0.01); snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3); snapOsc.start(now); snapOsc.stop(now + 0.3); }
+        function playFallSound() { if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(30, now + 0.15); gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.10, now + 0.02); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3); osc.start(now); osc.stop(now + 0.3); }
 
-        function playSnap(startTime, freq = 300) {
-            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.type = 'triangle'; osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.frequency.setValueAtTime(freq * 1.5, startTime); osc.frequency.exponentialRampToValueAtTime(freq / 2, startTime + 0.03);
-            gain.gain.setValueAtTime(0, startTime); gain.gain.linearRampToValueAtTime(0.5, startTime + 0.002); gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.04); 
-            osc.start(startTime); osc.stop(startTime + 0.04);
-        }
-
-        function playDropSound() {
-            if (isMuted || !audioCtx) return;
-            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.type = 'sine'; osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.frequency.setValueAtTime(600, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-        }
-
-        function playMergeSound(level) {
-            if (isMuted || !audioCtx) return;
-            const now = audioCtx.currentTime; 
-            const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33];
-            const baseFreq = scale[Math.min(level, scale.length - 1)];
-
-            playSnap(now, baseFreq);
-            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.type = 'sine'; osc.connect(gain); gain.connect(audioCtx.destination);
-            
-            osc.frequency.setValueAtTime(baseFreq, now); 
-            osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, now + 0.15); 
-            
-            gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.2, now + 0.02); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-            osc.start(now); osc.stop(now + 0.2);
-        }
-
-        function playGoodSound() {
-            if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const notes = [261.63, 329.63, 392.00]; 
-            notes.forEach((freq, i) => { const t = now + (i * 0.06); playSnap(t, freq); playTone(freq, 'sine', t, 0.6, 0.25); });
-        }
-        
-        function playGreatSound() {
-            if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; 
-            const notes = [261.63, 329.63, 392.00, 523.25]; 
-            notes.forEach((freq, i) => {
-                const t = now + (i * 0.08); 
-                const mainOsc = audioCtx.createOscillator(); const mainGain = audioCtx.createGain();
-                mainOsc.type = 'sine'; mainOsc.connect(mainGain); mainGain.connect(audioCtx.destination);
-                mainOsc.frequency.setValueAtTime(freq, t); 
-                mainGain.gain.setValueAtTime(0, t); mainGain.gain.linearRampToValueAtTime(0.2, t + 0.02); mainGain.gain.exponentialRampToValueAtTime(0.01, t + 0.8);
-                mainOsc.start(t); mainOsc.stop(t + 0.8);
-            });
-        }
-
-        function playWowSound() {
-            if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; 
-            const notes = [329.63, 392.00, 523.25, 587.33, 783.99]; 
-            notes.forEach((freq, i) => {
-                const t = now + (i * 0.06); 
-                const mainOsc = audioCtx.createOscillator(); const mainGain = audioCtx.createGain();
-                mainOsc.type = 'triangle'; mainOsc.connect(mainGain); mainGain.connect(audioCtx.destination);
-                mainOsc.frequency.setValueAtTime(freq, t); 
-                mainGain.gain.setValueAtTime(0, t); mainGain.gain.linearRampToValueAtTime(0.25, t + 0.02); mainGain.gain.exponentialRampToValueAtTime(0.01, t + 1.2);
-                mainOsc.start(t); mainOsc.stop(t + 1.2);
-            });
-        }
-
-        function playClearSound() {
-            if (isMuted || !audioCtx) return; const now = audioCtx.currentTime;
-
-            for (let i = 0; i < 30; i++) {
-                const popTime = now + (Math.random() * 1.45); 
-                const popOsc = audioCtx.createOscillator(); const popGain = audioCtx.createGain();
-                popOsc.type = 'sine'; popOsc.connect(popGain); popGain.connect(audioCtx.destination);
-                
-                const startFreq = 400 + Math.random() * 300; 
-                popOsc.frequency.setValueAtTime(startFreq, popTime);
-                popOsc.frequency.exponentialRampToValueAtTime(startFreq * 0.5, popTime + 0.05); 
-                
-                popGain.gain.setValueAtTime(0, popTime); 
-                popGain.gain.linearRampToValueAtTime(0.15 + Math.random() * 0.1, popTime + 0.01); 
-                popGain.gain.exponentialRampToValueAtTime(0.01, popTime + 0.06);
-                popOsc.start(popTime); popOsc.stop(popTime + 0.06);
-
-                const snapOsc = audioCtx.createOscillator(); const snapGain = audioCtx.createGain();
-                snapOsc.type = 'triangle'; snapOsc.connect(snapGain); snapGain.connect(audioCtx.destination);
-                
-                snapOsc.frequency.setValueAtTime(800 + Math.random() * 500, popTime);
-                snapGain.gain.setValueAtTime(0.05, popTime); 
-                snapGain.gain.exponentialRampToValueAtTime(0.001, popTime + 0.02); 
-                
-                snapOsc.start(popTime); snapOsc.stop(popTime + 0.02);
-            }
-
-            const clearNotes = [261.63, 392.00, 523.25, 659.25, 783.99, 1046.50]; 
-            clearNotes.forEach((freq, i) => {
-                const t = now + (i * 0.05); 
-                const chordOsc = audioCtx.createOscillator(); const chordGain = audioCtx.createGain();
-                chordOsc.type = 'triangle'; chordOsc.connect(chordGain); chordGain.connect(audioCtx.destination);
-                chordOsc.frequency.setValueAtTime(freq, t);
-                
-                chordGain.gain.setValueAtTime(0, t);
-                chordGain.gain.linearRampToValueAtTime(0.3, t + 0.02);
-                chordGain.gain.exponentialRampToValueAtTime(0.01, t + 1.5); 
-                
-                chordOsc.start(t); chordOsc.stop(t + 1.5); 
-            });
-        }
-
-        function playRumbleSound(duration) {
-            if (isMuted || !audioCtx) return;
-            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.type = 'sawtooth'; osc.connect(gain); gain.connect(audioCtx.destination);
-            
-            osc.frequency.setValueAtTime(40, audioCtx.currentTime); 
-            osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + duration / 2);
-            osc.frequency.linearRampToValueAtTime(40, audioCtx.currentTime + duration);
-
-            gain.gain.setValueAtTime(0, audioCtx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.04, audioCtx.currentTime + 0.2); 
-            gain.gain.setValueAtTime(0.04, audioCtx.currentTime + duration - 0.2);
-            gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + duration); 
-
-            osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime + duration);
-        }
-
-        function playLaunchSound() {
-            if (isMuted || !audioCtx) return;
-            const now = audioCtx.currentTime;
-
-            const boomOsc = audioCtx.createOscillator(); 
-            const boomGain = audioCtx.createGain();
-            boomOsc.type = 'triangle'; 
-            boomOsc.connect(boomGain); boomGain.connect(audioCtx.destination);
-
-            boomOsc.frequency.setValueAtTime(300, now);
-            boomOsc.frequency.exponentialRampToValueAtTime(30, now + 0.2); 
-
-            boomGain.gain.setValueAtTime(0, now);
-            boomGain.gain.linearRampToValueAtTime(0.12, now + 0.02); 
-            boomGain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
-
-            boomOsc.start(now); boomOsc.stop(now + 0.6);
-
-            const snapOsc = audioCtx.createOscillator(); 
-            const snapGain = audioCtx.createGain();
-            snapOsc.type = 'sawtooth'; 
-            snapOsc.connect(snapGain); snapGain.connect(audioCtx.destination);
-
-            snapOsc.frequency.setValueAtTime(600, now);
-            snapOsc.frequency.exponentialRampToValueAtTime(50, now + 0.15); 
-
-            snapGain.gain.setValueAtTime(0, now);
-            snapGain.gain.linearRampToValueAtTime(0.08, now + 0.01); 
-            snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-
-            snapOsc.start(now); snapOsc.stop(now + 0.3);
-        }
-
-        function playFallSound() {
-            if (isMuted || !audioCtx) return;
-            const now = audioCtx.currentTime;
-
-            const osc = audioCtx.createOscillator(); 
-            const gain = audioCtx.createGain();
-            
-            osc.type = 'sine'; 
-            osc.connect(gain); gain.connect(audioCtx.destination);
-
-            osc.frequency.setValueAtTime(150, now);
-            osc.frequency.exponentialRampToValueAtTime(30, now + 0.15); 
-
-            gain.gain.setValueAtTime(0, now);
-            gain.gain.linearRampToValueAtTime(0.10, now + 0.02); 
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3); 
-
-            osc.start(now); osc.stop(now + 0.3);
-        }
-    
         document.getElementById('mute-btn').addEventListener('click', (e) => { isMuted = !isMuted; e.target.innerText = isMuted ? '🔇 소리 꺼짐' : '🔊 소리 켜짐'; });
         
         document.getElementById('restart-btn').addEventListener('click', () => {
             const allBodies = Composite.allBodies(world);
             allBodies.forEach(body => { if (body.label !== 'Wall') World.remove(world, body); });
-            currentDroppingIndex = Math.floor(Math.random() * 3); upcomingSnackIndex = Math.floor(Math.random() * 3);
+            
+            currentDroppingIndex = getRandomSnackIndex(); 
+            upcomingSnackIndex = getRandomSnackIndex(); 
             document.getElementById('next-snack-img').src = SNACKS[upcomingSnackIndex].img;
             isDropping = false;
         });
@@ -543,23 +721,17 @@
             const pairs = event.pairs;
             for (let i = 0; i < pairs.length; i++) {
                 const bodyA = pairs[i].bodyA; const bodyB = pairs[i].bodyB;
-                
                 if (bodyA.isMerging || bodyB.isMerging) continue;
 
                 if (bodyA.label === bodyB.label && bodyA.label !== 'Wall') {
-                    
-                    bodyA.isMerging = true; 
-                    bodyB.isMerging = true;
-
+                    bodyA.isMerging = true; bodyB.isMerging = true;
                     let level = parseInt(bodyA.label);
-                    
                     const newX = (bodyA.position.x + bodyB.position.x) / 2;
                     const newY = (bodyA.position.y + bodyB.position.y) / 2;
 
                     if (level < SNACKS.length - 1) {
                         World.remove(world, bodyA); World.remove(world, bodyB);
                         const nextLevel = level + 1;
-                        
                         const newSnack = createSnack(newX, newY, nextLevel); 
                         Matter.Body.setVelocity(newSnack, { x: (Math.random() - 0.5) * 2, y: -4 });
 
@@ -567,11 +739,9 @@
                         else if (nextLevel === 6) { playGreatSound(); triggerEffect('great-effect', 'show-great'); } 
                         else if (nextLevel === 7) { 
                             playWowSound(); triggerEffect('wow-effect', 'show-wow'); 
-                            
                             totalChickens++; 
                             localStorage.setItem('kSnackTotalChickens', totalChickens); 
                             document.getElementById('total-chicken').innerText = totalChickens;
-                            
                             addChickenFever();
                         } else { playMergeSound(nextLevel); }
                     } 
@@ -583,80 +753,109 @@
             }
         });
 
-        // 🚀 [최적화 완료] 캐싱된 그라데이션을 재사용하여 훨씬 부드럽게 돌아갑니다!
+        // 💡 [최적화 완료] 캔버스 그리기 함수 - 즉시 전환! 연산량 폭풍 감소!
         function renderLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height); frameCount++;
-            
-            ctx.fillStyle = "rgba(255, 255, 255, 0.45)"; ctx.fillRect(bx1, by_top, bx2 - bx1, by_bot - by_top);
-            
-            ctx.fillStyle = sideGradient;
-            ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(bx1, by_top); ctx.lineTo(bx1, by_bot); ctx.lineTo(fx1, fy_bot); ctx.fill(); 
-            
-            ctx.fillStyle = sideGradientRight;
-            ctx.beginPath(); ctx.moveTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.lineTo(bx2, by_bot); ctx.lineTo(fx2, fy_bot); ctx.fill(); 
-            
-            ctx.fillStyle = bottomGradient;
-            ctx.beginPath(); ctx.moveTo(fx1, fy_bot); ctx.lineTo(bx1, by_bot); ctx.lineTo(bx2, by_bot); ctx.lineTo(fx2, fy_bot); ctx.fill();
+            if (!isShopOpen) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height); frameCount++;
+                
+                // 🎨 캔버스 그라데이션 그리기 
+                const gradientTop = ctx.createLinearGradient(0, fy_top, 0, by_top);
+                gradientTop.addColorStop(0, "rgba(255, 255, 255, 0.45)"); gradientTop.addColorStop(1, "rgba(255, 255, 255, 0)");
+                ctx.fillStyle = gradientTop; ctx.fillRect(bx1, by_top, bx2 - bx1, fy_top - by_top);
 
-            ctx.strokeStyle = "rgba(255, 255, 240, 0.8)"; ctx.lineWidth = 2; ctx.lineJoin = "round"; ctx.shadowColor = "rgba(255, 255, 255, 0.5)"; ctx.shadowBlur = 5; 
-            ctx.strokeRect(bx1, by_top, bx2 - bx1, by_bot - by_top); 
-            ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(bx1, by_top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx1, fy_bot); ctx.lineTo(bx1, by_bot); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx2, fy_bot); ctx.lineTo(bx2, by_bot); ctx.stroke();
-            ctx.shadowBlur = 0; 
+                const sideGradient = ctx.createLinearGradient(fx1, fy_top, bx1, by_top); 
+                sideGradient.addColorStop(0, "rgba(255, 255, 255, 0.6)"); sideGradient.addColorStop(1, "rgba(200, 180, 160, 0.2)"); 
+                ctx.fillStyle = sideGradient;
+                ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(bx1, by_top); ctx.lineTo(bx1, by_bot); ctx.lineTo(fx1, fy_bot); ctx.fill(); 
+                
+                const sideGradientRight = ctx.createLinearGradient(fx2, fy_top, bx2, by_top); 
+                sideGradientRight.addColorStop(0, "rgba(255, 255, 255, 0.6)"); sideGradientRight.addColorStop(1, "rgba(200, 180, 160, 0.2)"); 
+                ctx.fillStyle = sideGradientRight;
+                ctx.beginPath(); ctx.moveTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.lineTo(bx2, by_bot); ctx.lineTo(fx2, fy_bot); ctx.fill(); 
+                
+                const bottomGradient = ctx.createRadialGradient(canvas.width/2, fy_bot, 50, canvas.width/2, fy_bot, 200); 
+                bottomGradient.addColorStop(0, "rgba(100, 80, 60, 0.4)"); bottomGradient.addColorStop(1, "rgba(160, 140, 120, 0.1)"); 
+                ctx.fillStyle = bottomGradient;
+                ctx.beginPath(); ctx.moveTo(fx1, fy_bot); ctx.lineTo(bx1, by_bot); ctx.lineTo(bx2, by_bot); ctx.lineTo(fx2, fy_bot); ctx.fill();
 
-            ctx.strokeStyle = "#ffb142"; ctx.lineWidth = 5; ctx.shadowColor = "#ffb142"; ctx.shadowBlur = 8;
-            ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.lineTo(bx1, by_top); ctx.closePath(); ctx.stroke();
-            ctx.shadowBlur = 0;
+                // 🌙 [제안 3 반영] 0초 즉시 전환! CSS에서 클래스만 확인해서 색상 바로 적용
+                const isNight = document.body.classList.contains('night-mode');
+                
+                // 낮: 주황색, 밤: 포장마차 붉은색
+                const innerColor = isNight ? "rgba(220, 40, 40, 0.6)" : "rgba(255, 177, 66, 0.6)";
+                const outerColor = isNight ? "rgb(220, 40, 40)" : "rgb(255, 177, 66)";
 
-            if (!isDropping) {
-                const r = SNACKS[currentDroppingIndex].radius; const safeX = Math.max(r + 20, Math.min(previewX, canvas.width - r - 20));
-                ctx.beginPath(); ctx.setLineDash([6, 5]); ctx.moveTo(safeX, dropY + r); ctx.lineTo(safeX, fy_bot);
-                ctx.strokeStyle = 'rgba(255, 120, 0, 0.9)'; ctx.lineWidth = 2.5; ctx.shadowColor = "rgba(255, 255, 255, 0.6)"; ctx.shadowBlur = 4; ctx.stroke(); ctx.setLineDash([]); ctx.shadowBlur = 0; 
-                ctx.globalAlpha = 0.8; let bob = Math.sin(frameCount * 0.1) * 3; const img = loadedImages[currentDroppingIndex]; if (img && img.complete) { ctx.drawImage(img, safeX - r, dropY - r + bob, r * 2, r * 2); } ctx.globalAlpha = 1.0;
-            }
+                // 🎨 안쪽 테두리 그리기
+                ctx.strokeStyle = innerColor; 
+                ctx.lineWidth = 2; ctx.lineJoin = "round"; 
+                ctx.strokeRect(bx1, by_top, bx2 - bx1, by_bot - by_top); 
+                ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(bx1, by_top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx1, fy_bot); ctx.lineTo(bx1, by_bot); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx2, fy_bot); ctx.lineTo(bx2, by_bot); ctx.stroke();
+                
+                // 🎨 게임 오버 라인 (상단 테두리)
+                ctx.strokeStyle = outerColor; 
+                ctx.lineWidth = 5; 
+                ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.lineTo(bx1, by_top); ctx.closePath(); ctx.stroke();
 
-            const bodies = Matter.Composite.allBodies(world);
-            bodies.forEach(body => {
-                if (body.label !== 'Wall' && body.label !== 'SafetyNet') { 
-                    const level = parseInt(body.label); const img = loadedImages[level]; const r = SNACKS[level].radius; const visualR = r * 1.35; 
-                    ctx.save(); 
+                if (!isDropping) {
+                    const r = SNACKS[currentDroppingIndex].radius; const safeX = Math.max(r + 20, Math.min(previewX, canvas.width - r - 20));
                     
-                    if (body.position.y > fy_top && body.position.x > fx1 && body.position.x < fx2) {
-                        ctx.beginPath();
-                        ctx.rect(fx1, 0, fx2 - fx1, fy_bot);
-                        ctx.clip();
-                    }
-
-                    ctx.translate(body.position.x, body.position.y); ctx.rotate(body.angle);
-                    if (img && img.complete) { ctx.drawImage(img, -visualR, -visualR, visualR * 2, visualR * 2); }
-                    ctx.restore();
+                    ctx.beginPath(); ctx.setLineDash([6, 5]); ctx.moveTo(safeX, dropY + r); ctx.lineTo(safeX, fy_bot);
+                    ctx.strokeStyle = 'rgba(255, 120, 0, 0.9)'; ctx.lineWidth = 2.5; ctx.stroke(); ctx.setLineDash([]); 
+                    
+                    ctx.globalAlpha = 0.8; let bob = Math.sin(frameCount * 0.1) * 3; const img = loadedImages[currentDroppingIndex]; if (img && img.complete) { ctx.drawImage(img, safeX - r, dropY - r + bob, r * 2, r * 2); } ctx.globalAlpha = 1.0;
                 }
-            });
 
-            ctx.fillStyle = frontGlass; ctx.fillRect(fx1, fy_top, fx2 - fx1, fy_bot - fy_top);
-            ctx.beginPath(); ctx.moveTo(fx1 + 50, fy_top); ctx.lineTo(fx1 + 150, fy_top); ctx.lineTo(fx1 + 100, fy_bot); ctx.lineTo(fx1, fy_bot); ctx.fillStyle = "rgba(255, 255, 255, 0.08)"; ctx.fill();
-            ctx.strokeStyle = "rgba(255, 255, 240, 0.9)"; ctx.lineWidth = 3; ctx.shadowColor = "rgba(255, 255, 255, 0.6)"; ctx.shadowBlur = 5; ctx.strokeRect(fx1, fy_top, fx2 - fx1, fy_bot - fy_top); ctx.shadowBlur = 0;
+                const bodies = Matter.Composite.allBodies(world);
+                bodies.forEach(body => {
+                    if (body.label !== 'Wall' && body.label !== 'SafetyNet') { 
+                        const level = parseInt(body.label); const img = loadedImages[level]; const r = SNACKS[level].radius; const visualR = r * 1.35; 
+                        ctx.save(); 
+                        
+                        if (body.position.y > fy_top && body.position.x > fx1 && body.position.x < fx2) {
+                            ctx.beginPath();
+                            ctx.rect(fx1, 0, fx2 - fx1, fy_bot);
+                            ctx.clip();
+                        }
 
+                        ctx.translate(body.position.x, body.position.y); ctx.rotate(body.angle);
+                        if (img && img.complete) { ctx.drawImage(img, -visualR, -visualR, visualR * 2, visualR * 2); }
+                        ctx.restore();
+                    }
+                });
+
+                // 🎨 앞유리 테두리 선 
+                const frontGlass = ctx.createLinearGradient(fx1, fy_top, fx2, fy_bot); 
+                frontGlass.addColorStop(0, "rgba(255, 255, 255, 0.2)"); frontGlass.addColorStop(0.5, "rgba(255, 255, 255, 0.05)"); frontGlass.addColorStop(1, "rgba(255, 255, 255, 0.1)");
+                
+                ctx.fillStyle = frontGlass; ctx.fillRect(fx1, fy_top, fx2 - fx1, fy_bot - fy_top);
+                ctx.strokeStyle = outerColor; 
+                ctx.lineWidth = 3; ctx.strokeRect(fx1, fy_top, fx2 - fx1, fy_bot - fy_top); 
+            }
             requestAnimationFrame(renderLoop);
         }
 
         function getPointerX(e) { const rect = canvas.getBoundingClientRect(); const clientX = e.touches ? e.touches[0].clientX : e.clientX; return (clientX - rect.left) * (canvas.width / rect.width); }
 
         function dropSnack() {
-            if (isDropping) return; initAudio(); isDropping = true;
+            if (isDropping || isShopOpen) return; 
+            initAudio(); isDropping = true;
             const r = SNACKS[currentDroppingIndex].radius; const safeX = Math.max(r + 20, Math.min(previewX, canvas.width - r - 20));
             createSnack(safeX, dropY, currentDroppingIndex); playDropSound(); 
-            currentDroppingIndex = upcomingSnackIndex; upcomingSnackIndex = Math.floor(Math.random() * 3);
+            
+            currentDroppingIndex = upcomingSnackIndex; 
+            upcomingSnackIndex = getRandomSnackIndex(); 
+            
             document.getElementById('next-snack-img').src = SNACKS[upcomingSnackIndex].img;
             setTimeout(() => { isDropping = false; }, 600);
         }
 
-        canvas.addEventListener('mousemove', (e) => { previewX = getPointerX(e); });
+        canvas.addEventListener('mousemove', (e) => { if(!isShopOpen) previewX = getPointerX(e); });
         canvas.addEventListener('mousedown', dropSnack);
-        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); previewX = getPointerX(e); }, {passive: false});
-        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); previewX = getPointerX(e); }, {passive: false});
-        canvas.addEventListener('touchend', (e) => { e.preventDefault(); dropSnack(); }, {passive: false});
+        canvas.addEventListener('touchstart', (e) => { if(!isShopOpen) { e.preventDefault(); previewX = getPointerX(e); } }, {passive: false});
+        canvas.addEventListener('touchmove', (e) => { if(!isShopOpen) { e.preventDefault(); previewX = getPointerX(e); } }, {passive: false});
+        canvas.addEventListener('touchend', (e) => { if(!isShopOpen) { e.preventDefault(); dropSnack(); } }, {passive: false});
 
-        Runner.run(Runner.create(), engine); renderLoop();
+        Runner.run(engineRunner, engine); renderLoop();
     </script>
 </body>
 </html>
