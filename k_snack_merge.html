@@ -10,29 +10,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     <style>
         body {
+            /* 💡 [최적화 완료] 모바일 폰을 뜨겁게 만들던 무거운 SVG 노이즈 필터를 제거했습니다! */
             background: radial-gradient(circle at 50% 30%, #fff5e6 0%, #ffe0b2 40%, #ffcc80 80%, #f57c00 100%);
             display: flex; flex-direction: column; align-items: center;
-            /* 💡 상단 패딩 축소 (10px -> 2px)하여 전체를 위로 올림 */
             margin: 0; padding: 2px 0 25px 0; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none; -webkit-user-select: none; touch-action: none;
             overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: none; 
             min-height: 100dvh;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"), radial-gradient(circle at 50% 30%, #fff5e6 0%, #ffe0b2 40%, #ffcc80 80%, #f57c00 100%);
         }
         
         #app-grid {
             display: grid; 
             grid-template-columns: 100px minmax(0, 360px); 
             grid-template-rows: auto auto auto auto;
-            /* 💡 위아래 요소 간의 여백(gap) 축소 (4px -> 2px) */
             gap: 2px 15px; justify-content: center; width: 100%; padding: 0 10px; box-sizing: border-box;
         }
 
         #game-title {
             grid-column: 1 / -1; 
             justify-self: center; 
-            /* 💡 타이틀 위아래 마진 축소 및 폰트 살짝 축소로 공간 확보 */
             margin: 2px 0 0px 0; color: #fff; font-size: 26px; font-weight: normal; 
             text-shadow: 3px 3px 0px #d35400, 0px 4px 8px rgba(0,0,0,0.3); 
             letter-spacing: 1px; font-family: 'Bungee', cursive;
@@ -44,7 +41,6 @@
             display: flex; gap: 10px; position: relative; z-index: 10; 
         }
         
-        /* 💡 점수판 높이(다이어트) 축소: 패딩(6px -> 3px) 및 기본 폰트(16px -> 14px) 감소 */
         .stat-box { 
             font-size: 14px; font-weight: 900; color: #fff; background: rgba(139, 69, 19, 0.7); 
             padding: 3px 16px; 
@@ -98,13 +94,11 @@
 
         #button-container { 
             grid-column: 1 / -1; justify-self: center; 
-            /* 💡 버튼 위 여백 최소화하여 캔버스와 밀착 */
             display: flex; gap: 8px; margin-top: 0px; position: relative; z-index: 10; 
             flex-wrap: wrap; justify-content: center;
         }
         
         .game-btn { 
-            /* 💡 버튼 패딩도 살짝 줄여서 세로 높이를 다이어트 */
             padding: 8px 12px; 
             border-radius: 20px; font-size: 14px; font-family: 'Jua', sans-serif; 
             cursor: pointer; box-shadow: 0 4px 6px rgba(139, 69, 19, 0.1); 
@@ -117,6 +111,12 @@
         #mute-btn { background: #fff; color: #d35400; border-color: #e1b12c; }
         #restart-btn { background: #d35400; color: #fff; border-color: #c0392b; }
         #home-btn { background: #fff; color: #8B4513; border-color: #8B4513; text-decoration: none; }
+
+        .stamp { opacity: 0.2; filter: grayscale(100%); transition: all 0.3s ease; }
+        .stamp.filled { opacity: 1; filter: grayscale(0%); animation: popStamp 0.4s ease-out forwards; }
+        @keyframes popStamp { 0% { transform: scale(0.5); } 50% { transform: scale(1.5); } 100% { transform: scale(1); } }
+        #earthquake-toast { transition: opacity 0.3s, transform 0.3s; z-index: 100; }
+        #earthquake-toast.hidden { opacity: 0; transform: translateY(-10px); pointer-events: none; }
     </style>
 </head>
 <body>
@@ -124,8 +124,24 @@
     <div id="app-grid">
         <h1 id="game-title">K-SNACK MERGE!</h1>
         
-        <div id="stats-board">
-            <div class="stat-box high">누적 달성 치킨: <span id="total-chicken" style="font-size: 18px; color: #fffea0;">0</span> 마리</div>
+       <div id="stats-board" style="display: flex; flex-direction: row; justify-content: center; align-items: stretch; gap: 10px; width: 100%; margin-bottom: 5px;">
+            
+            <div class="stat-box high" style="display: flex; align-items: center; justify-content: center; padding: 6px 12px; font-size: 14px;">
+                <span style="white-space: nowrap;">누적 치킨: <span id="total-chicken" style="font-size: 16px; color: #fffea0; vertical-align: bottom;">0</span> 마리</span>
+            </div>
+            
+            <div class="stat-box" style="display: flex; align-items: center; justify-content: center; gap: 5px; padding: 6px 12px; background: rgba(0,0,0,0.6); font-size: 14px;">
+                <span style="color: #f1c40f; white-space: nowrap;">흔들기 찬스:</span>
+                <div style="display: flex; gap: 3px; font-size: 16px; margin-top: -2px;">
+                    <span class="stamp" id="stamp-1">🍗</span>
+                    <span class="stamp" id="stamp-2">🍗</span>
+                    <span class="stamp" id="stamp-3">🍗</span>
+                </div>
+            </div>
+
+            <div id="earthquake-toast" class="hidden stat-box" style="background: #c0392b; border-color: #f1c40f; font-size: 14px; position: absolute; top: 40px; z-index: 100; white-space: nowrap;">
+                🚨 연속 3마리 달성! 상자가 요동칩니다!
+            </div>
         </div>
 
         <div id="side-panel">
@@ -150,7 +166,7 @@
         </div>
 
         <div id="button-container">
-            <button id="restart-btn" class="game-btn">박스 비우기 찬스</button>
+            <button id="restart-btn" class="game-btn">박스 비우기</button>
             <button id="mute-btn" class="game-btn">🔊 소리 켜짐</button>
             <button id="home-btn" class="game-btn" onclick="location.href='index.html'">🏠 홈으로 이동</button>
         </div>
@@ -161,7 +177,7 @@
             { name: "알사탕", radius: 22, img: "candy.png" },       
             { name: "호두과자", radius: 30, img: "walnut.png" },      
             { name: "델리만쥬", radius: 38, img: "manjoo.png" },      
-            { name: "왕만두", radius: 46, img: "mandu.png" },       
+            { name: "왕만두", radius: 46, img: "mandu.png" },        
             { name: "뚱붕어빵", radius: 52, img: "fish.png" },        
             { name: "씨앗호떡", radius: 60, img: "hotteok.png" },     
             { name: "대왕솜사탕", radius: 72, img: "cottoncandy.png" }, 
@@ -190,8 +206,6 @@
               Bodies = Matter.Bodies, Events = Matter.Events, Runner = Matter.Runner, Composite = Matter.Composite;
 
         const engine = Engine.create(); const world = engine.world;
-        
-        // 💡 물리 엔진 패치 1: 중력을 1.2로 살짝 올려 아래로 잘 파고들게 세팅!
         engine.gravity.y = 1.2; 
         
         const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
@@ -208,6 +222,19 @@
         const bx1 = 60, bx2 = 300, by_top = 130, by_bot = 560; 
         const dropY = 110; 
 
+        // 🚀 [최적화 완료] 모바일 렌더링 성능을 갉아먹던 그라데이션을 최초 1번만 캐싱!
+        const sideGradient = ctx.createLinearGradient(fx1, fy_top, bx1, by_top); 
+        sideGradient.addColorStop(0, "rgba(255, 255, 255, 0.6)"); sideGradient.addColorStop(1, "rgba(200, 180, 160, 0.2)"); 
+        
+        const sideGradientRight = ctx.createLinearGradient(fx2, fy_top, bx2, by_top); 
+        sideGradientRight.addColorStop(0, "rgba(255, 255, 255, 0.6)"); sideGradientRight.addColorStop(1, "rgba(200, 180, 160, 0.2)"); 
+        
+        const bottomGradient = ctx.createRadialGradient(canvas.width/2, fy_bot, 50, canvas.width/2, fy_bot, 200); 
+        bottomGradient.addColorStop(0, "rgba(100, 80, 60, 0.4)"); bottomGradient.addColorStop(1, "rgba(160, 140, 120, 0.1)"); 
+
+        const frontGlass = ctx.createLinearGradient(fx1, fy_top, fx2, fy_bot); 
+        frontGlass.addColorStop(0, "rgba(255, 255, 255, 0.2)"); frontGlass.addColorStop(0.5, "rgba(255, 255, 255, 0.05)"); frontGlass.addColorStop(1, "rgba(255, 255, 255, 0.1)");
+
         const wallOptions = { isStatic: true, render: { fillStyle: 'transparent' }, friction: 0.05, restitution: 0.2, label: 'Wall' };
         World.add(world, [
             Bodies.rectangle(10, 380, 20, 400, wallOptions),
@@ -218,6 +245,90 @@
         let audioCtx = null; let isMuted = false;
         function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); }
 
+        let feverCount = 0; 
+        function addChickenFever() {
+            feverCount++;
+            if (feverCount <= 3) { document.getElementById('stamp-' + feverCount).classList.add('filled'); }
+            if (feverCount === 3) { triggerEarthquake(); }
+        }
+
+        // 🌋 완벽히 세팅된 대지진 로직!
+        function triggerEarthquake() {
+            const toast = document.getElementById('earthquake-toast');
+            toast.classList.remove('hidden');
+
+            const safetyOptions = { isStatic: true, friction: 0, restitution: 0, label: 'SafetyNet' };
+            const safetyNet = [
+                Bodies.rectangle(10, -200, 20, 1000, safetyOptions),
+                Bodies.rectangle(350, -200, 20, 1000, safetyOptions),
+                Bodies.rectangle(180, -800, 400, 50, safetyOptions)
+            ];
+            World.add(world, safetyNet); 
+
+            setTimeout(() => {
+                
+                playRumbleSound(2.5);
+
+                const shakeInterval = setInterval(() => {
+                    const allBodies = Composite.allBodies(world);
+                    allBodies.forEach(body => {
+                        if (body.label !== 'Wall' && body.label !== 'SafetyNet') {
+                            Matter.Body.setVelocity(body, { 
+                                x: (Math.random() - 0.5) * 5, 
+                                y: (Math.random() - 0.5) * 5 - 1 
+                            });
+                        }
+                    });
+                }, 100); 
+
+                setTimeout(() => {
+                    clearInterval(shakeInterval);
+                    toast.classList.add('hidden');
+                    
+                    playLaunchSound();
+                    
+                    // 💡 디렉터님 맞춤형 타이밍: 0.9초 후 쿵!
+                    setTimeout(() => playFallSound(), 900);
+
+                    const allBodies = Composite.allBodies(world);
+                    allBodies.forEach(body => {
+                        if (body.label !== 'Wall' && body.label !== 'SafetyNet') {
+                            Matter.Body.setPosition(body, { x: body.position.x, y: body.position.y - 10 });
+                            
+                            const level = parseInt(body.label); 
+                            const popPower = 18 + ((7 - level) * 2.5) + (Math.random() * 4); 
+                            
+                            Matter.Body.setVelocity(body, { 
+                                x: (Math.random() - 0.5) * 12, 
+                                y: -popPower 
+                            });
+
+                            body.frictionAir = 0.025 - (level * 0.003);
+                        }
+                    });
+
+                    setTimeout(() => {
+                        feverCount = 0;
+                        document.getElementById('stamp-1').classList.remove('filled');
+                        document.getElementById('stamp-2').classList.remove('filled');
+                        document.getElementById('stamp-3').classList.remove('filled');
+
+                        const currentBodies = Composite.allBodies(world);
+                        currentBodies.forEach(body => {
+                            if (body.label !== 'Wall' && body.label !== 'SafetyNet') {
+                                body.frictionAir = 0.001; 
+                            }
+                        });
+                        World.remove(world, safetyNet);
+
+                    }, 4000); 
+
+                }, 2500); 
+                
+            }, 1500); 
+        }
+
+        // 🎵 사운드 모듈
         function playTone(freq, type, startTime, duration, vol = 0.2) {
             const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
             osc.type = type; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.value = freq;
@@ -245,9 +356,6 @@
         function playMergeSound(level) {
             if (isMuted || !audioCtx) return;
             const now = audioCtx.currentTime; 
-            
-            // 💡 1. 펜타토닉 스케일 (C4, D4, E4, G4, A4, C5, D5) 
-            // 여러 개가 동시에 터져도 무조건 아름다운 화음이 만들어집니다!
             const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33];
             const baseFreq = scale[Math.min(level, scale.length - 1)];
 
@@ -255,7 +363,6 @@
             const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
             osc.type = 'sine'; osc.connect(gain); gain.connect(audioCtx.destination);
             
-            // 💡 2. 억지로 +150Hz를 더하는 대신, 음악적으로 가장 안정적인 '완전 5도(주파수 1.5배)'로 음을 꺾어줍니다.
             osc.frequency.setValueAtTime(baseFreq, now); 
             osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, now + 0.15); 
             
@@ -267,73 +374,60 @@
             if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const notes = [261.63, 329.63, 392.00]; 
             notes.forEach((freq, i) => { const t = now + (i * 0.06); playSnap(t, freq); playTone(freq, 'sine', t, 0.6, 0.25); });
         }
-       // ✨ 1. [Great: 호떡 ➡️ 솜사탕] 푹신하고 달콤한 C 메이저 상승음
+        
         function playGreatSound() {
             if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; 
-            const notes = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5 (도, 미, 솔, 도)
-            
+            const notes = [261.63, 329.63, 392.00, 523.25]; 
             notes.forEach((freq, i) => {
                 const t = now + (i * 0.08); 
                 const mainOsc = audioCtx.createOscillator(); const mainGain = audioCtx.createGain();
                 mainOsc.type = 'sine'; mainOsc.connect(mainGain); mainGain.connect(audioCtx.destination);
                 mainOsc.frequency.setValueAtTime(freq, t); 
-                
                 mainGain.gain.setValueAtTime(0, t); mainGain.gain.linearRampToValueAtTime(0.2, t + 0.02); mainGain.gain.exponentialRampToValueAtTime(0.01, t + 0.8);
                 mainOsc.start(t); mainOsc.stop(t + 0.8);
             });
         }
 
-        // 🌟 2. [Wow: 솜사탕 ➡️ 황금치킨] 따뜻하고 풍성한 화음 (Great와 겹쳐도 완벽한 화음!)
         function playWowSound() {
             if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; 
-            const notes = [329.63, 392.00, 523.25, 587.33, 783.99]; // E4, G4, C5, D5, G5
-            
+            const notes = [329.63, 392.00, 523.25, 587.33, 783.99]; 
             notes.forEach((freq, i) => {
                 const t = now + (i * 0.06); 
                 const mainOsc = audioCtx.createOscillator(); const mainGain = audioCtx.createGain();
                 mainOsc.type = 'triangle'; mainOsc.connect(mainGain); mainGain.connect(audioCtx.destination);
                 mainOsc.frequency.setValueAtTime(freq, t); 
-                
                 mainGain.gain.setValueAtTime(0, t); mainGain.gain.linearRampToValueAtTime(0.25, t + 0.02); mainGain.gain.exponentialRampToValueAtTime(0.01, t + 1.2);
                 mainOsc.start(t); mainOsc.stop(t + 1.2);
             });
         }
 
-        // 🎇 3. [Clear: 치킨 + 치킨] 바삭한 기름 튀기는 소리 + 팝콘 타격감 + 경쾌한 승리 화음!
-     function playClearSound() {
+        function playClearSound() {
             if (isMuted || !audioCtx) return; const now = audioCtx.currentTime;
 
-            // 🍿 [효과 1] 날카로운 기름 소리 대신, 귀엽고 경쾌한 팝콘/방울 소리!
-            // 무서운 느낌을 없애기 위해 개수도 30개로 살짝 줄여서 여유를 줍니다.
             for (let i = 0; i < 30; i++) {
                 const popTime = now + (Math.random() * 1.45); 
-                
-                // 1. 둥글고 귀여운 '뽁!' 소리 (물방울이나 두꺼운 반죽이 터지는 느낌)
                 const popOsc = audioCtx.createOscillator(); const popGain = audioCtx.createGain();
                 popOsc.type = 'sine'; popOsc.connect(popGain); popGain.connect(audioCtx.destination);
                 
-                // 주파수를 너무 높지 않게 잡아서 찢어지는 소리 방지
                 const startFreq = 400 + Math.random() * 300; 
                 popOsc.frequency.setValueAtTime(startFreq, popTime);
-                popOsc.frequency.exponentialRampToValueAtTime(startFreq * 0.5, popTime + 0.05); // 음이 살짝 떨어지며 '뽁'
+                popOsc.frequency.exponentialRampToValueAtTime(startFreq * 0.5, popTime + 0.05); 
                 
                 popGain.gain.setValueAtTime(0, popTime); 
                 popGain.gain.linearRampToValueAtTime(0.15 + Math.random() * 0.1, popTime + 0.01); 
                 popGain.gain.exponentialRampToValueAtTime(0.01, popTime + 0.06);
                 popOsc.start(popTime); popOsc.stop(popTime + 0.06);
 
-                // 2. 바삭함을 더해주는 아주 짧은 '틱!' 소리 (트라이앵글파로 부드럽게)
                 const snapOsc = audioCtx.createOscillator(); const snapGain = audioCtx.createGain();
                 snapOsc.type = 'triangle'; snapOsc.connect(snapGain); snapGain.connect(audioCtx.destination);
                 
                 snapOsc.frequency.setValueAtTime(800 + Math.random() * 500, popTime);
                 snapGain.gain.setValueAtTime(0.05, popTime); 
-                snapGain.gain.exponentialRampToValueAtTime(0.001, popTime + 0.02); // 0.02초 만에 스르륵 사라짐
+                snapGain.gain.exponentialRampToValueAtTime(0.001, popTime + 0.02); 
                 
                 snapOsc.start(popTime); snapOsc.stop(popTime + 0.02);
             }
 
-            // 🎉 [효과 2] 경쾌한 승리 화음은 그대로 유지! (1.5초 꼬리 연장)
             const clearNotes = [261.63, 392.00, 523.25, 659.25, 783.99, 1046.50]; 
             clearNotes.forEach((freq, i) => {
                 const t = now + (i * 0.05); 
@@ -349,6 +443,76 @@
             });
         }
 
+        function playRumbleSound(duration) {
+            if (isMuted || !audioCtx) return;
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'sawtooth'; osc.connect(gain); gain.connect(audioCtx.destination);
+            
+            osc.frequency.setValueAtTime(40, audioCtx.currentTime); 
+            osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + duration / 2);
+            osc.frequency.linearRampToValueAtTime(40, audioCtx.currentTime + duration);
+
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.04, audioCtx.currentTime + 0.2); 
+            gain.gain.setValueAtTime(0.04, audioCtx.currentTime + duration - 0.2);
+            gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + duration); 
+
+            osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function playLaunchSound() {
+            if (isMuted || !audioCtx) return;
+            const now = audioCtx.currentTime;
+
+            const boomOsc = audioCtx.createOscillator(); 
+            const boomGain = audioCtx.createGain();
+            boomOsc.type = 'triangle'; 
+            boomOsc.connect(boomGain); boomGain.connect(audioCtx.destination);
+
+            boomOsc.frequency.setValueAtTime(300, now);
+            boomOsc.frequency.exponentialRampToValueAtTime(30, now + 0.2); 
+
+            boomGain.gain.setValueAtTime(0, now);
+            boomGain.gain.linearRampToValueAtTime(0.12, now + 0.02); 
+            boomGain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+
+            boomOsc.start(now); boomOsc.stop(now + 0.6);
+
+            const snapOsc = audioCtx.createOscillator(); 
+            const snapGain = audioCtx.createGain();
+            snapOsc.type = 'sawtooth'; 
+            snapOsc.connect(snapGain); snapGain.connect(audioCtx.destination);
+
+            snapOsc.frequency.setValueAtTime(600, now);
+            snapOsc.frequency.exponentialRampToValueAtTime(50, now + 0.15); 
+
+            snapGain.gain.setValueAtTime(0, now);
+            snapGain.gain.linearRampToValueAtTime(0.08, now + 0.01); 
+            snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+            snapOsc.start(now); snapOsc.stop(now + 0.3);
+        }
+
+        function playFallSound() {
+            if (isMuted || !audioCtx) return;
+            const now = audioCtx.currentTime;
+
+            const osc = audioCtx.createOscillator(); 
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'sine'; 
+            osc.connect(gain); gain.connect(audioCtx.destination);
+
+            osc.frequency.setValueAtTime(150, now);
+            osc.frequency.exponentialRampToValueAtTime(30, now + 0.15); 
+
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(0.10, now + 0.02); 
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3); 
+
+            osc.start(now); osc.stop(now + 0.3);
+        }
+    
         document.getElementById('mute-btn').addEventListener('click', (e) => { isMuted = !isMuted; e.target.innerText = isMuted ? '🔇 소리 꺼짐' : '🔊 소리 켜짐'; });
         
         document.getElementById('restart-btn').addEventListener('click', () => {
@@ -363,7 +527,6 @@
             const baseDensity = 0.001;
             const snackDensity = baseDensity * Math.pow(1.2, level);
             const body = Bodies.circle(x, y, SNACKS[level].radius, {
-                // 💡 물리 엔진 패치 2: 튀는 맛은 유지하되(0.3), 마찰력을 0.005로 확 줄여서 빈 공간으로 스르륵 미끄러지게!
                 restitution: 0.3, friction: 0.005, density: snackDensity, label: level.toString()
             });
             World.add(world, body); return body;
@@ -380,7 +543,14 @@
             const pairs = event.pairs;
             for (let i = 0; i < pairs.length; i++) {
                 const bodyA = pairs[i].bodyA; const bodyB = pairs[i].bodyB;
+                
+                if (bodyA.isMerging || bodyB.isMerging) continue;
+
                 if (bodyA.label === bodyB.label && bodyA.label !== 'Wall') {
+                    
+                    bodyA.isMerging = true; 
+                    bodyB.isMerging = true;
+
                     let level = parseInt(bodyA.label);
                     
                     const newX = (bodyA.position.x + bodyB.position.x) / 2;
@@ -401,6 +571,8 @@
                             totalChickens++; 
                             localStorage.setItem('kSnackTotalChickens', totalChickens); 
                             document.getElementById('total-chicken').innerText = totalChickens;
+                            
+                            addChickenFever();
                         } else { playMergeSound(nextLevel); }
                     } 
                     else if (level === 7) { 
@@ -411,18 +583,19 @@
             }
         });
 
+        // 🚀 [최적화 완료] 캐싱된 그라데이션을 재사용하여 훨씬 부드럽게 돌아갑니다!
         function renderLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height); frameCount++;
             
             ctx.fillStyle = "rgba(255, 255, 255, 0.45)"; ctx.fillRect(bx1, by_top, bx2 - bx1, by_bot - by_top);
             
-            const sideGradient = ctx.createLinearGradient(fx1, fy_top, bx1, by_top); sideGradient.addColorStop(0, "rgba(255, 255, 255, 0.6)"); sideGradient.addColorStop(1, "rgba(200, 180, 160, 0.2)"); ctx.fillStyle = sideGradient;
+            ctx.fillStyle = sideGradient;
             ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(bx1, by_top); ctx.lineTo(bx1, by_bot); ctx.lineTo(fx1, fy_bot); ctx.fill(); 
             
-            const sideGradientRight = ctx.createLinearGradient(fx2, fy_top, bx2, by_top); sideGradientRight.addColorStop(0, "rgba(255, 255, 255, 0.6)"); sideGradientRight.addColorStop(1, "rgba(200, 180, 160, 0.2)"); ctx.fillStyle = sideGradientRight;
+            ctx.fillStyle = sideGradientRight;
             ctx.beginPath(); ctx.moveTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.lineTo(bx2, by_bot); ctx.lineTo(fx2, fy_bot); ctx.fill(); 
             
-            const bottomGradient = ctx.createRadialGradient(canvas.width/2, fy_bot, 50, canvas.width/2, fy_bot, 200); bottomGradient.addColorStop(0, "rgba(100, 80, 60, 0.4)"); bottomGradient.addColorStop(1, "rgba(160, 140, 120, 0.1)"); ctx.fillStyle = bottomGradient;
+            ctx.fillStyle = bottomGradient;
             ctx.beginPath(); ctx.moveTo(fx1, fy_bot); ctx.lineTo(bx1, by_bot); ctx.lineTo(bx2, by_bot); ctx.lineTo(fx2, fy_bot); ctx.fill();
 
             ctx.strokeStyle = "rgba(255, 255, 240, 0.8)"; ctx.lineWidth = 2; ctx.lineJoin = "round"; ctx.shadowColor = "rgba(255, 255, 255, 0.5)"; ctx.shadowBlur = 5; 
@@ -443,12 +616,10 @@
 
             const bodies = Matter.Composite.allBodies(world);
             bodies.forEach(body => {
-                if (body.label !== 'Wall') {
+                if (body.label !== 'Wall' && body.label !== 'SafetyNet') { 
                     const level = parseInt(body.label); const img = loadedImages[level]; const r = SNACKS[level].radius; const visualR = r * 1.35; 
                     ctx.save(); 
                     
-                    // 2️⃣ [스마트 자르기 추가] 박스 안쪽에 있을 때만 벽을 뚫지 않게 잘라줍니다!
-                    // 위로 넘치거나 바깥으로 튕겨 나간 애들은 자르지 않아서 그대로 보이게 됩니다.
                     if (body.position.y > fy_top && body.position.x > fx1 && body.position.x < fx2) {
                         ctx.beginPath();
                         ctx.rect(fx1, 0, fx2 - fx1, fy_bot);
@@ -461,7 +632,6 @@
                 }
             });
 
-            const frontGlass = ctx.createLinearGradient(fx1, fy_top, fx2, fy_bot); frontGlass.addColorStop(0, "rgba(255, 255, 255, 0.2)"); frontGlass.addColorStop(0.5, "rgba(255, 255, 255, 0.05)"); frontGlass.addColorStop(1, "rgba(255, 255, 255, 0.1)");
             ctx.fillStyle = frontGlass; ctx.fillRect(fx1, fy_top, fx2 - fx1, fy_bot - fy_top);
             ctx.beginPath(); ctx.moveTo(fx1 + 50, fy_top); ctx.lineTo(fx1 + 150, fy_top); ctx.lineTo(fx1 + 100, fy_bot); ctx.lineTo(fx1, fy_bot); ctx.fillStyle = "rgba(255, 255, 255, 0.08)"; ctx.fill();
             ctx.strokeStyle = "rgba(255, 255, 240, 0.9)"; ctx.lineWidth = 3; ctx.shadowColor = "rgba(255, 255, 255, 0.6)"; ctx.shadowBlur = 5; ctx.strokeRect(fx1, fy_top, fx2 - fx1, fy_bot - fy_top); ctx.shadowBlur = 0;
