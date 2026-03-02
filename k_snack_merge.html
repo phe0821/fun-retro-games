@@ -13,7 +13,7 @@
         body {
             background: radial-gradient(circle at 50% 30%, #fff5e6 0%, #ffe0b2 40%, #ffcc80 80%, #f57c00 100%);
             display: flex; flex-direction: column; align-items: center;
-            margin: 0; padding: 2px 0 25px 0; 
+            margin: 0; padding: 2px 0 5px 0; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none; -webkit-user-select: none; touch-action: none;
             overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: none; 
@@ -28,43 +28,48 @@
         }
 
         #game-title {
-            grid-column: 1 / -1; 
-            justify-self: center; 
-            margin: 2px 0 0px 0; color: #fff; font-size: 26px; font-weight: normal; 
+            grid-column: 1 / -1; justify-self: center; margin: 2px 0 2px 0; 
+            color: #fff; font-size: 26px; font-weight: normal; 
             text-shadow: 3px 3px 0px #d35400, 0px 4px 8px rgba(0,0,0,0.3); 
             letter-spacing: 1px; font-family: 'Bungee', cursive;
         }
 
+        /* 상단 스탯보드 */
         #stats-board { 
-            grid-column: 1 / -1; 
-            justify-self: center; 
-            display: flex; gap: 4px; position: relative; z-index: 10; 
-            flex-wrap: wrap; justify-content: center; align-items: stretch;
+            grid-column: 1 / -1; justify-self: center; 
+            display: flex; gap: 8px; position: relative; z-index: 10; 
+            flex-wrap: nowrap; justify-content: center; align-items: center;
+            width: 100%; max-width: 480px;
         }
         
         .stat-box { 
-            height: auto; 
-            font-weight: 900; color: #fff; background: rgba(139, 69, 19, 0.7); 
-            padding: 3px 6px; 
-            border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.2); 
-            border: 2px solid #ffffff; font-family: 'Jua', sans-serif; letter-spacing: 0.5px; 
+            height: auto; font-weight: 900; color: #fff; background: rgba(139, 69, 19, 0.7); 
+            padding: 4px 10px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.2); 
+            border: 2px solid #ffffff; font-family: 'Jua', sans-serif; 
             display: flex; align-items: center; justify-content: center;
-            transition: transform 0.1s ease-out;
+            transition: transform 0.1s ease-out; white-space: nowrap;
         }
         
-        .stat-box.pump {
-            transform: scale(1.3);
-            box-shadow: 0 0 15px #ffea00, inset 0 0 10px #ffffff;
-        }
-        
+        .stat-box.pump { transform: scale(1.15); box-shadow: 0 0 15px #ffea00, inset 0 0 10px #ffffff; }
         .stat-box.high { background: #d35400; border-color: #f1c40f; color: #fffaf0; }
         
+        #score-badge {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-color: #90caf9; cursor: pointer; flex-grow: 0; min-width: 170px;
+            padding: 3px 12px;
+        }
+        #score-badge:active { transform: scale(0.98); }
+        .score-inner { display: flex; width: 100%; justify-content: flex-end; align-items: baseline; gap: 8px; }
+        .score-part { display: flex; align-items: baseline; gap: 4px; }
+        .score-label { color: #ffeb3b; font-size: 13px; font-weight: bold; opacity: 0.9;} 
+        .score-val { color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); font-size: 14px; font-weight: bold; letter-spacing: 0.5px; } 
+        .score-divider { margin: 0 4px; color: #64b5f6; font-size: 14px; } 
+
         #bomb-btn {
             background: rgba(0,0,0,0.6); color: #fff; border-color: #ffffff; cursor: pointer;
             transition: transform 0.1s, background 0.2s;
         }
         #bomb-btn:active { transform: scale(0.95); background: rgba(0,0,0,0.8); }
-        
         .bomb-neon { color: #ff9100; transition: color 0.2s; }
         
         #bomb-btn.disabled { 
@@ -74,13 +79,10 @@
         #bomb-btn.disabled:active { transform: none; }
         #bomb-btn.disabled .bomb-neon { color: #cccccc; }
 
-        #shop-btn {
-            background: #FFD700; color: #8B4513; border-color: #DAA520; cursor: pointer;
-            transition: transform 0.1s; text-shadow: 0 1px 1px rgba(255,255,255,0.8);
-        }
+        #shop-btn { background: #FFD700; color: #8B4513; border-color: #DAA520; cursor: pointer; transition: transform 0.1s; text-shadow: 0 1px 1px rgba(255,255,255,0.8); }
         #shop-btn:active { transform: scale(0.95); }
 
-        #side-panel { grid-column: 1; grid-row: 3; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding-top: 70px; padding-bottom: 25px; }
+        #side-panel { grid-column: 1; grid-row: 3; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding-top: 50px; padding-bottom: 25px; } 
         
         #next-snack-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; }
         .side-title { color: #d35400; font-size: 15px; margin-bottom: 8px; text-shadow: 0 1px 2px rgba(255,255,255,0.8); text-align: center; font-family: 'Jua', sans-serif; }
@@ -101,10 +103,14 @@
         .evo-big { width: 28px; height: 28px; object-fit: contain; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); }
         .evo-math { font-size: 13px; font-weight: normal; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.4); font-family: 'Jua', sans-serif; }
         
-        #canvas-wrapper { grid-column: 2; grid-row: 3; display: flex; width: 100%; margin-top: -65px; position: relative; z-index: 1; }
+        #canvas-wrapper { grid-column: 2; grid-row: 3; display: flex; width: 100%; margin-top: -50px; position: relative; z-index: 1; }
         canvas { width: 100%; height: auto; aspect-ratio: 360 / 600; background: transparent; border: none; outline: none; cursor: crosshair; touch-action: none; }
 
-        .effect-text { position: absolute; top: 45%; left: 50%; width: 90%; text-align: center; transform: translate(-50%, -50%); font-weight: 900; color: #fff; font-family: 'Jua', sans-serif; pointer-events: none; opacity: 0; z-index: 100; line-height: 1.15; word-break: keep-all; }
+        .effect-text { position: absolute; top: 45%; left: 50%; width: 100%; text-align: center; transform: translate(-50%, -50%); font-weight: 900; color: #fff; font-family: 'Jua', sans-serif; pointer-events: none; opacity: 0; z-index: 100; line-height: 1.15; word-break: keep-all; }
+
+        #game-over-text { font-size: clamp(45px, 10vw, 60px); color: #ff1744; text-shadow: 0 0 20px #fff, 0 0 40px #ff1744, 0 0 80px #b71c1c; z-index: 999;}
+        .show-game-over { animation: gameOverPop 1.5s ease-out forwards; }
+        @keyframes gameOverPop { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.1); } 20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } 80% { opacity: 1; transform: translate(-50%, -50%) scale(1.0); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.1); } }
 
         #good-effect { font-size: clamp(35px, 8vw, 45px); }
         .show-good { animation: goodGlowFade 2.0s ease-out forwards; }
@@ -116,47 +122,24 @@
 
         #wow-effect { font-size: clamp(45px, 10vw, 55px); }
         .show-wow { animation: wowGlowFade 2.0s ease-out forwards; }
-        @keyframes wowGlowFade { 
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 
-            15% { opacity: 1; transform: translate(-50%, -50%) scale(1.1) rotate(2deg); text-shadow: 0 0 20px #fff, 0 0 50px #00e5ff, 0 0 90px #008cff, 0 0 150px #0051ff; } 
-            30% { transform: translate(-50%, -50%) scale(1.0) rotate(-2deg); } 
-            60% { opacity: 1; transform: translate(-50%, -50%) scale(1.05) rotate(0deg); text-shadow: 0 0 10px #fff, 0 0 30px #00e5ff, 0 0 60px #008cff; } 
-            100% { opacity: 0; transform: translate(-50%, -65%) scale(1.25); text-shadow: 0 0 5px #fff; } 
-        }
+        @keyframes wowGlowFade { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 15% { opacity: 1; transform: translate(-50%, -50%) scale(1.1) rotate(2deg); text-shadow: 0 0 20px #fff, 0 0 50px #00e5ff, 0 0 90px #008cff, 0 0 150px #0051ff; } 30% { transform: translate(-50%, -50%) scale(1.0) rotate(-2deg); } 60% { opacity: 1; transform: translate(-50%, -50%) scale(1.05) rotate(0deg); text-shadow: 0 0 10px #fff, 0 0 30px #00e5ff, 0 0 60px #008cff; } 100% { opacity: 0; transform: translate(-50%, -65%) scale(1.25); text-shadow: 0 0 5px #fff; } }
 
         #clear-effect { font-size: clamp(32px, 8vw, 42px); }
         .show-clear { animation: clearGlowFade 3.0s ease-out forwards; } 
-        @keyframes clearGlowFade { 
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 
-            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2) rotate(-5deg); text-shadow: 0 0 20px #fff, 0 0 50px #ffea00, 0 0 90px #ff9100, 0 0 150px #ff5100; } 
-            40% { transform: translate(-50%, -50%) scale(1.05) rotate(3deg); } 
-            70% { opacity: 1; transform: translate(-50%, -50%) scale(1.1) rotate(0deg); text-shadow: 0 0 10px #fff, 0 0 30px #ffea00, 0 0 50px #ff9100; } 
-            100% { opacity: 0; transform: translate(-50%, -70%) scale(1.15); text-shadow: 0 0 5px #fff; } 
-        }
+        @keyframes clearGlowFade { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2) rotate(-5deg); text-shadow: 0 0 20px #fff, 0 0 50px #ffea00, 0 0 90px #ff9100, 0 0 150px #ff5100; } 40% { transform: translate(-50%, -50%) scale(1.05) rotate(3deg); } 70% { opacity: 1; transform: translate(-50%, -50%) scale(1.1) rotate(0deg); text-shadow: 0 0 10px #fff, 0 0 30px #ffea00, 0 0 50px #ff9100; } 100% { opacity: 0; transform: translate(-50%, -70%) scale(1.15); text-shadow: 0 0 5px #fff; } }
 
-        #jackpot-text {
-            position: fixed; top: 55%; left: 50%; transform: translate(-50%, -50%) scale(0);
-            font-size: 55px; font-weight: 900; color: #FFD700; font-family: 'Jua', sans-serif; pointer-events: none; opacity: 0; z-index: 999;
-            -webkit-text-stroke: 2.5px #fff; letter-spacing: 2px;
-            text-shadow: 0 0 10px #fff, 0 0 20px #ffea00, 0 0 40px #ff9100, 0 0 60px #ff5100;
-        }
-
+        #jackpot-text { position: fixed; top: 55%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 55px; font-weight: 900; color: #FFD700; font-family: 'Jua', sans-serif; pointer-events: none; opacity: 0; z-index: 999; -webkit-text-stroke: 2.5px #fff; letter-spacing: 2px; text-shadow: 0 0 10px #fff, 0 0 20px #ffea00, 0 0 40px #ff9100, 0 0 60px #ff5100; }
         .show-jackpot { animation: popAndBounce 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        @keyframes popAndBounce { 
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.1); } 
-            15% { opacity: 1; transform: translate(-50%, -65%) scale(1.2) rotate(-8deg); }
-            25% { transform: translate(-50%, -50%) scale(0.9) rotate(5deg); }
-            35% { transform: translate(-50%, -55%) scale(1.05) rotate(-3deg); }
-            50% { transform: translate(-50%, -52%) scale(1.0) rotate(0deg); }
-            100% { opacity: 1; transform: translate(-50%, -52%) scale(1.0); }
-        }
+        @keyframes popAndBounce { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.1); } 15% { opacity: 1; transform: translate(-50%, -65%) scale(1.2) rotate(-8deg); } 25% { transform: translate(-50%, -50%) scale(0.9) rotate(5deg); } 35% { transform: translate(-50%, -55%) scale(1.05) rotate(-3deg); } 50% { transform: translate(-50%, -52%) scale(1.0) rotate(0deg); } 100% { opacity: 1; transform: translate(-50%, -52%) scale(1.0); } }
 
         #button-container { 
             grid-column: 1 / -1; justify-self: center; 
-            display: flex; gap: 8px; margin-top: 0px; position: relative; z-index: 10; 
-            flex-wrap: wrap; justify-content: center;
+            display: flex; margin-top: 5px; position: relative; z-index: 10; 
+            width: 100%; max-width: 480px; justify-content: space-between; 
+            padding: 0 10px; box-sizing: border-box;
         }
-        
+        .btn-group { display: flex; gap: 6px; } 
+
         .game-btn { 
             padding: 8px 12px; border-radius: 20px; font-size: 14px; font-family: 'Jua', sans-serif; 
             cursor: pointer; box-shadow: 0 4px 6px rgba(139, 69, 19, 0.1); 
@@ -165,7 +148,8 @@
             box-sizing: border-box; line-height: 1; white-space: nowrap; 
         }
         .game-btn:active { transform: translateY(2px); box-shadow: 0 2px 3px rgba(139, 69, 19, 0.1); }
-        
+        .icon-btn { padding: 8px 10px; font-size: 16px; border-radius: 50%; } 
+
         #mute-btn { background: #fff; color: #d35400; border-color: #e1b12c; }
         #restart-btn { background: #d35400; color: #fff; border-color: #c0392b; }
         #home-btn { background: #fff; color: #8B4513; border-color: #8B4513; text-decoration: none; }
@@ -173,31 +157,33 @@
         #earthquake-toast { transition: opacity 0.3s, transform 0.3s; z-index: 100; }
         #earthquake-toast.hidden { opacity: 0; transform: translateY(-10px); pointer-events: none; }
 
-        /* 🛒 상점 UI CSS */
-        #shop-modal {
+        /* 🛒 모달 공통 */
+        .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
             display: flex; justify-content: center; align-items: flex-start; padding-top: 60px; z-index: 9999; 
             opacity: 1; transition: opacity 0.3s ease;
         }
-        #shop-modal.hidden { opacity: 0; pointer-events: none; }
+        .modal-overlay.hidden { opacity: 0; pointer-events: none; }
         
-        .shop-container {
-            width: 320px; height: 550px; max-height: 85vh;
+        .modal-container {
             background: linear-gradient(135deg, #fffaf0 0%, #ffe0b2 100%);
             border: 4px solid #DAA520; border-radius: 20px;
             display: flex; flex-direction: column; padding: 15px; box-sizing: border-box;
             box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 0 15px rgba(255,215,0,0.3);
             transform: translateY(0); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        #shop-modal.hidden .shop-container { transform: translateY(30px); }
+        .modal-overlay.hidden .modal-container { transform: translateY(30px); }
+        
+        #shop-modal .modal-container { width: 320px; height: 550px; max-height: 85vh; }
+        #score-modal .modal-container { width: 260px; height: auto; max-height: 75vh; } 
 
         .shop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 2px dashed rgba(218,165,32,0.5); padding-bottom: 8px; }
         .shop-header h2 { margin: 0; color: #8B4513; font-family: 'Jua'; font-size: 22px; text-shadow: 1px 1px 0 #FFD700; display: flex; align-items: center; gap: 5px; }
-        #close-shop-btn { background: #fff; border: 2px solid #DAA520; color: #8B4513; font-size: 14px; font-weight: bold; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .close-modal-btn { background: #fff; border: 2px solid #DAA520; color: #8B4513; font-size: 14px; font-weight: bold; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         
-        .shop-wallet-container { display: flex; gap: 12px; justify-content: center; margin-bottom: 15px; width: 100%; }
-        .shop-wallet-badge { background: #d35400; border: 2px solid #f1c40f; border-radius: 20px; padding: 6px 16px; font-family: 'Jua'; color: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; text-shadow: 0 1px 2px rgba(0,0,0,0.3); white-space: nowrap; }
+        .shop-wallet-container { display: flex; gap: 6px; justify-content: space-between; margin-bottom: 15px; width: 100%; }
+        .shop-wallet-badge { border: 2px solid #f1c40f; border-radius: 12px; padding: 6px 8px; font-family: 'Jua'; color: #fff; box-shadow: inset 0 2px 4px rgba(255,255,255,0.2); display: flex; align-items: center; text-shadow: 0 1px 2px rgba(0,0,0,0.3); white-space: nowrap; flex: 1; justify-content: center; }
         
         .shop-tabs { display: flex; gap: 4px; margin-bottom: 15px; }
         .shop-tab { flex: 1; text-align: center; padding: 8px 0; font-family: 'Jua'; font-size: 15px; background: #fff5e6; color: #a0522d; border-radius: 12px 12px 0 0; border: 2px solid transparent; border-bottom: 3px solid #DAA520; cursor: pointer; transition: 0.2s; white-space: nowrap; }
@@ -213,17 +199,6 @@
         .shop-item-img-wrapper { width: 48px; height: 48px; background: #fff5e6; border-radius: 50%; border: 2px solid #ffe0b2; display: flex; justify-content: center; align-items: center; flex-shrink: 0; overflow: hidden; }
         .shop-item-img { width: 36px; height: 36px; object-fit: contain; }
         
-        .css-3d-box { width: 22px; height: 22px; position: relative; margin: auto; transform-style: preserve-3d; transform: rotateX(-20deg) rotateY(-35deg) scale(0.8); }
-        .css-3d-box .face { position: absolute; width: 22px; height: 22px; background: rgba(255, 255, 255, 0.25); border: 2px solid rgba(255, 177, 66, 0.9); box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.6); }
-        .css-3d-box .front  { transform: translateZ(11px); }
-        .css-3d-box .back   { transform: rotateY(180deg) translateZ(11px); }
-        .css-3d-box .right  { transform: rotateY(90deg) translateZ(11px); }
-        .css-3d-box .left   { transform: rotateY(-90deg) translateZ(11px); }
-        .css-3d-box .top    { transform: rotateX(90deg) translateZ(11px); background: rgba(255, 255, 255, 0.5); }
-        .css-3d-box .bottom { transform: rotateX(-90deg) translateZ(11px); }
-        
-        /* 스킨 썸네일 전용 색상 덮어쓰기 */
-
         .shop-item-info { flex: 1; }
         .shop-item-name { font-family: 'Jua'; font-size: 15px; color: #8B4513; margin-bottom: 2px; line-height: 1.1; }
         .shop-item-desc { font-size: 11px; color: #666; line-height: 1.2; word-break: keep-all; }
@@ -234,88 +209,99 @@
         .btn-equip { background: #4caf50; color: #fff; border-color: #388e3c; }
         .btn-equipped { background: #e0e0e0; color: #757575; border-color: #bdbdbd; cursor: default; }
 
-        /* 🌙 심야 포장마차 테마 */
+        .score-formula { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 0; border-bottom: 1px dashed rgba(139, 69, 19, 0.3); font-family: 'Jua', sans-serif; }
+        .score-formula:last-child { border-bottom: none; }
+        .score-evo-img { width: 34px; height: 34px; object-fit: contain; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2)); } 
+        .score-math { font-size: 18px; font-weight: bold; color: #333; } 
+        .score-math.result { color: #d35400; }
+
+        /* 🌙 테마: 심야 포장마차 (유지) */
         body.night-mode { background: linear-gradient(to bottom, #0f172a 0%, #1b2a47 40%, #2e4a62 80%, #0d1117 100%); }
         body.night-mode #game-title { color: #ffdda1; text-shadow: 2px 2px 0px #d35400, 0px 0px 10px #ffea00, 0px 0px 20px #ff9100, 0px 0px 30px #ff5100; }
         body.night-mode .side-title { color: #ffdda1; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
         body.night-mode #next-snack-bubble { background: radial-gradient(circle at 30% 30%, rgba(200,220,255,0.3) 0%, rgba(100,120,150,0.1) 50%, transparent 80%, rgba(50,70,100,0.4) 100%); border-color: rgba(200, 220, 255, 0.4); box-shadow: inset -2px -2px 6px rgba(0,0,0,0.6), inset 3px 3px 10px rgba(200,220,255,0.2), 0 8px 15px rgba(0,0,0,0.7); }
         body.night-mode .stat-box { background: rgba(15, 23, 42, 0.85); border-color: #a0aec0; color: #e2e8f0; }
         body.night-mode .stat-box.high { background: rgba(180, 50, 20, 0.9); border-color: #ffdda1; color: #fff; }
+        body.night-mode #score-badge { background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); border-color: #ffdda1; } 
         body.night-mode #evolution-chain { background: linear-gradient(to bottom, rgba(30,40,60,0.9), rgba(15,20,30,0.9)); border-color: #a0aec0; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6), inset 0 2px 5px rgba(255,255,255,0.1); }
         body.night-mode .game-btn { background: rgba(30, 40, 60, 0.9); color: #e2e8f0; border-color: #a0aec0; }
+        body.night-mode .shop-header h2 { color: #1a237e; text-shadow: none; }
+        body.night-mode #score-modal .modal-container, body.night-mode #shop-modal .modal-container { background: linear-gradient(135deg, #1b2a47 0%, #0f172a 100%); border-color: #a0aec0; color: #e2e8f0; }
+        body.night-mode .score-formula { border-bottom-color: rgba(160, 174, 192, 0.3); }
+        body.night-mode .score-math { color: #e2e8f0; } body.night-mode .score-math.result { color: #ffdda1; }
 
-        /* 🌿 여름날 툇마루 테마 (CSS-Only) */
-        body.summer-mode {
-            background: linear-gradient(135deg, #aed581 0%, #dcedc8 30%, #fff9c4 70%, #a1887f 100%);
-        }
-        body.summer-mode #game-title {
-            color: #fff; text-shadow: 2px 2px 0px #5d4037, 0px 4px 8px rgba(0,0,0,0.3);
-        }
-        body.summer-mode .side-title { color: #4e342e; text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
-        body.summer-mode #next-snack-bubble { 
-            background: rgba(255, 236, 179, 0.8); border-color: #8d6e63;
-            box-shadow: inset -2px -2px 6px rgba(141,110,99,0.3), inset 3px 3px 10px rgba(255,255,255,0.8), 0 8px 15px rgba(0,0,0,0.1); 
-        }
-        body.summer-mode .stat-box {
-            background: #ffe082; border-color: #8d6e63; color: #4e342e;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.4);
-        }
-        body.summer-mode .stat-box.high {
-            background: #ffb300; border-color: #5d4037; color: #3e2723;
-        }
-        body.summer-mode #evolution-chain {
-            background: rgba(255, 236, 179, 0.8); border-color: #8d6e63;
-        }
-        body.summer-mode .game-btn { background: #ffe082; color: #4e342e; border-color: #8d6e63; }
-        body.summer-mode #restart-btn { background: #e57373; color: #fff; border-color: #b71c1c; }
-        body.summer-mode #mute-btn { background: #64b5f6; color: #fff; border-color: #1565c0; }
-        body.summer-mode #total-chicken { color: #00c853; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.2); } 
-        body.summer-mode .bomb-neon { color: #00c853; text-shadow: 0 0 5px rgba(0,200,83,0.5); }
+        /* 🌿 테마: 여름날 툇마루 (맑고 청량한 감성으로 최적화) */
+        body.summer-mode { background: linear-gradient(135deg, #f1f8e9 0%, #c8e6c9 40%, #aed581 80%, #81c784 100%); }
+        body.summer-mode #game-title { color: #ffffff; text-shadow: 2px 2px 0px #2e7d32, 0px 4px 8px rgba(0,0,0,0.2); }
+        body.summer-mode .side-title { color: #1b5e20; text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
+        body.summer-mode #next-snack-bubble { background: rgba(255, 255, 255, 0.6); border-color: #81c784; box-shadow: inset -2px -2px 6px rgba(129,199,132,0.3), inset 3px 3px 10px rgba(255,255,255,0.8), 0 8px 15px rgba(0,0,0,0.1); }
+        body.summer-mode .stat-box { background: rgba(255, 255, 255, 0.8); border-color: #81c784; color: #2e7d32; box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.5); }
+        body.summer-mode .stat-box.high { background: #66bb6a; border-color: #388e3c; color: #ffffff; }
+        body.summer-mode #score-badge { background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); border-color: #a5d6a7; } 
+        body.summer-mode .score-label { color: #c8e6c9; } 
+        body.summer-mode #evolution-chain { background: rgba(255, 255, 255, 0.6); border-color: #81c784; }
+        body.summer-mode .game-btn { background: rgba(255, 255, 255, 0.9); color: #2e7d32; border-color: #81c784; }
+        body.summer-mode #restart-btn { background: #ef5350; color: #fff; border-color: #c62828; }
+        body.summer-mode #mute-btn { background: #ffffff; color: #2e7d32; border-color: #81c784; }
+        body.summer-mode #total-chicken { color: #ffeb3b; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.4); } 
+        body.summer-mode .bomb-neon { color: #ff9800; text-shadow: 0 0 5px rgba(255,152,0,0.5); }
+        body.summer-mode .shop-header h2 { color: #2e7d32; text-shadow: none; }
+        body.summer-mode #score-modal .modal-container, body.summer-mode #shop-modal .modal-container { background: linear-gradient(135deg, #f1f8e9 0%, #c8e6c9 100%); border-color: #66bb6a; }
+        body.summer-mode .score-formula { border-bottom-color: rgba(46, 125, 50, 0.2); }
+        body.summer-mode .score-math { color: #1b5e20; } body.summer-mode .score-math.result { color: #d84315; }
+	body.summer-mode .evo-math { color: #1b5e20; text-shadow: none; font-weight: bold; }
 
-	/* 🌸 봄날의 벚꽃 테마 */
-        body.spring-mode { background: linear-gradient(135deg, #ffe0e9 0%, #ffb6c1 40%, #ff9ceab3 80%, #ff7eb3 100%); }
-        body.spring-mode #game-title { color: #fff; text-shadow: 2px 2px 0px #d81b60, 0px 4px 8px rgba(0,0,0,0.3); }
+        /* 🌸 테마: 봄날의 벚꽃 (소프트 파스텔 감성으로 최적화) */
+        body.spring-mode { background: linear-gradient(to bottom, #fff0f5 0%, #fce4ec 40%, #f8bbd0 80%, #f48fb1 100%); }
+        body.spring-mode #game-title { color: #fff; text-shadow: 2px 2px 0px #c2185b, 0px 4px 8px rgba(0,0,0,0.2); }
         body.spring-mode .side-title { color: #ad1457; text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
-        body.spring-mode #next-snack-bubble { background: rgba(255, 240, 245, 0.8); border-color: #ff69b4; box-shadow: inset -2px -2px 6px rgba(255,105,180,0.3), inset 3px 3px 10px rgba(255,255,255,0.8), 0 8px 15px rgba(0,0,0,0.1); }
-        body.spring-mode .stat-box { background: #ffb6c1; border-color: #d81b60; color: #880e4f; box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.4); }
-        body.spring-mode .stat-box.high { background: #ff69b4; border-color: #ad1457; color: #fff; }
-        body.spring-mode #evolution-chain { background: rgba(255, 240, 245, 0.8); border-color: #ff69b4; }
-        body.spring-mode .game-btn { background: #ffe0e9; color: #d81b60; border-color: #ff69b4; }
+        body.spring-mode #next-snack-bubble { background: rgba(255, 255, 255, 0.65); border-color: #f48fb1; box-shadow: inset -2px -2px 6px rgba(244,143,177,0.3), inset 3px 3px 10px rgba(255,255,255,0.8), 0 8px 15px rgba(0,0,0,0.1); }
+        body.spring-mode .stat-box { background: rgba(255, 255, 255, 0.85); border-color: #f48fb1; color: #c2185b; box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.5); }
+        body.spring-mode .stat-box.high { background: #f06292; border-color: #d81b60; color: #fff; }
+        body.spring-mode #score-badge { background: linear-gradient(135deg, #d81b60 0%, #ad1457 100%); border-color: #f8bbd0; } 
+        body.spring-mode .score-label { color: #fce4ec; } 
+        body.spring-mode #evolution-chain { background: rgba(255, 255, 255, 0.65); border-color: #f48fb1; }
+        body.spring-mode .game-btn { background: rgba(255, 255, 255, 0.9); color: #c2185b; border-color: #f48fb1; }
         body.spring-mode #restart-btn { background: #ff4081; color: #fff; border-color: #c51162; }
-        body.spring-mode #mute-btn { background: #f8bbd0; color: #880e4f; border-color: #d81b60; }
+        body.spring-mode #mute-btn { background: #ffffff; color: #c2185b; border-color: #f48fb1; }
+        body.spring-mode .shop-header h2 { color: #d81b60; text-shadow: none; }
+        body.spring-mode #score-modal .modal-container, body.spring-mode #shop-modal .modal-container { background: linear-gradient(135deg, #fff0f5 0%, #fce4ec 100%); border-color: #f06292; }
+        body.spring-mode .score-formula { border-bottom-color: rgba(194, 24, 91, 0.2); }
+        body.spring-mode .score-math { color: #ad1457; } body.spring-mode .score-math.result { color: #d81b60; }
+	body.spring-mode .evo-math { color: #ad1457; text-shadow: none; font-weight: bold; }
         
-        /* 🌸 CSS로 그리는 벚꽃 상점 아이콘 */
+        .css-3d-box { width: 22px; height: 22px; position: relative; margin: auto; transform-style: preserve-3d; transform: rotateX(-20deg) rotateY(-35deg) scale(0.8); }
+        .css-3d-box .face { position: absolute; width: 22px; height: 22px; background: rgba(255, 255, 255, 0.25); border: 2px solid rgba(255, 177, 66, 0.9); box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.6); }
+        .css-3d-box .front  { transform: translateZ(11px); } .css-3d-box .back   { transform: rotateY(180deg) translateZ(11px); } .css-3d-box .right  { transform: rotateY(90deg) translateZ(11px); } .css-3d-box .left   { transform: rotateY(-90deg) translateZ(11px); } .css-3d-box .top    { transform: rotateX(90deg) translateZ(11px); background: rgba(255, 255, 255, 0.5); } .css-3d-box .bottom { transform: rotateX(-90deg) translateZ(11px); }
+
         .css-cherry-blossom { width: 30px; height: 30px; position: relative; margin: auto; background: #ffb7c5; border-radius: 50%; box-shadow: 0 0 0 4px #ffcdd2, 0 0 0 8px #ffebee; transform: rotate(15deg); }
         .css-cherry-blossom::after { content: ''; position: absolute; top: -4px; left: -4px; width: 38px; height: 38px; background: transparent; border-radius: 40% 60% 50% 50% / 50% 50% 60% 40%; border: 3px solid #ff8fab; box-sizing: border-box; transform: rotate(-30deg); }
         .css-cherry-blossom::before { content: ''; position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: #fff176; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 2px #fdd835; }
 
-	/* 🌿 CSS로 그리는 여름 테마 썸네일 (녹색/갈색) */
         .css-summer-flower { width: 30px; height: 30px; position: relative; margin: auto; background: #aed581; border-radius: 50%; box-shadow: 0 0 0 4px #c5e1a5, 0 0 0 8px #dcedc8; transform: rotate(15deg); }
         .css-summer-flower::after { content: ''; position: absolute; top: -4px; left: -4px; width: 38px; height: 38px; background: transparent; border-radius: 40% 60% 50% 50% / 50% 50% 60% 40%; border: 3px solid #2e7d32; box-sizing: border-box; transform: rotate(-30deg); }
         .css-summer-flower::before { content: ''; position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: #8d6e63; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 2px #5d4037; }
 
-        /* 🌙 CSS로 그리는 심야 테마 썸네일 (하늘/네이비/레드) */
         .css-night-flower { width: 30px; height: 30px; position: relative; margin: auto; background: #90caf9; border-radius: 50%; box-shadow: 0 0 0 4px #bbdefb, 0 0 0 8px #e3f2fd; transform: rotate(15deg); }
         .css-night-flower::after { content: ''; position: absolute; top: -4px; left: -4px; width: 38px; height: 38px; background: transparent; border-radius: 40% 60% 50% 50% / 50% 50% 60% 40%; border: 3px solid #1a237e; box-sizing: border-box; transform: rotate(-30deg); }
         .css-night-flower::before { content: ''; position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: #f44336; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 2px #b71c1c; }
-    
-	</style>
+    </style>
 </head>
 <body>
     <div id="app-grid">
         <h1 id="game-title">K-SNACK MERGE!</h1>
         
-       <div id="stats-board">
+        <div id="stats-board">
             <div class="stat-box high" id="wallet-badge">
-                <span style="white-space: nowrap; font-size: 14px;">보유 치킨: <span id="total-chicken" style="color: #fffea0; font-size: 14px;">0</span><span style="font-size: 13.5px; margin-left: 1px;">마리</span></span>
+                <span style="white-space: nowrap; font-size: 13px;">누적 치킨: <span id="total-chicken" style="color: #fffea0; font-size: 13px;">0</span>마리</span>
             </div>
             
-            <div class="stat-box disabled" id="bomb-btn" onclick="useBomb()">
-                <span style="white-space: nowrap; font-size: 14px;">흔들기 찬스 <span class="bomb-neon" style="font-size: 13.5px;">x</span><span id="bomb-count" class="bomb-neon" style="font-size: 14px;">0</span></span>
-            </div>
-
-            <div class="stat-box" id="shop-btn">
-                <span style="font-size: 13.5px;">🛒</span><span style="font-size: 14px; margin-left: 2px;">상점</span>
+            <div class="stat-box" id="score-badge">
+                <div class="score-inner">
+                    <span class="score-part"><span class="score-label">Best</span><span id="best-score" class="score-val">0</span></span>
+                    <span class="score-divider">|</span>
+                    <span class="score-part"><span class="score-label">Score</span><span id="current-score" class="score-val">0</span></span>
+                </div>
             </div>
 
             <div id="earthquake-toast" class="hidden stat-box" style="background: #c0392b; border-color: #f1c40f; position: absolute; top: 40px; z-index: 100; white-space: nowrap;">
@@ -340,66 +326,76 @@
             <div id="great-effect" class="effect-text">GREAT!</div>
             <div id="wow-effect" class="effect-text">WOW!</div>
             <div id="clear-effect" class="effect-text">Chicken<br>Clear!</div>
+            <div id="game-over-text" class="effect-text">박스 터짐!</div>
             <div id="jackpot-text">+3 🍗</div>
             <canvas id="gameCanvas" width="360" height="600"></canvas>
         </div>
 
         <div id="button-container">
-            <button id="restart-btn" class="game-btn">박스 비우기</button>
-            <button id="mute-btn" class="game-btn">🔊 소리 켜짐</button>
-            <button id="home-btn" class="game-btn" onclick="location.href='index.html'">🏠 홈으로 이동</button>
+            <div class="btn-group">
+                <button id="restart-btn" class="game-btn">박스 비우기</button>
+                <div class="stat-box disabled game-btn" id="bomb-btn" onclick="useBomb()" style="margin:0; padding: 8px 12px; border-radius: 20px; font-weight:normal;">
+                    <span style="font-size: 14px;">흔들기 <span class="bomb-neon" style="color: #ff9100; font-size: 13px;">x<span id="bomb-count" style="font-size: 14px;">0</span></span></span>
+                </div>
+                <button id="shop-btn" class="game-btn">🛒 상점</button>
+            </div>
+            <div class="btn-group">
+                <button id="mute-btn" class="game-btn icon-btn">🔊</button>
+                <button id="home-btn" class="game-btn icon-btn" onclick="location.href='index.html'">🏠</button>
+            </div>
         </div>
     </div>
 
-    <div id="shop-modal" class="hidden">
-        <div class="shop-container">
+    <div id="shop-modal" class="modal-overlay hidden">
+        <div class="modal-container">
             <div class="shop-header">
                 <h2>🛒 K-간식 상점</h2>
-                <button id="close-shop-btn">X</button>
+                <button class="close-modal-btn" onclick="closeShop()">X</button>
             </div>
-            
             <div class="shop-wallet-container">
-                <div class="shop-wallet-badge">
-                    <span style="font-size: 16px;">보유 치킨: 🍗 <span id="shop-wallet-count" style="color: #fffea0; font-size: 16px;">0</span><span style="font-size: 15.5px; margin-left: 1px;">마리</span></span>
+                <div class="shop-wallet-badge" style="background: #d35400;">
+                    <span style="font-size: 14px;">현재 보유 치킨: 🍗 <span id="shop-wallet-count" style="color: #fffea0; font-size: 15px;">0</span></span>
                 </div>
                 <div class="shop-wallet-badge" style="background: rgba(0,0,0,0.6); border-color: #ffffff;">
-                    <span style="font-size: 16px;">흔들기 찬스 <span style="color: #ff9100; font-size: 15.5px;">x</span><span id="shop-bomb-count" style="color: #ff9100; font-size: 16px;">0</span></span>
+                    <span style="font-size: 14px;">흔들기 찬스 <span style="color: #ff9100; font-size: 14px;">x<span id="shop-bomb-count">0</span></span></span>
                 </div>
             </div>
-
             <div class="shop-tabs">
                 <div class="shop-tab active" data-tab="booster" style="color:#d35400;">부스터</div>
                 <div class="shop-tab" data-tab="growth">성장</div>
                 <div class="shop-tab" data-tab="collection">수집</div>
                 <div class="shop-tab" data-tab="environment">환경</div>
             </div>
-            <div class="shop-content" id="shop-content">
-                </div>
+            <div class="shop-content" id="shop-content"></div>
+        </div>
+    </div>
+
+    <div id="score-modal" class="modal-overlay hidden" style="z-index: 10000;">
+        <div class="modal-container">
+            <div class="shop-header">
+                <h2>🏆 점수 공식</h2>
+                <button class="close-modal-btn" onclick="closeScoreModal()">X</button>
+            </div>
+            <div id="score-evolution-chain" style="display: flex; flex-direction: column; background: rgba(255,255,255,0.5); padding: 5px 15px; border-radius: 15px; overflow-y: auto;">
+            </div>
         </div>
     </div>
 
     <script>
         const SNACKS = [
-            // 1. 알사탕: 여백이 거의 없이 꽉 차 있음 
-            { name: "알사탕", radius: 22, img: "candy.png", scale: 1.40 },        
-            // 2. 호두과자: 아주 약간의 여백이 있음 (85%)
-            { name: "호두과자", radius: 30, img: "walnut.png", scale: 1.40 },      
-            // 3. 델리만쥬: 호두과자와 비슷한 수준의 여백 (85%)
-            { name: "델리만쥬", radius: 38, img: "manjoo.png", scale: 1.35 },      
-            // 4. 왕만두: 기준점! 넉넉한 여백 (74%) -> 기존 1.35
-            { name: "왕만두", radius: 46, img: "mandu.png", scale: 1.32 },         
-            // 5. 뚱붕어빵: 꼬리 때문에 원형 기준 여백이 살짝 있음 (80%)
-            { name: "뚱붕어빵", radius: 52, img: "fish.png", scale: 1.32 },         
-            // 6. 씨앗호떡: 꽤 꽉 차 있는 형태 (85%)
-            { name: "씨앗호떡", radius: 60, img: "hotteok.png", scale: 1.32 },      
-            // 7. 대왕솜사탕: 스크린샷 분석 결과 진공 공간 매우 큼 (실제 비율 약 60~65%) -> 대폭 확대
-            { name: "대왕솜사탕", radius: 72, img: "cottoncandy.png", scale: 1.45 }, 
-            // 8. 황금치킨: 솜사탕과 마찬가지로 캔버스 내 투명 여백이 아주 큼 (실제 비율 약 60~65%) -> 대폭 확대
-            { name: "황금치킨", radius: 95, img: "chicken.png", scale: 1.43 }       
+            { name: "알사탕", radius: 22, img: "candy.png", scale: 1.40, score: 1 },        
+            { name: "호두과자", radius: 30, img: "walnut.png", scale: 1.40, score: 2 },      
+            { name: "델리만쥬", radius: 38, img: "manjoo.png", scale: 1.35, score: 3 },      
+            { name: "왕만두", radius: 46, img: "mandu.png", scale: 1.32, score: 4 },         
+            { name: "뚱붕어빵", radius: 52, img: "fish.png", scale: 1.32, score: 5 },         
+            { name: "씨앗호떡", radius: 60, img: "hotteok.png", scale: 1.32, score: 6 },      
+            { name: "대왕솜사탕", radius: 72, img: "cottoncandy.png", scale: 1.45, score: 8 }, 
+            { name: "황금치킨", radius: 95, img: "chicken.png", scale: 1.43, score: 10 }       
         ];
 
         const loadedImages = {};
         const evoContainer = document.getElementById('evolution-chain');
+        const scoreEvoContainer = document.getElementById('score-evolution-chain');
         
         SNACKS.forEach((snack, index) => {
             const img = new Image(); img.src = snack.img; loadedImages[index] = img;
@@ -409,6 +405,10 @@
                 formulaDiv.innerHTML = `<img class="evo-small" src="${snack.img}"><span class="evo-math">x 2 =</span><img class="evo-big" src="${SNACKS[index + 1].img}">`;
                 evoContainer.appendChild(formulaDiv);
             }
+            const scoreDiv = document.createElement('div');
+            scoreDiv.className = 'score-formula';
+            scoreDiv.innerHTML = `<img class="score-evo-img" src="${snack.img}"><span class="score-math">+</span><img class="score-evo-img" src="${snack.img}"><span class="score-math result">= +${snack.score}점</span>`;
+            scoreEvoContainer.appendChild(scoreDiv);
         });
 
         const clearFormulaDiv = document.createElement('div');
@@ -421,14 +421,32 @@
 
         const engine = Engine.create(); const world = engine.world;
         engine.gravity.y = 1.2; 
-        
         const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
 
-        let totalChickens = parseInt(localStorage.getItem('kSnackTotalChickens') || 0, 10);
-        document.getElementById('total-chicken').innerText = totalChickens;
+        let lifetimeChickens = parseInt(localStorage.getItem('kSnackLifetimeChickens') || 0, 10);
+        let shopWalletChickens = parseInt(localStorage.getItem('kSnackTotalChickens') || 0, 10); 
+        if (lifetimeChickens < shopWalletChickens) {
+            lifetimeChickens = shopWalletChickens;
+            localStorage.setItem('kSnackLifetimeChickens', lifetimeChickens);
+        }
+        document.getElementById('total-chicken').innerText = lifetimeChickens; 
+        
+        let bestScore = parseInt(localStorage.getItem('kSnackBestScore') || 0, 10);
+        let currentScore = 0;
+        document.getElementById('best-score').innerText = bestScore;
+        document.getElementById('current-score').innerText = currentScore;
+
+        function addScore(points) {
+            currentScore += points;
+            document.getElementById('current-score').innerText = currentScore;
+            if (currentScore > bestScore) {
+                bestScore = currentScore;
+                document.getElementById('best-score').innerText = bestScore;
+                localStorage.setItem('kSnackBestScore', bestScore);
+            }
+        }
 
         let isQuaking = false; 
-
         let bombCount = parseInt(localStorage.getItem('kSnackBombCount') || 0, 10);
         updateBombUI(); 
 
@@ -438,17 +456,13 @@
         };
 
         ['growth', 'collection'].forEach(cat => {
-            if (shopData.equipped[cat] && !Array.isArray(shopData.equipped[cat])) {
-                shopData.equipped[cat] = [shopData.equipped[cat]];
-            } else if (!shopData.equipped[cat]) {
-                shopData.equipped[cat] = [];
-            }
+            if (shopData.equipped[cat] && !Array.isArray(shopData.equipped[cat])) { shopData.equipped[cat] = [shopData.equipped[cat]]; } 
+            else if (!shopData.equipped[cat]) { shopData.equipped[cat] = []; }
         });
         
         let currentShopTab = 'booster'; 
         let isShopOpen = false;
 
-        // 💡 수정됨: 환경 스킨 토글 로직 완벽 적용 (body class 교체)
         function applySkins() {
             const collection = Array.isArray(shopData.equipped.collection) ? shopData.equipped.collection : [];
             SNACKS[3].img = "mandu.png"; SNACKS[4].img = "fish.png";
@@ -472,15 +486,19 @@
                 });
             }
 
-            const nextSnackImgEl = document.getElementById('next-snack-img');
-            if (nextSnackImgEl && typeof upcomingSnackIndex !== 'undefined') {
-                nextSnackImgEl.src = SNACKS[upcomingSnackIndex].img;
+            const scoreFormulas = document.getElementById('score-evolution-chain').children;
+            if (scoreFormulas.length > 0) {
+                SNACKS.forEach((snack, index) => {
+                    const imgs = scoreFormulas[index].querySelectorAll('.score-evo-img');
+                    if(imgs.length > 0) { imgs[0].src = snack.img; imgs[1].src = snack.img; }
+                });
             }
 
+            const nextSnackImgEl = document.getElementById('next-snack-img');
+            if (nextSnackImgEl && typeof upcomingSnackIndex !== 'undefined') { nextSnackImgEl.src = SNACKS[upcomingSnackIndex].img; }
+
             const environment = shopData.equipped.environment;
-            // 기존 테마 클래스 싹 날리기
             document.body.classList.remove('night-mode', 'summer-mode', 'spring-mode');
-            // 장착된 테마가 있으면 해당 클래스 부여
             if (environment === 'night') { document.body.classList.add('night-mode'); } 
             else if (environment === 'summer') { document.body.classList.add('summer-mode'); }
             else if (environment === 'spring') { document.body.classList.add('spring-mode'); }
@@ -502,8 +520,7 @@
             } else { return Math.floor(rand * 3); }
         }
 
-        let currentDroppingIndex = getRandomSnackIndex();
-        let upcomingSnackIndex = getRandomSnackIndex();
+        let currentDroppingIndex = getRandomSnackIndex(); let upcomingSnackIndex = getRandomSnackIndex();
         applySkins(); 
 
         const fx1 = 20, fx2 = 340, fy_top = 180, fy_bot = 580; 
@@ -512,18 +529,15 @@
 
         const wallOptions = { isStatic: true, render: { fillStyle: 'transparent' }, friction: 0.05, restitution: 0.2, label: 'Wall' };
         World.add(world, [
-            Bodies.rectangle(10, 380, 20, 400, wallOptions),
-            Bodies.rectangle(350, 380, 20, 400, wallOptions),
-            Bodies.rectangle(180, 590, 360, 20, wallOptions)
+            Bodies.rectangle(10, 380, 20, 400, wallOptions), Bodies.rectangle(350, 380, 20, 400, wallOptions), Bodies.rectangle(180, 590, 360, 20, wallOptions)
         ]);
 
-        let goldenRainParticles = [];
-        let isRaining = false;
+        let goldenRainParticles = []; let isRaining = false;
+        let dangerTimer = 0; let isDanger = false; let gameOverTriggered = false;
 
         let audioCtx = null; let isMuted = false;
         function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); }
 
-        // 💡 수정됨: 상점에 '여름날 툇마루' 스킨 추가!
         const SHOP_ITEMS = {
             booster: [
                 { id: 'bomb_1', name: '흔들기 1개', price: 3, desc: '1회용 위기 탈출<br>상자 흔들기', img: 'css-box', amount: 1 },
@@ -546,68 +560,38 @@
         };
 
         function renderShopItems() {
-            document.getElementById('shop-wallet-count').innerText = totalChickens;
+            document.getElementById('shop-wallet-count').innerText = shopWalletChickens;
             const shopBombEl = document.getElementById('shop-bomb-count');
             if(shopBombEl) shopBombEl.innerText = bombCount;
 
-            const container = document.getElementById('shop-content');
-            container.innerHTML = '';
+            const container = document.getElementById('shop-content'); container.innerHTML = '';
             
             SHOP_ITEMS[currentShopTab].forEach(item => {
-                let btnHtml = '';
-                let imgHtml = '';
+                let btnHtml = ''; let imgHtml = '';
+                if (item.img === 'css-box') { imgHtml = `<div class="css-3d-box"><div class="face front"></div><div class="face back"></div><div class="face right"></div><div class="face left"></div><div class="face top"></div><div class="face bottom"></div></div>`;
+                } else if (item.img === 'css-cherry-blossom') { imgHtml = `<div class="css-cherry-blossom"></div>`;
+                } else if (item.img === 'css-summer-flower') { imgHtml = `<div class="css-summer-flower"></div>`;
+                } else if (item.img === 'css-night-flower') { imgHtml = `<div class="css-night-flower"></div>`;
+                } else { imgHtml = `<img src="${item.img}" class="shop-item-img">`; }
 
-                // 썸네일 아이콘 분기 처리
-                if (item.img === 'css-box') {
-                    imgHtml = `<div class="css-3d-box"><div class="face front"></div><div class="face back"></div><div class="face right"></div><div class="face left"></div><div class="face top"></div><div class="face bottom"></div></div>`;
-                } else if (item.img === 'css-cherry-blossom') {
-                    imgHtml = `<div class="css-cherry-blossom"></div>`;
-                } else if (item.img === 'css-summer-flower') {
-                    imgHtml = `<div class="css-summer-flower"></div>`;
-                } else if (item.img === 'css-night-flower') {
-                    imgHtml = `<div class="css-night-flower"></div>`;
-                } else {
-                    imgHtml = `<img src="${item.img}" class="shop-item-img">`;
-                }
-
-                if (currentShopTab === 'booster') {
-                    btnHtml = `<button class="shop-item-btn btn-buy" onclick="buyBooster(${item.price}, ${item.amount})">🍗 ${item.price} 구매</button>`;
+                if (currentShopTab === 'booster') { btnHtml = `<button class="shop-item-btn btn-buy" onclick="buyBooster(${item.price}, ${item.amount})">🍗 ${item.price} 구매</button>`;
                 } else {
                     const isOwned = shopData.owned.includes(item.id);
-                    const isEquipped = Array.isArray(shopData.equipped[currentShopTab]) 
-                        ? shopData.equipped[currentShopTab].includes(item.id) 
-                        : shopData.equipped[currentShopTab] === item.id;
-                    
+                    const isEquipped = Array.isArray(shopData.equipped[currentShopTab]) ? shopData.equipped[currentShopTab].includes(item.id) : shopData.equipped[currentShopTab] === item.id;
                     if (isEquipped) { btnHtml = `<button class="shop-item-btn btn-equipped" style="cursor: pointer;" onclick="unequipItem('${currentShopTab}', '${item.id}')">장착 해제</button>`; } 
                     else if (isOwned) { btnHtml = `<button class="shop-item-btn btn-equip" onclick="equipItem('${currentShopTab}', '${item.id}')">장착하기</button>`; } 
                     else { btnHtml = `<button class="shop-item-btn btn-buy" onclick="buyItem('${item.id}', '${currentShopTab}', ${item.price})">🍗 ${item.price} 구매</button>`; } 
                 }
 
-                container.innerHTML += `
-                    <div class="shop-item">
-                        <div class="shop-item-img-wrapper">
-                            ${imgHtml}
-                        </div>
-                        <div class="shop-item-info">
-                            <div class="shop-item-name">${item.name}</div>
-                            <div class="shop-item-desc">${item.desc}</div>
-                        </div>
-                        ${btnHtml}
-                    </div>
-                `;
+                container.innerHTML += `<div class="shop-item"><div class="shop-item-img-wrapper">${imgHtml}</div><div class="shop-item-info"><div class="shop-item-name">${item.name}</div><div class="shop-item-desc">${item.desc}</div></div>${btnHtml}</div>`;
             });
         }
 
         window.buyBooster = function(price, amount) {
             initAudio();
-            if (totalChickens >= price) {
-                totalChickens -= price;
-                bombCount += amount;
-                if(bombCount > 99) bombCount = 99; 
-                
-                document.getElementById('total-chicken').innerText = totalChickens;
-                localStorage.setItem('kSnackTotalChickens', totalChickens);
-                
+            if (shopWalletChickens >= price) {
+                shopWalletChickens -= price; bombCount += amount; if(bombCount > 99) bombCount = 99; 
+                localStorage.setItem('kSnackTotalChickens', shopWalletChickens); 
                 updateBombUI(); playGoodSound(); renderShopItems(); 
             } else { alert('금고에 치킨이 부족합니다! 🍗'); }
         };
@@ -616,31 +600,21 @@
             localStorage.setItem('kSnackBombCount', bombCount);
             const bombBtn = document.getElementById('bomb-btn');
             document.getElementById('bomb-count').innerText = bombCount;
-            
             const shopBombEl = document.getElementById('shop-bomb-count');
             if(shopBombEl) shopBombEl.innerText = bombCount;
-            
-            if(bombCount <= 0 || isQuaking) { bombBtn.classList.add('disabled'); } 
-            else { bombBtn.classList.remove('disabled'); }
+            if(bombCount <= 0 || isQuaking) { bombBtn.classList.add('disabled'); } else { bombBtn.classList.remove('disabled'); }
         }
 
         window.useBomb = function() {
-            initAudio();
-            if(isDropping || isShopOpen) return;
-            if(bombCount <= 0 || isQuaking) return; 
+            initAudio(); if(isDropping || isShopOpen) return; if(bombCount <= 0 || isQuaking) return; 
             bombCount--; updateBombUI(); triggerEarthquake();
         }
 
         window.buyItem = function(id, category, price) {
             initAudio();
-            if (totalChickens >= price) {
-                totalChickens -= price;
-                document.getElementById('total-chicken').innerText = totalChickens;
-                localStorage.setItem('kSnackTotalChickens', totalChickens);
-                
-                shopData.owned.push(id);
-                localStorage.setItem('kSnackOwned', JSON.stringify(shopData.owned));
-                
+            if (shopWalletChickens >= price) {
+                shopWalletChickens -= price; localStorage.setItem('kSnackTotalChickens', shopWalletChickens);
+                shopData.owned.push(id); localStorage.setItem('kSnackOwned', JSON.stringify(shopData.owned));
                 playGoodSound(); renderShopItems();
             } else { alert('금고에 치킨이 부족합니다! 🍗'); }
         };
@@ -651,31 +625,23 @@
                 if (!Array.isArray(shopData.equipped[category])) shopData.equipped[category] = [];
                 if (!shopData.equipped[category].includes(id)) shopData.equipped[category].push(id);
             } else { shopData.equipped[category] = id; }
-            
             localStorage.setItem('kSnackEquipped', JSON.stringify(shopData.equipped));
-            playTone(300, 'sine', audioCtx.currentTime, 0.1, 0.1);
-            applySkins(); renderShopItems();
+            playTone(300, 'sine', audioCtx.currentTime, 0.1, 0.1); applySkins(); renderShopItems();
         };
 
         window.unequipItem = function(category, id) {
             initAudio();
             if (category === 'growth' || category === 'collection') {
-                if (Array.isArray(shopData.equipped[category])) {
-                    shopData.equipped[category] = shopData.equipped[category].filter(itemId => itemId !== id);
-                }
+                if (Array.isArray(shopData.equipped[category])) { shopData.equipped[category] = shopData.equipped[category].filter(itemId => itemId !== id); }
             } else { shopData.equipped[category] = null; }
-            
             localStorage.setItem('kSnackEquipped', JSON.stringify(shopData.equipped));
-            playTone(300, 'sine', audioCtx.currentTime, 0.1, 0.1); 
-            applySkins(); renderShopItems();
+            playTone(300, 'sine', audioCtx.currentTime, 0.1, 0.1); applySkins(); renderShopItems();
         };        
 
         document.querySelectorAll('.shop-tab').forEach(tab => {
-            tab.addEventListener('click', (e) => { playTabClickSound();
-                document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
-                e.target.classList.add('active');
-                currentShopTab = e.target.getAttribute('data-tab');
-                renderShopItems();
+            tab.addEventListener('click', (e) => { 
+                playTabClickSound(); document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active')); e.target.classList.add('active');
+                currentShopTab = e.target.getAttribute('data-tab'); renderShopItems();
             });
         });
 
@@ -686,7 +652,7 @@
             document.getElementById('shop-modal').classList.remove('hidden'); renderShopItems();
         });
 
-        document.getElementById('close-shop-btn').addEventListener('click', () => {
+        window.closeShop = function() {
             isShopOpen = false; document.getElementById('shop-modal').classList.add('hidden');
             const growth = Array.isArray(shopData.equipped.growth) ? shopData.equipped.growth : [];
             const hasBung = growth.includes('bungeoppang'); const hasMandu = growth.includes('wangmandu');
@@ -694,7 +660,45 @@
             let isValidUpcoming = true; if (upcomingSnackIndex === 4 && !hasBung) isValidUpcoming = false; if (upcomingSnackIndex === 3 && !hasMandu) isValidUpcoming = false;
             if (!isValidCurrent) currentDroppingIndex = getRandomSnackIndex(); if (!isValidUpcoming) upcomingSnackIndex = getRandomSnackIndex();
             document.getElementById('next-snack-img').src = SNACKS[upcomingSnackIndex].img; Runner.start(engineRunner, engine); 
-        });
+        };
+
+        document.getElementById('score-badge').addEventListener('click', () => { initAudio(); playTabClickSound(); document.getElementById('score-modal').classList.remove('hidden'); });
+        window.closeScoreModal = function() { document.getElementById('score-modal').classList.add('hidden'); };
+
+        function playExplosionSound() {
+            if (isMuted || !audioCtx) return;
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'square'; osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.setValueAtTime(100, now); osc.frequency.exponentialRampToValueAtTime(10, now + 1.2);
+            gain.gain.setValueAtTime(0.5, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
+            osc.start(now); osc.stop(now + 1.2);
+
+            const bufferSize = audioCtx.sampleRate * 1.0; 
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            for (let i = 0; i < bufferSize; i++) buffer.getChannelData(0)[i] = Math.random() * 2 - 1;
+            const noise = audioCtx.createBufferSource(); const noiseGain = audioCtx.createGain();
+            noise.buffer = buffer; 
+            const filter = audioCtx.createBiquadFilter(); filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(800, now); filter.frequency.linearRampToValueAtTime(100, now + 1.0);
+            noise.connect(noiseGain).connect(filter).connect(audioCtx.destination);
+            noiseGain.gain.setValueAtTime(0.4, now); noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 1.0);
+            noise.start(now);
+        }
+
+        function resetGameBox(isGameOver = false) {
+            if (isGameOver) { playExplosionSound(); triggerEffect('game-over-text', 'show-game-over'); } 
+            else { playTrashSound(); }
+            
+            Composite.allBodies(world).forEach(body => { if (body.label !== 'Wall' && body.label !== 'SafetyNet') World.remove(world, body); });
+            currentDroppingIndex = getRandomSnackIndex(); upcomingSnackIndex = getRandomSnackIndex(); 
+            document.getElementById('next-snack-img').src = SNACKS[upcomingSnackIndex].img; isDropping = false;
+            
+            currentScore = 0; document.getElementById('current-score').innerText = currentScore;
+            dangerTimer = 0; isDanger = false; gameOverTriggered = false;
+        }
+
+        document.getElementById('restart-btn').addEventListener('click', () => { resetGameBox(false); });
 
         function triggerEarthquake() {
             isQuaking = true; updateBombUI(); 
@@ -706,9 +710,7 @@
             setTimeout(() => {
                 playRumbleSound(2.5);
                 const shakeInterval = setInterval(() => {
-                    Composite.allBodies(world).forEach(body => {
-                        if (body.label !== 'Wall' && body.label !== 'SafetyNet') { Matter.Body.setVelocity(body, { x: (Math.random() - 0.5) * 5, y: (Math.random() - 0.5) * 5 - 1 }); }
-                    });
+                    Composite.allBodies(world).forEach(body => { if (body.label !== 'Wall' && body.label !== 'SafetyNet') { Matter.Body.setVelocity(body, { x: (Math.random() - 0.5) * 5, y: (Math.random() - 0.5) * 5 - 1 }); } });
                 }, 100); 
 
                 setTimeout(() => {
@@ -731,7 +733,6 @@
             }, 500);
         }
 
-        // 사운드 함수들 생략 없이 그대로 유지
         function playTone(freq, type, startTime, duration, vol = 0.2) { const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = type; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.value = freq; gain.gain.setValueAtTime(0, startTime); gain.gain.linearRampToValueAtTime(vol, startTime + 0.02); gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration); osc.start(startTime); osc.stop(startTime + duration); }
         function playSnap(startTime, freq = 300) { const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'triangle'; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(freq * 1.5, startTime); osc.frequency.exponentialRampToValueAtTime(freq / 2, startTime + 0.03); gain.gain.setValueAtTime(0, startTime); gain.gain.linearRampToValueAtTime(0.5, startTime + 0.002); gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.04); osc.start(startTime); osc.stop(startTime + 0.04); }
         function playDropSound() { if (isMuted || !audioCtx) return; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(600, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1); osc.start(); osc.stop(audioCtx.currentTime + 0.1); }
@@ -744,77 +745,20 @@
         function playRumbleSound(duration) { if (isMuted || !audioCtx) return; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sawtooth'; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(40, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + duration / 2); osc.frequency.linearRampToValueAtTime(40, audioCtx.currentTime + duration); gain.gain.setValueAtTime(0, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.04, audioCtx.currentTime + 0.2); gain.gain.setValueAtTime(0.04, audioCtx.currentTime + duration - 0.2); gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + duration); osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime + duration); }
         function playLaunchSound() { if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const boomOsc = audioCtx.createOscillator(); const boomGain = audioCtx.createGain(); boomOsc.type = 'triangle'; boomOsc.connect(boomGain); boomGain.connect(audioCtx.destination); boomOsc.frequency.setValueAtTime(300, now); boomOsc.frequency.exponentialRampToValueAtTime(30, now + 0.2); boomGain.gain.setValueAtTime(0, now); boomGain.gain.linearRampToValueAtTime(0.12, now + 0.02); boomGain.gain.exponentialRampToValueAtTime(0.001, now + 0.6); boomOsc.start(now); boomOsc.stop(now + 0.6); const snapOsc = audioCtx.createOscillator(); const snapGain = audioCtx.createGain(); snapOsc.type = 'sawtooth'; snapOsc.connect(snapGain); snapGain.connect(audioCtx.destination); snapOsc.frequency.setValueAtTime(600, now); snapOsc.frequency.exponentialRampToValueAtTime(50, now + 0.15); snapGain.gain.setValueAtTime(0, now); snapGain.gain.linearRampToValueAtTime(0.08, now + 0.01); snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3); snapOsc.start(now); snapOsc.stop(now + 0.3); }
         function playFallSound() { if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(30, now + 0.15); gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.10, now + 0.02); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3); osc.start(now); osc.stop(now + 0.3); }
+        function playShopOpenSound() { if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const freqs = [523.25, 659.25, 783.99]; freqs.forEach((freq, i) => { const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(freq, now + (i * 0.05)); gain.gain.setValueAtTime(0, now + (i * 0.05)); gain.gain.linearRampToValueAtTime(0.15, now + (i * 0.05) + 0.02); gain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.05) + 0.3); osc.start(now + (i * 0.05)); osc.stop(now + (i * 0.05) + 0.3); }); }
+        function playTrashSound() { if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const bufferSize = audioCtx.sampleRate * 0.15; const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate); for (let i = 0; i < bufferSize; i++) buffer.getChannelData(0)[i] = Math.random() * 2 - 1; const noise = audioCtx.createBufferSource(); const gain = audioCtx.createGain(); noise.buffer = buffer; gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15); noise.connect(gain).connect(audioCtx.destination); noise.start(now); }
+        function playTabClickSound() { if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'triangle'; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(800, now); osc.frequency.exponentialRampToValueAtTime(400, now + 0.05); gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.1, now + 0.01); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05); osc.start(now); osc.stop(now + 0.05); }
+        function playSirenSound() { if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'square'; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(600, now); osc.frequency.linearRampToValueAtTime(800, now + 0.2); osc.frequency.linearRampToValueAtTime(600, now + 0.4); gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.1, now + 0.05); gain.gain.linearRampToValueAtTime(0.01, now + 0.4); osc.start(now); osc.stop(now + 0.4); }
 
-	function playShopOpenSound() {
-            if (isMuted || !audioCtx) return;
-            const now = audioCtx.currentTime;
-            // 상점 문 열리는 경쾌한 딩동 소리
-            const freqs = [523.25, 659.25, 783.99]; // C5, E5, G5
-            freqs.forEach((freq, i) => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.frequency.setValueAtTime(freq, now + (i * 0.05));
-                gain.gain.setValueAtTime(0, now + (i * 0.05));
-                gain.gain.linearRampToValueAtTime(0.15, now + (i * 0.05) + 0.02);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.05) + 0.3);
-                osc.start(now + (i * 0.05));
-                osc.stop(now + (i * 0.05) + 0.3);
-            });
-        }
-
-        function playTrashSound() {
-            if (isMuted || !audioCtx) return;
-            const now = audioCtx.currentTime;
-            
-            // 1. 0.15초짜리 백색 소음(무작위 노이즈) 버퍼 생성
-            const bufferSize = audioCtx.sampleRate * 0.15; 
-            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            for (let i = 0; i < bufferSize; i++) buffer.getChannelData(0)[i] = Math.random() * 2 - 1;
-
-            const noise = audioCtx.createBufferSource();
-            const gain = audioCtx.createGain();
-            noise.buffer = buffer;
-            
-            // 2. 볼륨을 0.2에서 시작해서 0.15초만에 확 줄어들게 설정 (샤삭! 느낌)
-            gain.gain.setValueAtTime(0.2, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-
-            noise.connect(gain).connect(audioCtx.destination);
-            noise.start(now);
-        }
-
-        function playTabClickSound() {
-            if (isMuted || !audioCtx) return;
-            const now = audioCtx.currentTime;
-            // 탭 클릭 시 나는 가벼운 틱 소리
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'triangle';
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.frequency.setValueAtTime(800, now);
-            osc.frequency.exponentialRampToValueAtTime(400, now + 0.05);
-            gain.gain.setValueAtTime(0, now);
-            gain.gain.linearRampToValueAtTime(0.1, now + 0.01);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
-            osc.start(now);
-            osc.stop(now + 0.05);
-        }
-
-        document.getElementById('mute-btn').addEventListener('click', (e) => { isMuted = !isMuted; e.target.innerText = isMuted ? '🔇 소리 꺼짐' : '🔊 소리 켜짐'; });
-        
-        document.getElementById('restart-btn').addEventListener('click', () => { playTrashSound();
-            Composite.allBodies(world).forEach(body => { if (body.label !== 'Wall') World.remove(world, body); });
-            currentDroppingIndex = getRandomSnackIndex(); upcomingSnackIndex = getRandomSnackIndex(); 
-            document.getElementById('next-snack-img').src = SNACKS[upcomingSnackIndex].img; isDropping = false;
-        });
+        document.getElementById('mute-btn').addEventListener('click', (e) => { isMuted = !isMuted; e.target.innerText = isMuted ? '🔇' : '🔊'; });
 
         function createSnack(x, y, level) {
             const baseDensity = 0.001; const snackDensity = baseDensity * Math.pow(1.2, level);
             const body = Bodies.circle(x, y, SNACKS[level].radius, { restitution: 0.3, friction: 0.005, density: snackDensity, label: level.toString() });
+            
+            body.isNewDrop = true; 
+            setTimeout(() => { if (body) body.isNewDrop = false; }, 800); 
+
             World.add(world, body); return body;
         }
 
@@ -835,13 +779,11 @@
         function triggerJackpotMagnet() {
             const jackpotEl = document.getElementById('jackpot-text'); const walletBadge = document.getElementById('wallet-badge');
             jackpotEl.style.transition = ''; jackpotEl.style.top = '55%'; jackpotEl.style.left = '50%'; jackpotEl.style.transform = 'translate(-50%, -50%) scale(0.1)'; jackpotEl.style.opacity = '0';
-            
             setTimeout(() => { jackpotEl.classList.remove('show-jackpot'); void jackpotEl.offsetWidth; jackpotEl.classList.add('show-jackpot'); }, 400);
 
             setTimeout(() => {
                 jackpotEl.classList.remove('show-jackpot'); jackpotEl.style.transform = 'translate(-50%, -52%) scale(1)'; jackpotEl.style.opacity = '1'; void jackpotEl.offsetWidth;
                 const rect = walletBadge.getBoundingClientRect(); const targetX = rect.left + rect.width / 2; const targetY = rect.top + rect.height / 2;
-                
                 jackpotEl.style.transition = 'all 0.5s cubic-bezier(0.55, 0.055, 0.675, 0.19)'; 
                 jackpotEl.style.top = targetY + 'px'; jackpotEl.style.left = targetX + 'px'; jackpotEl.style.transform = 'translate(-50%, -50%) scale(0.0)'; jackpotEl.style.opacity = '0';
             }, 2500 + 400); 
@@ -850,11 +792,13 @@
                 jackpotEl.style.transition = ''; jackpotEl.style.top = '55%'; jackpotEl.style.left = '50%';
                 let count = 0;
                 const coinInterval = setInterval(() => {
-                    totalChickens++; localStorage.setItem('kSnackTotalChickens', totalChickens); document.getElementById('total-chicken').innerText = totalChickens;
-                    playCoinSound(count);
-                    walletBadge.classList.remove('pump'); void walletBadge.offsetWidth; walletBadge.classList.add('pump');
-                    count++;
-                    if(count >= 3) { clearInterval(coinInterval); setTimeout(() => walletBadge.classList.remove('pump'), 200); }
+                    lifetimeChickens++; shopWalletChickens++; 
+                    localStorage.setItem('kSnackLifetimeChickens', lifetimeChickens);
+                    localStorage.setItem('kSnackTotalChickens', shopWalletChickens);
+                    document.getElementById('total-chicken').innerText = lifetimeChickens;
+                    
+                    playCoinSound(count); walletBadge.classList.remove('pump'); void walletBadge.offsetWidth; walletBadge.classList.add('pump');
+                    count++; if(count >= 3) { clearInterval(coinInterval); setTimeout(() => walletBadge.classList.remove('pump'), 200); }
                 }, 150); 
             }, 3000 + 400); 
         }
@@ -869,6 +813,8 @@
                     bodyA.isMerging = true; bodyB.isMerging = true;
                     let level = parseInt(bodyA.label);
                     const newX = (bodyA.position.x + bodyB.position.x) / 2; const newY = (bodyA.position.y + bodyB.position.y) / 2;
+                    
+                    addScore(SNACKS[level].score); 
 
                     if (level < SNACKS.length - 1) {
                         World.remove(world, bodyA); World.remove(world, bodyB);
@@ -878,48 +824,35 @@
                         if (nextLevel === 5) { playGoodSound(); triggerEffect('good-effect', 'show-good'); } 
                         else if (nextLevel === 6) { playGreatSound(); triggerEffect('great-effect', 'show-great'); } 
                         else if (nextLevel === 7) { 
-			totalChickens++; 
-                            localStorage.setItem('kSnackTotalChickens', totalChickens);
-                            document.getElementById('total-chicken').innerText = totalChickens;
-                            
-                            playWowSound(); 
-                            triggerEffect('wow-effect', 'show-wow'); 
+                            lifetimeChickens++; shopWalletChickens++; 
+                            localStorage.setItem('kSnackLifetimeChickens', lifetimeChickens);
+                            localStorage.setItem('kSnackTotalChickens', shopWalletChickens);
+                            document.getElementById('total-chicken').innerText = lifetimeChickens;
+                            playWowSound(); triggerEffect('wow-effect', 'show-wow'); 
                         }
                         else { playMergeSound(nextLevel); }
                     } 
                     else if (level === 7) { 
-                        // ✅ 이 밑은 치킨 + 치킨 = 잭팟(+3) 로직
                         World.remove(world, bodyA); World.remove(world, bodyB); 
-                        playClearSound(); triggerEffect('clear-effect', 'show-clear'); 
-                        startGoldenRain(); triggerJackpotMagnet();
+                        playClearSound(); triggerEffect('clear-effect', 'show-clear'); startGoldenRain(); triggerJackpotMagnet();
                     }
                 }
             }
         });
 
-        // 💡 수정됨: 환경 테마에 따라 Canvas 안쪽 렌더링을 완전히 분기 처리
-        // 💡 픽스됨: 환경 테마 색상이 꼬이지 않고 완벽하게 전환되도록 로직 재구성
         function renderLoop() {
             if (!isShopOpen) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height); frameCount++;
                 
-                // 1. 테마 클래스 확인
                 const isNight = document.body.classList.contains('night-mode');
                 const isSummer = document.body.classList.contains('summer-mode');
                 const isSpring = document.body.classList.contains('spring-mode');
                 
-                // 2. 컬러 변수 초기화 (기본적으로 '오렌지색 기본 테마'를 깔아둡니다)
-                let innerColor = "rgba(255, 177, 66, 0.6)"; 
-                let outerColor = "rgb(255, 177, 66)";
-                let backWallGrad0 = "rgba(255, 255, 255, 0.45)"; 
-                let backWallGrad1 = "rgba(255, 255, 255, 0)";
-                let sideGrad0 = "rgba(255, 255, 255, 0.6)"; 
-                let sideGrad1 = "rgba(200, 180, 160, 0.2)";
-                let botGrad0 = "rgba(100, 80, 60, 0.4)"; 
-                let botGrad1 = "rgba(160, 140, 120, 0.1)";
+                let innerColor = "rgba(255, 177, 66, 0.6)"; let outerColor = "rgb(255, 177, 66)";
+                let backWallGrad0 = "rgba(255, 255, 255, 0.45)"; let backWallGrad1 = "rgba(255, 255, 255, 0)";
+                let sideGrad0 = "rgba(255, 255, 255, 0.6)"; let sideGrad1 = "rgba(200, 180, 160, 0.2)";
+                let botGrad0 = "rgba(100, 80, 60, 0.4)"; let botGrad1 = "rgba(160, 140, 120, 0.1)";
 
-                // 3. 특정 테마가 켜져 있다면, 해당 색상으로 '덮어쓰기' 합니다.
-                // 이렇게 해야 테마를 껐을 때(위의 3개가 모두 false일 때) 깔끔하게 기본 색상으로 돌아옵니다.
                 if (isNight) {
                     innerColor = "rgba(220, 40, 40, 0.6)"; outerColor = "rgb(220, 40, 40)";
                     backWallGrad0 = "rgba(255, 255, 255, 0.1)"; backWallGrad1 = "rgba(255, 255, 255, 0)";
@@ -937,44 +870,20 @@
                     botGrad0 = "rgba(255, 182, 193, 0.5)"; botGrad1 = "rgba(216, 27, 96, 0.2)";
                 }
                 
-                // 4. 백그라운드 렌더링
                 const gradientTop = ctx.createLinearGradient(0, fy_top, 0, by_top);
                 gradientTop.addColorStop(0, backWallGrad0); gradientTop.addColorStop(1, backWallGrad1);
                 ctx.fillStyle = gradientTop; ctx.fillRect(bx1, by_top, bx2 - bx1, fy_top - by_top);
 
-                // 여름 테마 전용 돗자리 렌더링 (가로줄 패턴)
                 if (isSummer) {
-                    ctx.strokeStyle = "rgba(141, 110, 99, 0.15)";
-                    ctx.lineWidth = 1.5;
-                    for(let y = by_top; y < fy_bot; y += 8) {
-                        ctx.beginPath(); ctx.moveTo(bx1, Math.max(by_top, y)); ctx.lineTo(bx2, Math.max(by_top, y)); ctx.stroke();
-                    }
+                    ctx.strokeStyle = "rgba(141, 110, 99, 0.15)"; ctx.lineWidth = 1.5;
+                    for(let y = by_top; y < fy_bot; y += 8) { ctx.beginPath(); ctx.moveTo(bx1, Math.max(by_top, y)); ctx.lineTo(bx2, Math.max(by_top, y)); ctx.stroke(); }
                 }
 
-                const sideGradient = ctx.createLinearGradient(fx1, fy_top, bx1, by_top); 
-                sideGradient.addColorStop(0, sideGrad0); sideGradient.addColorStop(1, sideGrad1); 
-                ctx.fillStyle = sideGradient;
-                ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(bx1, by_top); ctx.lineTo(bx1, by_bot); ctx.lineTo(fx1, fy_bot); ctx.fill(); 
-                
-                const sideGradientRight = ctx.createLinearGradient(fx2, fy_top, bx2, by_top); 
-                sideGradientRight.addColorStop(0, sideGrad0); sideGradientRight.addColorStop(1, sideGrad1); 
-                ctx.fillStyle = sideGradientRight;
-                ctx.beginPath(); ctx.moveTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.lineTo(bx2, by_bot); ctx.lineTo(fx2, fy_bot); ctx.fill(); 
-                
-                const bottomGradient = ctx.createRadialGradient(canvas.width/2, fy_bot, 50, canvas.width/2, fy_bot, 200); 
-                bottomGradient.addColorStop(0, botGrad0); bottomGradient.addColorStop(1, botGrad1); 
-                ctx.fillStyle = bottomGradient;
-                ctx.beginPath(); ctx.moveTo(fx1, fy_bot); ctx.lineTo(bx1, by_bot); ctx.lineTo(bx2, by_bot); ctx.lineTo(fx2, fy_bot); ctx.fill();
-
-                // 5. 테두리(Wireframe) 렌더링
-                ctx.strokeStyle = innerColor; 
-                ctx.lineWidth = 2; ctx.lineJoin = "round"; 
-                ctx.strokeRect(bx1, by_top, bx2 - bx1, by_bot - by_top); 
-                ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(bx1, by_top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx1, fy_bot); ctx.lineTo(bx1, by_bot); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx2, fy_bot); ctx.lineTo(bx2, by_bot); ctx.stroke();
-                
-                ctx.strokeStyle = outerColor; 
-                ctx.lineWidth = 5; 
-                ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.lineTo(bx1, by_top); ctx.closePath(); ctx.stroke();
+                const sideGradient = ctx.createLinearGradient(fx1, fy_top, bx1, by_top); sideGradient.addColorStop(0, sideGrad0); sideGradient.addColorStop(1, sideGrad1); ctx.fillStyle = sideGradient; ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(bx1, by_top); ctx.lineTo(bx1, by_bot); ctx.lineTo(fx1, fy_bot); ctx.fill(); 
+                const sideGradientRight = ctx.createLinearGradient(fx2, fy_top, bx2, by_top); sideGradientRight.addColorStop(0, sideGrad0); sideGradientRight.addColorStop(1, sideGrad1); ctx.fillStyle = sideGradientRight; ctx.beginPath(); ctx.moveTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.lineTo(bx2, by_bot); ctx.lineTo(fx2, fy_bot); ctx.fill(); 
+                const bottomGradient = ctx.createRadialGradient(canvas.width/2, fy_bot, 50, canvas.width/2, fy_bot, 200); bottomGradient.addColorStop(0, botGrad0); bottomGradient.addColorStop(1, botGrad1); ctx.fillStyle = bottomGradient; ctx.beginPath(); ctx.moveTo(fx1, fy_bot); ctx.lineTo(bx1, by_bot); ctx.lineTo(bx2, by_bot); ctx.lineTo(fx2, fy_bot); ctx.fill();
+                ctx.strokeStyle = innerColor; ctx.lineWidth = 2; ctx.lineJoin = "round"; ctx.strokeRect(bx1, by_top, bx2 - bx1, by_bot - by_top); ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(bx1, by_top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx1, fy_bot); ctx.lineTo(bx1, by_bot); ctx.stroke(); ctx.beginPath(); ctx.moveTo(fx2, fy_bot); ctx.lineTo(bx2, by_bot); ctx.stroke();
+                ctx.strokeStyle = outerColor; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(fx2, fy_top); ctx.lineTo(bx2, by_top); ctx.lineTo(bx1, by_top); ctx.closePath(); ctx.stroke();
 
                 if (!isDropping) {
                     const r = SNACKS[currentDroppingIndex].radius; const safeX = Math.max(r + 20, Math.min(previewX, canvas.width - r - 20));
@@ -983,42 +892,56 @@
                     ctx.globalAlpha = 0.8; let bob = Math.sin(frameCount * 0.1) * 3; const img = loadedImages[currentDroppingIndex]; if (img && img.complete) { ctx.drawImage(img, safeX - r, dropY - r + bob, r * 2, r * 2); } ctx.globalAlpha = 1.0;
                 }
 
+                let highestY = 9999;
                 const bodies = Matter.Composite.allBodies(world);
                 bodies.forEach(body => {
                     if (body.label !== 'Wall' && body.label !== 'SafetyNet') { 
-                        const level = parseInt(body.label); const img = loadedImages[level]; const r = SNACKS[level].radius; 
                         
-                        const scale = SNACKS[level].scale || 1.35; 
-                        const visualR = r * scale;
+                        if (!body.isNewDrop) {
+                            const topEdge = body.position.y - SNACKS[parseInt(body.label)].radius;
+                            if(topEdge < highestY) highestY = topEdge;
+                        }
+
+                        const level = parseInt(body.label); const img = loadedImages[level]; const r = SNACKS[level].radius; 
+                        const scale = SNACKS[level].scale || 1.35; const visualR = r * scale;
 
                         ctx.save(); 
-                        
-                        if (body.position.y > fy_top && body.position.x > fx1 && body.position.x < fx2) {
-                            ctx.beginPath(); ctx.rect(fx1, 0, fx2 - fx1, fy_bot); ctx.clip();
-                        }
+                        if (body.position.y > fy_top && body.position.x > fx1 && body.position.x < fx2) { ctx.beginPath(); ctx.rect(fx1, 0, fx2 - fx1, fy_bot); ctx.clip(); }
                         ctx.translate(body.position.x, body.position.y); ctx.rotate(body.angle);
                         if (img && img.complete) { ctx.drawImage(img, -visualR, -visualR, visualR * 2, visualR * 2); }
                         ctx.restore();
                     }
                 });
 
+                const dangerY = by_top - 5; 
+                if (highestY < dangerY && !gameOverTriggered && !isQuaking) {
+                    dangerTimer += 1000/60; 
+                    isDanger = true;
+                } else if (highestY >= dangerY) { 
+                    dangerTimer = 0;
+                    isDanger = false;
+                }
+
+                if (isDanger && !gameOverTriggered) {
+                    let dangerAlpha = 0.3;
+                    if (dangerTimer > 5000) { dangerAlpha = 0.4 + Math.sin(frameCount * 0.3) * 0.2; if (frameCount % 30 === 0) playSirenSound(); } 
+                    else { dangerAlpha = 0.15 + Math.sin(frameCount * 0.1) * 0.15; }
+                    ctx.fillStyle = `rgba(255, 0, 0, ${dangerAlpha})`; ctx.beginPath(); ctx.moveTo(fx1, fy_top); ctx.lineTo(bx1, by_top); ctx.lineTo(bx2, by_top); ctx.lineTo(fx2, fy_top); ctx.closePath(); ctx.fill();
+                    if (dangerTimer > 8000) { gameOverTriggered = true; resetGameBox(true); }
+                }
+
                 if (goldenRainParticles.length > 0) {
                     ctx.save();
                     goldenRainParticles.forEach((p, index) => {
                         if(isRaining) { p.y += p.speed; p.x += Math.sin(p.wobble) * 1.5; p.wobble += p.wobbleSpeed; } 
                         else { p.y += p.speed * 1.5; p.opacity = Math.max(0, (canvas.height - p.y) / canvas.height); }
-
-                        if (p.y < canvas.height) {
-                            ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                            ctx.fillStyle = `rgba(255, 215, 0, ${p.opacity !== undefined ? p.opacity : 0.8})`;
-                            ctx.shadowBlur = 10; ctx.shadowColor = '#FF8E0D'; ctx.fill();
+                        if (p.y < canvas.height) { ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fillStyle = `rgba(255, 215, 0, ${p.opacity !== undefined ? p.opacity : 0.8})`; ctx.shadowBlur = 10; ctx.shadowColor = '#FF8E0D'; ctx.fill();
                         } else if (!isRaining && p.y >= canvas.height) { goldenRainParticles.splice(index, 1); }
                     });
                     ctx.restore();
                 }
 
-                const frontGlass = ctx.createLinearGradient(fx1, fy_top, fx2, fy_bot); 
-                frontGlass.addColorStop(0, "rgba(255, 255, 255, 0.2)"); frontGlass.addColorStop(0.5, "rgba(255, 255, 255, 0.05)"); frontGlass.addColorStop(1, "rgba(255, 255, 255, 0.1)");
+                const frontGlass = ctx.createLinearGradient(fx1, fy_top, fx2, fy_bot); frontGlass.addColorStop(0, "rgba(255, 255, 255, 0.2)"); frontGlass.addColorStop(0.5, "rgba(255, 255, 255, 0.05)"); frontGlass.addColorStop(1, "rgba(255, 255, 255, 0.1)");
                 ctx.fillStyle = frontGlass; ctx.fillRect(fx1, fy_top, fx2 - fx1, fy_bot - fy_top);
                 ctx.strokeStyle = outerColor; ctx.lineWidth = 3; ctx.strokeRect(fx1, fy_top, fx2 - fx1, fy_bot - fy_top); 
             }
@@ -1035,8 +958,7 @@
             document.getElementById('next-snack-img').src = SNACKS[upcomingSnackIndex].img; setTimeout(() => { isDropping = false; }, 600);
         }
 
-        canvas.addEventListener('mousemove', (e) => { if(!isShopOpen) previewX = getPointerX(e); });
-        canvas.addEventListener('mousedown', dropSnack);
+        canvas.addEventListener('mousemove', (e) => { if(!isShopOpen) previewX = getPointerX(e); }); canvas.addEventListener('mousedown', dropSnack);
         canvas.addEventListener('touchstart', (e) => { if(!isShopOpen) { e.preventDefault(); previewX = getPointerX(e); } }, {passive: false});
         canvas.addEventListener('touchmove', (e) => { if(!isShopOpen) { e.preventDefault(); previewX = getPointerX(e); } }, {passive: false});
         canvas.addEventListener('touchend', (e) => { if(!isShopOpen) { e.preventDefault(); dropSnack(); } }, {passive: false});
