@@ -638,7 +638,7 @@
         };        
 
         document.querySelectorAll('.shop-tab').forEach(tab => {
-            tab.addEventListener('click', (e) => {
+            tab.addEventListener('click', (e) => { playTabClickSound();
                 document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
                 e.target.classList.add('active');
                 currentShopTab = e.target.getAttribute('data-tab');
@@ -649,7 +649,7 @@
         let engineRunner = Runner.create(); 
 
         document.getElementById('shop-btn').addEventListener('click', () => {
-            initAudio(); isShopOpen = true; Runner.stop(engineRunner); 
+            initAudio(); playShopOpenSound(); isShopOpen = true; Runner.stop(engineRunner); 
             document.getElementById('shop-modal').classList.remove('hidden'); renderShopItems();
         });
 
@@ -712,9 +712,68 @@
         function playLaunchSound() { if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const boomOsc = audioCtx.createOscillator(); const boomGain = audioCtx.createGain(); boomOsc.type = 'triangle'; boomOsc.connect(boomGain); boomGain.connect(audioCtx.destination); boomOsc.frequency.setValueAtTime(300, now); boomOsc.frequency.exponentialRampToValueAtTime(30, now + 0.2); boomGain.gain.setValueAtTime(0, now); boomGain.gain.linearRampToValueAtTime(0.12, now + 0.02); boomGain.gain.exponentialRampToValueAtTime(0.001, now + 0.6); boomOsc.start(now); boomOsc.stop(now + 0.6); const snapOsc = audioCtx.createOscillator(); const snapGain = audioCtx.createGain(); snapOsc.type = 'sawtooth'; snapOsc.connect(snapGain); snapGain.connect(audioCtx.destination); snapOsc.frequency.setValueAtTime(600, now); snapOsc.frequency.exponentialRampToValueAtTime(50, now + 0.15); snapGain.gain.setValueAtTime(0, now); snapGain.gain.linearRampToValueAtTime(0.08, now + 0.01); snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3); snapOsc.start(now); snapOsc.stop(now + 0.3); }
         function playFallSound() { if (isMuted || !audioCtx) return; const now = audioCtx.currentTime; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(30, now + 0.15); gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.10, now + 0.02); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3); osc.start(now); osc.stop(now + 0.3); }
 
+	function playShopOpenSound() {
+            if (isMuted || !audioCtx) return;
+            const now = audioCtx.currentTime;
+            // 상점 문 열리는 경쾌한 딩동 소리
+            const freqs = [523.25, 659.25, 783.99]; // C5, E5, G5
+            freqs.forEach((freq, i) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.setValueAtTime(freq, now + (i * 0.05));
+                gain.gain.setValueAtTime(0, now + (i * 0.05));
+                gain.gain.linearRampToValueAtTime(0.15, now + (i * 0.05) + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.05) + 0.3);
+                osc.start(now + (i * 0.05));
+                osc.stop(now + (i * 0.05) + 0.3);
+            });
+        }
+
+        function playTrashSound() {
+            if (isMuted || !audioCtx) return;
+            const now = audioCtx.currentTime;
+            
+            // 1. 0.15초짜리 백색 소음(무작위 노이즈) 버퍼 생성
+            const bufferSize = audioCtx.sampleRate * 0.15; 
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            for (let i = 0; i < bufferSize; i++) buffer.getChannelData(0)[i] = Math.random() * 2 - 1;
+
+            const noise = audioCtx.createBufferSource();
+            const gain = audioCtx.createGain();
+            noise.buffer = buffer;
+            
+            // 2. 볼륨을 0.2에서 시작해서 0.15초만에 확 줄어들게 설정 (샤삭! 느낌)
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+
+            noise.connect(gain).connect(audioCtx.destination);
+            noise.start(now);
+        }
+
+        function playTabClickSound() {
+            if (isMuted || !audioCtx) return;
+            const now = audioCtx.currentTime;
+            // 탭 클릭 시 나는 가벼운 틱 소리
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.exponentialRampToValueAtTime(400, now + 0.05);
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(0.1, now + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+            osc.start(now);
+            osc.stop(now + 0.05);
+        }
+
         document.getElementById('mute-btn').addEventListener('click', (e) => { isMuted = !isMuted; e.target.innerText = isMuted ? '🔇 소리 꺼짐' : '🔊 소리 켜짐'; });
         
-        document.getElementById('restart-btn').addEventListener('click', () => {
+        document.getElementById('restart-btn').addEventListener('click', () => { playTrashSound();
             Composite.allBodies(world).forEach(body => { if (body.label !== 'Wall') World.remove(world, body); });
             currentDroppingIndex = getRandomSnackIndex(); upcomingSnackIndex = getRandomSnackIndex(); 
             document.getElementById('next-snack-img').src = SNACKS[upcomingSnackIndex].img; isDropping = false;
