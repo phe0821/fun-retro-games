@@ -542,7 +542,10 @@
 
         const wallOptions = { isStatic: true, render: { fillStyle: 'transparent' }, friction: 0.05, restitution: 0.2, label: 'Wall' };
         World.add(world, [
-            Bodies.rectangle(10, 380, 20, 400, wallOptions), Bodies.rectangle(350, 380, 20, 400, wallOptions), Bodies.rectangle(180, 590, 360, 20, wallOptions)
+            // 💡 두께를 100px로 늘려서 뚫고 나가는 것 완벽 방지!
+            Bodies.rectangle(-30, 300, 100, 800, wallOptions), // 왼쪽 벽
+            Bodies.rectangle(390, 300, 100, 800, wallOptions), // 오른쪽 벽
+            Bodies.rectangle(180, 630, 400, 100, wallOptions)  // 바닥 벽
         ]);
 
         let goldenRainParticles = []; let isRaining = false;
@@ -717,7 +720,12 @@
             isQuaking = true; updateBombUI(); 
             const toast = document.getElementById('earthquake-toast'); toast.classList.remove('hidden');
             const safetyOptions = { isStatic: true, friction: 0, restitution: 0, label: 'SafetyNet' };
-            const safetyNet = [ Bodies.rectangle(10, -200, 20, 1000, safetyOptions), Bodies.rectangle(350, -200, 20, 1000, safetyOptions), Bodies.rectangle(180, -800, 400, 50, safetyOptions) ];
+            const safetyNet = [ 
+                // 💡 흔들기 발동 시 튕겨나감 방지 벙커
+                Bodies.rectangle(-30, -200, 100, 1000, safetyOptions), 
+                Bodies.rectangle(390, -200, 100, 1000, safetyOptions), 
+                Bodies.rectangle(180, -800, 400, 100, safetyOptions) 
+            ];
             World.add(world, safetyNet); 
 
             setTimeout(() => {
