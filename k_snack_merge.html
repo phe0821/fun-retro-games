@@ -464,11 +464,6 @@
             scoreEvoContainer.appendChild(scoreDiv);
         });
 
-        const clearFormulaDiv = document.createElement('div');
-        clearFormulaDiv.className = 'evo-formula';
-        clearFormulaDiv.innerHTML = `<img class="evo-small" src="${SNACKS[7].img}"><span class="evo-math">x2 =</span><span class="evo-math" style="color:#f1c40f; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Clear</span>`;
-        evoContainer.appendChild(clearFormulaDiv);
-
         const Engine = Matter.Engine, Render = Matter.Render, World = Matter.World,
               Bodies = Matter.Bodies, Events = Matter.Events, Runner = Matter.Runner, Composite = Matter.Composite;
 
