@@ -9,19 +9,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Jua&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     <style>
-        /* ☀️ 기본 테마 (Default) */
+       /* ☀️ 기본 테마 (Default) */
         body {
             background: radial-gradient(circle at 50% 30%, #fff5e6 0%, #ffe0b2 40%, #ffcc80 80%, #f57c00 100%);
             display: flex; flex-direction: column; align-items: center;
             
-            /* 💡 수정: APK 상단바(배터리/시간) 겹침 방지 & 폴드 세로 여백 정중앙 배치 */
-            justify-content: center; 
+            /* 💡 수정 1: 자비없이 화면을 잘라먹던 justify-content 삭제하고 안전하게 변경 */
             padding-top: max(35px, env(safe-area-inset-top)); 
             padding-bottom: max(15px, env(safe-area-inset-bottom));
             margin: 0; 
-
-            /* 🚨 디렉터님이 살려낸 생명줄!! (패딩 때문에 화면 길어지는 것 완벽 차단) */
-            box-sizing: border-box;
+            box-sizing: border-box; 
             
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none; -webkit-user-select: none; touch-action: none;
@@ -34,6 +31,9 @@
             grid-template-columns: 100px minmax(0, 360px); 
             grid-template-rows: auto auto auto auto;
             gap: 2px 15px; justify-content: center; width: 100%; padding: 0 10px; box-sizing: border-box;
+            
+            /* 💡 수정 1-2: 높이가 좁으면 위로 붙고, 남으면 정중앙에 위치하는 안전한 마법! */
+            margin: auto 0; 
         }
 
         #game-title {
@@ -115,12 +115,11 @@
         .evo-small { width: 22px; height: 22px; object-fit: contain; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2)); }
         .evo-big { width: 28px; height: 28px; object-fit: contain; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); }
         
-        /* 💡 수정: 진화 공식 시각적 정중앙 완벽 정렬! (Middle Alignment) */
         .evo-math { 
             font-size: 13px; font-weight: normal; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.4); font-family: 'Jua', sans-serif; 
             white-space: nowrap; 
-            line-height: 1; /* 텍스트 윗밑 쓸데없는 공백 제거 */
-            transform: translateY(-1px); /* 'x2'를 시각적으로 아주 살짝 위로 올려서 그림과 센터를 완벽히 맞춤 */
+            line-height: 1; 
+            transform: translateY(-1px); 
         }
         
         #canvas-wrapper { grid-column: 2; grid-row: 3; display: flex; width: 100%; margin-top: -50px; position: relative; z-index: 1; }
@@ -152,7 +151,6 @@
         .show-jackpot { animation: popAndBounce 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popAndBounce { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.1); } 15% { opacity: 1; transform: translate(-50%, -65%) scale(1.2) rotate(-8deg); } 25% { transform: translate(-50%, -50%) scale(0.9) rotate(5deg); } 35% { transform: translate(-50%, -55%) scale(1.05) rotate(-3deg); } 50% { transform: translate(-50%, -52%) scale(1.0) rotate(0deg); } 100% { opacity: 1; transform: translate(-50%, -52%) scale(1.0); } }
 
-        /* 💡 수정: 하단 버튼 여백 글로벌 세팅 (APK 버튼 따닥따닥 방지) */
         #button-container { 
             grid-column: 1 / -1; justify-self: center; 
             display: flex; margin-top: 5px; position: relative; z-index: 10; 
@@ -167,7 +165,7 @@
             transition: 0.1s; border: 2px solid; 
             display: flex; align-items: center; justify-content: center;
             box-sizing: border-box; line-height: 1; white-space: nowrap; 
-            margin: 0 3px; 
+            margin: 0; 
         }
         .game-btn:active { transform: translateY(2px); box-shadow: 0 2px 3px rgba(139, 69, 19, 0.1); }
         .icon-btn { padding: 8px 10px; font-size: 16px; border-radius: 50%; } 
@@ -221,7 +219,12 @@
         .shop-item-img { width: 36px; height: 36px; object-fit: contain; }
         
         .shop-item-info { flex: 1; }
-        .shop-item-name { font-family: 'Jua'; font-size: 15px; color: #8B4513; margin-bottom: 2px; line-height: 1.1; }
+        
+        /* 💡 수정 3: 상점 테마 글씨 줄바꿈 완벽 차단! */
+        .shop-item-name { 
+            font-family: 'Jua'; font-size: 15px; color: #8B4513; margin-bottom: 2px; line-height: 1.1; 
+            word-break: keep-all; white-space: nowrap; letter-spacing: -0.5px;
+        }
         .shop-item-desc { font-size: 11px; color: #666; line-height: 1.2; word-break: keep-all; }
         
         .shop-item-btn { padding: 6px 12px; border-radius: 15px; font-family: 'Jua'; font-size: 13px; cursor: pointer; border: 2px solid; white-space: nowrap; transition: 0.1s; }
@@ -313,8 +316,7 @@
                 grid-template-columns: 85px minmax(0, 1fr); 
                 gap: 5px 10px;
                 padding: 0 5px;
-                /* 💡 추가: 폴드 쫙 폈을 때 가로세로 무한 팽창(줌인 버그) 완벽 차단! */
-                max-width: 480px;
+                max-width: 480px; 
             }
 
             #evolution-chain {
@@ -328,7 +330,7 @@
             .evo-math { 
                 font-size: 10px; 
                 letter-spacing: -0.5px; 
-                transform: translateY(-1px); /* 모바일에서도 시각적 센터 완벽 유지 */
+                transform: translateY(-1px); 
             }
 
             .shop-wallet-container {
@@ -336,25 +338,25 @@
                 gap: 8px;
             }
             
-            /* 폴드 폈을 때 상점이 무식하게 안 커지게 방어 */
             #shop-modal .modal-container {
                 width: 90vw;
                 max-width: 400px;
                 padding: 15px;
             }
 
+            /* 💡 수정 2: 폴드 접었을 때 극단적으로 좁은 가로폭(280px)에서 버튼 터짐 방어! */
             #button-container {
-                padding: 0 5px;
+                padding: 0 2px; 
             }
             .btn-group {
-                gap: 15px; 
+                gap: 5px; /* 넓었던 간격을 바짝 좁혀서 우측 짤림 방지 */
             }
             .game-btn {
-                padding: 10px 14px; 
-                font-size: 13px;
+                padding: 8px 8px; /* 좁은 폰을 위한 다이어트 패딩 */
+                font-size: 12px; 
+                letter-spacing: -0.5px;
             }
             
-            /* 캔버스 화면 밖 탈선 및 왼쪽 쏠림 방지 */
             #canvas-wrapper {
                 min-width: 0;
             }
