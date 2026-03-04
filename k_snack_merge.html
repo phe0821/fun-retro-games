@@ -233,7 +233,17 @@
         .btn-equip { background: #4caf50; color: #fff; border-color: #388e3c; }
         .btn-equipped { background: #e0e0e0; color: #757575; border-color: #bdbdbd; cursor: default; }
 
-        .score-formula { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 0; border-bottom: 1px dashed rgba(139, 69, 19, 0.3); font-family: 'Jua', sans-serif; }
+        .score-formula { 
+            display: grid; 
+            /* [그림 34px] + [기호 20px] + [그림 34px] + [결과 85px] 크기로 칸막이 고정 */
+            grid-template-columns: 34px 20px 34px 85px; 
+            align-items: center; 
+            justify-content: center; /* 표 자체를 가운데 정렬 */
+            gap: 6px; 
+            padding: 8px 0; 
+            border-bottom: 1px dashed rgba(139, 69, 19, 0.3); 
+            font-family: 'Jua', sans-serif; 
+        }
         .score-formula:last-child { border-bottom: none; }
         .score-evo-img { width: 34px; height: 34px; object-fit: contain; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2)); } 
         /* 💡 수정: 줄바꿈 금지 본드(nowrap) 추가 및 여유 공간 확보 */
