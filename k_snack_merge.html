@@ -337,6 +337,11 @@
                 padding: 10px 14px; 
                 font-size: 13px;
             }
+			
+			/* 5. 캔버스 고집 꺾기 (왼쪽 쏠림 & 오른쪽 튀어나감 완벽 방어!) */
+            #canvas-wrapper {
+                min-width: 0;
+            }
         }
 		
 	</style>
@@ -528,9 +533,7 @@
                     if (index < SNACKS.length - 1) {
                         evoFormulas[index].querySelector('.evo-small').src = snack.img;
                         evoFormulas[index].querySelector('.evo-big').src = SNACKS[index + 1].img;
-                    } else if (index === 7) { 
-                        evoFormulas[index].querySelector('.evo-small').src = snack.img;
-                    }
+                    } 
                 });
             }
 
