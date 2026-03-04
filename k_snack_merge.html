@@ -234,7 +234,7 @@
         .score-formula:last-child { border-bottom: none; }
         .score-evo-img { width: 34px; height: 34px; object-fit: contain; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2)); } 
         .score-math { font-size: 18px; font-weight: bold; color: #333; } 
-        .score-math.result { color: #d35400; }
+        .score-math.result { color: #d35400; display: inline-block; width: 65px; text-align: left; }
 
         /* 🌙 테마: 심야 포장마차 (유지) */
         body.night-mode { background: linear-gradient(to bottom, #0f172a 0%, #1b2a47 40%, #2e4a62 80%, #0d1117 100%); }
@@ -313,6 +313,8 @@
                 grid-template-columns: 85px minmax(0, 1fr); 
                 gap: 5px 10px;
                 padding: 0 5px;
+                /* 💡 추가: 폴드 쫙 폈을 때 가로세로 무한 팽창(줌인 버그) 완벽 차단! */
+                max-width: 480px;
             }
 
             #evolution-chain {
